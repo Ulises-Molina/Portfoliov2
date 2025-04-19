@@ -297,7 +297,8 @@ export default function Home() {
                         <TechBadge label="Git" />
                         <TechBadge label="Zustand" />
                         <TechBadge label="Figma" />
-                        <TechBadge label="Shopify" />
+                        <TechBadge label="WordPress"/>
+                        <TechBadge label="Shopify"/>
                       </div>
                     </div>
                   </div>
@@ -331,7 +332,7 @@ export default function Home() {
                       company="Qualita"
                       period="2025 - Presente"
                       description="Desarrollo de aplicaciones web utilizando Wordpress y Shopify. Implementación de diseños responsivos y accesibles. Colaboración con equipos de diseño y marketing"
-                      technologies={["Wordpress", "Elementor", "Shopify", "ClickUp"]}
+                      technologies={["Wordpress", "Elementor", "Shopify", "Slack"]}
                       isLeft={true}
                     />
 
@@ -340,7 +341,7 @@ export default function Home() {
                       company="Qualita"
                       period="2025-2025"
                       description="Desarrollo de aplicaciones web utilizando Wordpress y Shopify. Implementación de diseños responsivos y accesibles. Colaboración con equipos de diseño y marketing"
-                      technologies={["Wordpress", "Elementor", "Shopify", "ClickUp"]}
+                      technologies={["Wordpress", "Elementor", "Shopify", "Slack"]}
                       isLeft={false}
                     />
 
