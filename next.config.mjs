@@ -1,3 +1,13 @@
+const path = require("path");
+
+module.exports = {
+  webpack: (config) => {
+    config.resolve.alias["@"] = path.resolve(__dirname);
+    return config;
+  },
+};
+
+
 let userConfig = undefined
 try {
   userConfig = await import('./v0-user-next.config')
