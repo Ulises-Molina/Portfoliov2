@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowUpRight, Github, Linkedin, Twitter, Mail, ExternalLink, Menu, X, Code, ChevronRight, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { cn } from "../lib/utils"
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("about")
