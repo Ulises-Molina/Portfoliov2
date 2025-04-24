@@ -297,6 +297,7 @@ export default function Home() {
                         <TechBadge label="Git" />
                         <TechBadge label="Zustand" />
                         <TechBadge label="Figma" />
+                        <TechBadge label="Wordpress" />
                         <TechBadge label="Shopify" />
                       </div>
                     </div>
