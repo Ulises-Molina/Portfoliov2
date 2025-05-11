@@ -65,7 +65,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] to-[#121212] text-white overflow-hidden">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-br from-[#8a9a8c]/20 to-[#4a5a4d]/20 backdrop-blur-lg border-b border-white/10">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="container flex items-center justify-between px-6 py-4 mx-auto">
           <Link href="https://www.linkedin.com/in/ulises-rafael-molina/" target="_blank" className="flex items-center gap-3">
             <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] p-0.5">
               <div className="absolute inset-0 bg-black rounded-lg overflow-hidden m-0.5">
@@ -108,14 +108,14 @@ export default function Home() {
           </nav>
 
           {/* Social Links - Desktop */}
-          <div className="hidden md:flex space-x-2">
+          <div className="hidden space-x-2 md:flex">
             <SocialLink href="https://github.com/Ulises-Molina" icon={<Github className="w-4 h-4" />} label="GitHub" />
             <SocialLink href="https://www.linkedin.com/in/ulises-rafael-molina/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
             <SocialLink href="mailto:tu@ulisesmolinadev@gmail.com" icon={<Mail className="w-4 h-4" />} label="Email" />
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 bg-white/5 rounded-lg">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-lg md:hidden bg-white/5">
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function Home() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-lg pt-20 px-6 pb-6 flex flex-col md:hidden"
+            className="fixed inset-0 z-40 flex flex-col px-6 pt-20 pb-6 bg-black/95 backdrop-blur-lg md:hidden"
           >
             <nav className="mb-8">
               <ul className="space-y-2">
@@ -149,7 +149,7 @@ export default function Home() {
                       )}
                     >
                       {section.label}
-                      {activeSection === section.id && <ChevronRight className="ml-auto h-4 w-4" />}
+                      {activeSection === section.id && <ChevronRight className="w-4 h-4 ml-auto" />}
                     </button>
                   </li>
                 ))}
@@ -157,19 +157,19 @@ export default function Home() {
             </nav>
 
             <div className="mt-auto">
-              <div className="flex space-x-4 mb-6 justify-center">
+              <div className="flex justify-center mb-6 space-x-4">
               <SocialLink href="https://github.com/Ulises-Molina" icon={<Github className="w-4 h-4" />} label="GitHub" />
               <SocialLink href="https://www.linkedin.com/in/ulises-rafael-molina/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
               <SocialLink href="mailto:tu@ulisesmolinadev@gmail.com" icon={<Mail className="w-4 h-4" />} label="Email" />
               </div>
-              <p className="text-xs text-white/40 text-center">© {new Date().getFullYear()} Tu Nombre</p>
+              <p className="text-xs text-center text-white/40">© {new Date().getFullYear()} Tu Nombre</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Main content */}
-      <main ref={mainRef} className="h-screen overflow-y-auto overflow-x-hidden scrollbar-hide pt-16">
+      <main ref={mainRef} className="h-screen pt-16 overflow-x-hidden overflow-y-auto scrollbar-hide">
         <AnimatePresence mode="wait">
           {activeSection === "about" && (
             <motion.div
@@ -187,17 +187,17 @@ export default function Home() {
                   style={{ transform: `translateY(${scrollY * 0.2}px)` }}
                 ></div>
                 <div
-                  className="absolute inset-0 opacity-10 z-0"
+                  className="absolute inset-0 z-0 opacity-10"
                   style={{ transform: `translateY(${scrollY * 0.1}px)` }}
                 ></div>
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f0f0f] to-transparent z-10"></div>
 
-                <div className="container mx-auto px-6 md:px-12 relative z-20">
+                <div className="container relative z-20 px-6 mx-auto md:px-12">
                   <motion.h1
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
+                    className="mb-4 text-4xl font-bold leading-tight sm:text-5xl md:text-7xl sm:mb-6"
                   >
                     Creando{" "}
                     <span className="bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] text-transparent bg-clip-text">
@@ -209,7 +209,7 @@ export default function Home() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.4, duration: 0.8 }}
-                    className="text-lg sm:text-xl text-white/70 max-w-2xl mb-6 sm:mb-8"
+                    className="max-w-2xl mb-6 text-lg sm:text-xl text-white/70 sm:mb-8"
                   >
                     Desarrollador Frontend especializado en crear interfaces modernas, atractivas y funcionales que
                     conectan con los usuarios.
@@ -218,14 +218,14 @@ export default function Home() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
-                    className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                    className="flex flex-col gap-3 sm:flex-row sm:gap-4"
                   >
                     <Link
                       href="#contact"
                       onClick={() => handleSectionClick("contact")}
                       className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full font-medium hover:shadow-lg hover:shadow-[#8a9a8c]/20 transition-all flex items-center justify-center"
                     >
-                      Contactar <ArrowUpRight className="ml-2 h-4 w-4" />
+                      Contactar <ArrowUpRight className="w-4 h-4 ml-2" />
                     </Link>
                     <Link
                       href="#projects"
@@ -243,7 +243,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: showArrow ? 1 : 0, y: 0 }}
                 transition={{ delay: 1, duration: 0.8 }}
-                className="relative -mt-2 left-1/2 -translate-x-1/2 z-50"
+                className="relative z-50 -mt-2 -translate-x-1/2 left-1/2"
               >
                 <motion.div
                   animate={{
@@ -260,17 +260,17 @@ export default function Home() {
               </motion.div>
 
               {/* About content */}
-              <section className="py-16 sm:py-32 container mx-auto px-4 sm:px-6 md:px-12">
+              <section className="container px-4 py-16 mx-auto sm:py-32 sm:px-6 md:px-12">
                 <div className="max-w-4xl mx-auto">
-                  <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 inline-block relative">
+                  <h2 className="relative inline-block mb-8 text-2xl font-bold sm:text-3xl sm:mb-12">
                     Sobre mí
                     <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                   </h2>
 
-                  <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
+                  <div className="grid gap-8 mb-12 md:grid-cols-2 sm:gap-12 sm:mb-16">
                     <div className="space-y-4 sm:space-y-6 text-white/80">
                       <p className="text-sm sm:text-base">
-                        Hola, soy <span className="text-white font-medium">Ulises Molina</span>. Soy un desarrollador
+                        Hola, soy <span className="font-medium text-white">Ulises Molina</span>. Soy un desarrollador
                         frontend apasionado por crear experiencias web atractivas y funcionales.
                       </p>
                       <p className="text-sm sm:text-base">
@@ -285,8 +285,8 @@ export default function Home() {
                     </div>
 
                     <div>
-                      <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-white">Tecnologías</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                      <h3 className="mb-4 text-lg font-semibold text-white sm:text-xl sm:mb-6">Tecnologías</h3>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
                         <TechBadge label="JavaScript" />
                         <TechBadge label="React" />
                         <TechBadge label="TypeScript" />
@@ -314,10 +314,10 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="min-h-screen py-20 container mx-auto px-6 md:px-12"
+              className="container min-h-screen px-6 py-20 mx-auto md:px-12"
             >
               <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold mb-12 inline-block relative">
+                <h2 className="relative inline-block mb-12 text-3xl font-bold">
                   Experiencia
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
@@ -366,10 +366,10 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="min-h-screen py-20 container mx-auto px-6 md:px-12"
+              className="container min-h-screen px-6 py-20 mx-auto md:px-12"
             >
               <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold mb-12 inline-block relative">
+                <h2 className="relative inline-block mb-12 text-3xl font-bold">
                   Certificaciones
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#647566] to-[#7d8f7e] rounded-full"></div>
                 </h2>
@@ -413,15 +413,15 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="min-h-screen py-20 container mx-auto px-6 md:px-12"
+              className="container min-h-screen px-6 py-20 mx-auto md:px-12"
             >
               <div className="max-w-6xl mx-auto">
-                <h2 className="text-3xl font-bold mb-12 inline-block relative">
+                <h2 className="relative inline-block mb-12 text-3xl font-bold">
                   Proyectos
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                   <ProjectCard
                     title="Great Burgers"
                     description="Tienda online con manejo de carrito de compras, autenticación de administrador y almacenamiento en Supabase."
@@ -487,16 +487,16 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="min-h-screen py-20 container mx-auto px-6 md:px-12 flex items-center"
+              className="container flex items-center min-h-screen px-6 py-20 mx-auto md:px-12"
             >
-              <div className="max-w-4xl mx-auto w-full">
-                <h2 className="text-3xl font-bold mb-12 inline-block relative text-center w-full">
+              <div className="w-full max-w-4xl mx-auto">
+                <h2 className="relative inline-block w-full mb-12 text-3xl font-bold text-center">
                   Contacto
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
 
                 <div className="max-w-xl mx-auto">
-                  <p className="text-white/80 mb-8 text-center">
+                  <p className="mb-8 text-center text-white/80">
                     Actualmente estoy abierto a nuevas oportunidades. No dudes en contactarme si
                     queres trabajar conmigo.
                   </p>
@@ -530,10 +530,10 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Footer */}
-        <footer className="py-8 border-t border-white/10 mt-20">
-          <div className="container mx-auto px-6 md:px-12">
+        <footer className="py-8 mt-20 border-t border-white/10">
+          <div className="container px-6 mx-auto md:px-12">
             <div className="flex items-center justify-center text-center">
-              <p className="text-white/40 text-sm">
+              <p className="text-sm text-white/40">
                 Hecho por Ulises Molina
               </p>
             </div>
@@ -550,7 +550,7 @@ function SocialLink({ href, icon, label }: { href: string; icon: React.ReactNode
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+      className="flex items-center justify-center w-8 h-8 transition-colors rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white"
       aria-label={label}
     >
       {icon}
@@ -567,7 +567,7 @@ function TechBadge({ label }: { label: string }) {
       transition={{ duration: 0.3 }}
       className="bg-gradient-to-br from-[#8a9a8c]/10 to-[#4a5a4d]/10 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2 text-center hover:border-[#8a9a8c]/30 transition-colors"
     >
-      <span className="text-white/90 text-sm font-medium">{label}</span>
+      <span className="text-sm font-medium text-white/90">{label}</span>
     </motion.div>
   )
 }
@@ -592,7 +592,7 @@ function ProjectCard({ title, description, technologies, demoUrl, repoUrl, image
       whileHover={{ y: -5 }}
       className="group bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#8a9a8c]/30 transition-all flex flex-col h-full"
     >
-      <div className="relative h-48 w-full overflow-hidden">
+      <div className="relative w-full h-48 overflow-hidden">
         <Image
           src={imageUrl || "/placeholder.svg"}
           alt={title}
@@ -601,12 +601,12 @@ function ProjectCard({ title, description, technologies, demoUrl, repoUrl, image
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] to-transparent opacity-60"></div>
       </div>
-      <div className="p-6 flex flex-col flex-grow">
+      <div className="flex flex-col flex-grow p-6">
         <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-[#8a9a8c] transition-colors">{title}</h3>
-        <p className="text-sm text-white/70 mb-4">{description}</p>
+        <p className="mb-4 text-sm text-white/70">{description}</p>
         <div className="flex flex-wrap gap-2 mb-6">
           {technologies.map((tech) => (
-            <span key={tech} className="text-xs px-2 py-1 bg-white/5 rounded-full border border-white/10">
+            <span key={tech} className="px-2 py-1 text-xs border rounded-full bg-white/5 border-white/10">
               {tech}
             </span>
           ))}
@@ -621,7 +621,7 @@ function ProjectCard({ title, description, technologies, demoUrl, repoUrl, image
             <ExternalLink className="mr-1.5 w-3.5 h-3.5" /> Ver Demo
           </Link>
           {isPrivate ? (
-            <div className="flex-1 flex items-center justify-center px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium text-white/40 cursor-not-allowed">
+            <div className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium border rounded-lg cursor-not-allowed bg-white/5 border-white/10 text-white/40">
               <Code className="mr-1.5 w-3.5 h-3.5" /> Privado
             </div>
           ) : (
@@ -629,7 +629,7 @@ function ProjectCard({ title, description, technologies, demoUrl, repoUrl, image
               href={repoUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-all"
+              className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium transition-all border rounded-lg bg-white/5 border-white/10 hover:bg-white/10"
             >
               <Code className="mr-1.5 w-3.5 h-3.5" /> Ver Código
             </Link>
@@ -691,13 +691,13 @@ function TimelineItem({ title, company, period, description, technologies, isLef
         <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-[#8a9a8c]/30 transition-all">
           <div className="flex flex-col mb-4">
             <h3 className="text-xl font-semibold text-white">{title}</h3>
-            <span className="text-sm text-white/60 bg-white/5 px-3 py-1 rounded-full mt-2 w-fit">{period}</span>
+            <span className="px-3 py-1 mt-2 text-sm rounded-full text-white/60 bg-white/5 w-fit">{period}</span>
           </div>
           <p className="text-[#8a9a8c] mb-3">{company}</p>
-          <p className="text-white/70 mb-6">{description}</p>
+          <p className="mb-6 text-white/70">{description}</p>
           <div className="flex flex-wrap gap-2">
             {technologies.map((tech) => (
-              <span key={tech} className="text-xs px-3 py-1 bg-white/5 rounded-full border border-white/10">
+              <span key={tech} className="px-3 py-1 text-xs border rounded-full bg-white/5 border-white/10">
                 {tech}
               </span>
             ))}
@@ -734,7 +734,7 @@ function CertificationCard({
       whileHover={{ y: -5 }}
       className="bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#647566]/30 transition-all"
     >
-      <div className="p-6 flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col gap-6 p-6 md:flex-row">
         <div className="flex-shrink-0">
           <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gradient-to-br from-[#647566]/20 to-[#7d8f7e]/20 p-0.5">
             <div className="absolute inset-0 bg-black/50 rounded-lg overflow-hidden m-0.5">
@@ -743,13 +743,13 @@ function CertificationCard({
           </div>
         </div>
         <div className="flex-1">
-          <h3 className="text-xl font-semibold text-white mb-1">{title}</h3>
+          <h3 className="mb-1 text-xl font-semibold text-white">{title}</h3>
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="text-[#7d8f7e] font-medium">{organization}</span>
-            <span className="text-white/40 text-sm">•</span>
-            <span className="text-white/40 text-sm">{date}</span>
+            <span className="text-sm text-white/40">•</span>
+            <span className="text-sm text-white/40">{date}</span>
           </div>
-          <p className="text-white/70 text-sm mb-4">{description}</p>
+          <p className="mb-4 text-sm text-white/70">{description}</p>
           <Link
             href={credentialUrl}
             target="_blank"
@@ -757,7 +757,7 @@ function CertificationCard({
             className="inline-flex items-center text-sm text-[#7d8f7e] hover:text-[#8fa190] transition-colors"
           >
             <div className="mr-1.5 w-3.5 h-3.5" /> Ver credencial
-            <ArrowUpRight className="ml-1 w-3 h-3" />
+            <ArrowUpRight className="w-3 h-3 ml-1" />
           </Link>
         </div>
       </div>
