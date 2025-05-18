@@ -331,7 +331,7 @@ export default function Home() {
                       title="Desarrollador Web"
                       company="Qualita"
                       period="2025 - Presente"
-                      description="Desarrollo de aplicaciones web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
+                      description="Desarrollo de sitios web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
                       technologies={["Wordpress", "Elementor", "Shopify", "ClickUp","Zapier"]}
                       isLeft={true}
                     />
@@ -340,7 +340,7 @@ export default function Home() {
                       title="Pasante Desarrollo Web"
                       company="Qualita"
                       period="2025-2025"
-                      description="Desarrollo de aplicaciones web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
+                      description="Desarrollo de sitios web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
                       technologies={["Wordpress", "Elementor", "Shopify", "ClickUp"]}
                       isLeft={false}
                     />
