@@ -421,7 +421,7 @@ export default function Home() {
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
 
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                   <ProjectCard
                     title="E-Commerce"
                     description="Tienda online que incluye autenticación de usuarios mediante NextAuth, con almacenamiento en PostgreSQL usando Prisma y encriptación de contraseñas."
