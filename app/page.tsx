@@ -239,25 +239,25 @@ export default function Home() {
               </section>
 
               {/* Scroll indicator */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: showArrow ? 1 : 0, y: 0 }}
-                transition={{ delay: 1, duration: 0.8 }}
-                className="relative z-50 -mt-2 -translate-x-1/2 left-1/2"
-              >
-                <motion.div
-                  animate={{
-                    y: [0, 10, 0],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <ChevronDown className="w-8 h-8 text-white/60" />
-                </motion.div>
-              </motion.div>
+              <AnimatePresence>
+  {showArrow && (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ delay: 1, duration: 0.8 }}
+      className="relative z-50 -mt-2 -translate-x-1/2 left-1/2"
+    >
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <ChevronDown className="w-8 h-8 text-white/60" />
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
 
               {/* About content */}
               <section className="container px-4 py-16 mx-auto sm:py-32 sm:px-6 md:px-12">
@@ -421,16 +421,7 @@ export default function Home() {
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
 
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                  <ProjectCard
-                    title="Great Burgers"
-                    description="Tienda online con manejo de carrito de compras, autenticación de administrador y almacenamiento en Supabase."
-                    technologies={["NextJS", "TypeScript", "Tailwind CSS", "Supabase"]}
-                    demoUrl="https://great-burgers.vercel.app/"
-                    imageUrl="/great.png"
-                    isPrivate={true}
-                  />
-
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
                   <ProjectCard
                     title="E-Commerce"
                     description="Tienda online que incluye autenticación de usuarios mediante NextAuth, con almacenamiento en PostgreSQL usando Prisma y encriptación de contraseñas."
@@ -534,7 +525,7 @@ export default function Home() {
           <div className="container px-6 mx-auto md:px-12">
             <div className="flex items-center justify-center text-center">
               <p className="text-sm text-white/40">
-                Hecho por Ulises Molina
+                Desarrollado por Ulises Molina
               </p>
             </div>
           </div>

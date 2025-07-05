@@ -25,6 +25,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <link rel="icon" type="image/svg+xml" href="/icons8-studio-display-50 .png" />
       <body className={poppins.className}>{children}
+        cz-shortcut-listen="true"
         <Analytics/>
         </body>
     </html>
