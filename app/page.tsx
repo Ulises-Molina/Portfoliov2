@@ -8,6 +8,9 @@ import { ArrowUpRight, Github, Linkedin, Twitter, Mail, ExternalLink, Menu, X, C
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("about")
@@ -162,7 +165,7 @@ export default function Home() {
               <SocialLink href="https://www.linkedin.com/in/ulises-rafael-molina/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
               <SocialLink href="mailto:tu@ulisesmolinadev@gmail.com" icon={<Mail className="w-4 h-4" />} label="Email" />
               </div>
-              <p className="text-xs text-center text-white/40">© {new Date().getFullYear()} Tu Nombre</p>
+              <p className="text-xs text-center text-white/40">© {new Date().getFullYear()} Ulises Molina</p>
             </div>
           </motion.div>
         )}
@@ -415,57 +418,55 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="container min-h-screen px-6 py-20 mx-auto md:px-12"
             >
-              <div className="max-w-6xl mx-auto">
+              <div className="max-w-8xl mx-auto">
                 <h2 className="relative inline-block mb-12 text-3xl font-bold">
                   Proyectos
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
 
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                  <ProjectCard
-                    title="E-Commerce"
-                    description="Tienda online que incluye autenticación de usuarios mediante NextAuth, con almacenamiento en PostgreSQL usando Prisma y encriptación de contraseñas."
-                    technologies={["NextJS", "TypeScript", "TailwindCSS", "PostgreSQL", "Prisma"]}
-                    demoUrl="https://next-js-eccomerce-nine.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/NextJS-Eccomerce"
-                    imageUrl="/eccom.png"
+                <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1">
+                  <ProjectCardVideo
+                    title="Great Burgers Website"
+                    description="Great Burgers es una aplicación web de pedidos de comida desarrollada como proyecto de práctica de desarrollo front-end. La interfaz simula una experiencia de usuario moderna para un restaurante de hamburguesas, permitiendo explorar el menú, agregar productos al carrito y gestionar pedidos mediante un panel de administración."
+                    technologies={["NextJS", "TypeScript", "TailwindCSS", "Supabase"]}
+                    demoUrl="https://great-burgers.vercel.app/"
+                    repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
+                    videoDesktopUrl="/great.mp4"
+                    videoMobileUrl="/greatmobile.png"
+                    isPrivate={true}
                   />
 
-                  <ProjectCard
+                  <ProjectCardVideo
                     title="Crypto Market"
                     description="Permite a los usuarios visualizar el precio de diversas criptomonedas en tiempo real con grafico interactivo y acceder a las últimas noticias del mundo cripto."
                     technologies={["React", "TypeScript", "TailwindCSS", "Chart.js", "NewsAPI"]}
                     demoUrl="https://marketcrypto-psi.vercel.app/"
                     repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
-                    imageUrl="/market.png"
+                    videoDesktopUrl="/marketcrypto.mp4"
+                    videoMobileUrl="/marketcrypto.png"
                   />
 
-                  <ProjectCard
+                  <ProjectCardVideo
+                    title="NextJS E-Commerce"
+                    description="Next.js E-Commerce es una aplicación web de comercio electrónico desarrollada como proyecto de práctica de desarrollo front-end. La interfaz simula una experiencia de usuario moderna para una tienda en línea, permitiendo explorar productos, agregarlos al carrito y utiliza un sistema de register y login."
+                    technologies={["NextJS", "TypeScript", "TailwindCSS", "PostgreSQL","NextAuth"]}
+                    demoUrl="https://next-js-eccomerce-nine.vercel.app/"
+                    repoUrl="https://github.com/Ulises-Molina/NextJS-Eccomerce"
+                    videoDesktopUrl="/nextjs.mp4"
+                    videoMobileUrl="/nextmobile.png"
+                  />
+
+                  <ProjectCardVideo
                     title="Room"
-                    description="SPA siguiendo un diseño en figma de Frontend Mentor. "
+                    description="SPA siguiendo un diseño en figma de Frontend Mentor."
                     technologies={["NextJS", "TypeScript", "TailwindCSS", "Framer Motion"]}
                     demoUrl="https://room-tan.vercel.app/"
                     repoUrl="https://github.com/Ulises-Molina/Room"
-                    imageUrl="/room.png"
+                    videoDesktopUrl="/room.mp4"
+                    videoMobileUrl="/roommobile.png"
+                    isPrivate={true}
                   />
-
-                  <ProjectCard
-                    title="OrganizARTE"
-                    description="Sistema de gestión de tareas con filtro por categorías, prioridad y búsqueda. Formulario para agregar o eliminar categorías."
-                    technologies={["React", "TailwindCSS", "MaterialUI", "Firebase"]}
-                    demoUrl="https://organizarte.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/Organizarte"
-                    imageUrl="/organizarte.png"
-                  />
-
-                  <ProjectCard
-                    title="MercadoSur E-Commerce"
-                    description="Tienda online, cuenta con funcionalidades como búsqueda por categoría, filtros por nombre y precio, paginas individuales por producto, carrito de compra y pago."
-                    technologies={["React", "CSS", "MaterialUI", "React Router"]}
-                    demoUrl="https://mercado-sur.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/MercadoSur-Web-Eccomerce"
-                    imageUrl="/mercadosur.png"
-                  />
+                  
                 </div>
               </div>
             </motion.div>
@@ -563,73 +564,124 @@ function TechBadge({ label }: { label: string }) {
   )
 }
 
-interface ProjectCardProps {
+interface ProjectCardVideoProps {
   title: string
   description: string
   technologies: string[]
   demoUrl: string
-  repoUrl?: string
-  imageUrl: string
+  repoUrl: string
+  videoDesktopUrl: string
+  videoMobileUrl: string
   isPrivate?: boolean
 }
 
-function ProjectCard({ title, description, technologies, demoUrl, repoUrl, imageUrl, isPrivate }: ProjectCardProps) {
+export function ProjectCardVideo({
+  title,
+  description,
+  technologies,
+  demoUrl,
+  repoUrl,
+  videoDesktopUrl,
+  videoMobileUrl,
+  isPrivate,
+}: ProjectCardVideoProps) {
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -5 }}
-      className="group bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#8a9a8c]/30 transition-all flex flex-col h-full"
-    >
-      <div className="relative w-full h-48 overflow-hidden">
-        <Image
-          src={imageUrl || "/placeholder.svg"}
-          alt={title}
-          fill
-          className="object-cover transition-transform"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] to-transparent opacity-60"></div>
-      </div>
-      <div className="flex flex-col flex-grow p-6">
-        <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-[#8a9a8c] transition-colors">{title}</h3>
-        <p className="mb-4 text-sm text-white/70">{description}</p>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {technologies.map((tech) => (
-            <span key={tech} className="px-2 py-1 text-xs border rounded-full bg-white/5 border-white/10">
-              {tech}
-            </span>
-          ))}
+  <motion.div
+    viewport={{ once: true }}
+    transition={{ duration: 0.5 }}
+    className="group overflow-hidden transition-all flex flex-col xl:flex-row h-full lg:gap-8 border-b-2 border-[#8a9a8c]/10 lg:py-10"
+  >
+    {/* Mockups */}
+    <div className="flex justify-center items-center px-4 md:py-10 py-6 relative w-full md:w-auto">
+      {/* Laptop (Desktop Video) */}
+      <div className="transform scale-[0.45] sm:scale-[0.5] md:scale-[0.65] lg:scale-[0.7] xl:scale-[0.8]">
+        <div className="relative mx-auto flex h-[390px] w-[630px] items-center justify-center rounded-[20px] bg-black p-[9px] pt-[9px] pb-[23px] shadow-[inset_0_0_0_2px_#c8cacb,inset_0_0_0_10px_#000] [transform-style:preserve-3d] [transform-origin:bottom_center]">
+          <div className="absolute top-[10px] left-1/2 h-[12px] w-[100px] -translate-x-1/2 rounded-b-[6px] bg-black z-20" />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="h-full w-full rounded-[12px] object-cover p-1"
+          >
+            <source src={videoDesktopUrl} type="video/mp4" />
+          </video>
+          <div className="absolute top-[-3px] h-[12px] w-[630px] rounded-t-[5px] bg-gradient-to-b from-[#979899] to-transparent [transform:rotateX(90deg)]" />
+          <div className="absolute bottom-[2px] left-[2px] h-[24px] w-[626px] rounded-b-[20px] bg-gradient-to-b from-[#272727] to-[#0d0d0d]" />
         </div>
-        <div className="flex gap-3 mt-auto">
+        <div className="relative mx-auto mt-[-10px] h-[30px] w-[750px] rounded-b-[12px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-2px_8px_0_#6c7074] z-10">
+          <div className="absolute top-0 left-1/2 h-[10px] w-[120px] -translate-x-1/2 rounded-b-[10px] bg-[#e2e3e4] shadow-[inset_0_0_4px_2px_#babdbf]" />
+          <div className="absolute bottom-[-2px] left-1/2 h-[2px] w-[40px] -translate-x-1/2 rounded-b-[3px] shadow-[-320px_0_#272727,300px_0_#272727]" />
+        </div>
+      </div>
+
+      {/* Phone (Mobile Video)*/}
+      <div className="hidden md:block w-[130px] sm:w-[120px] md:w-[136px] absolute top-[44%] md:left-[85%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="relative aspect-[9/19.5] overflow-hidden rounded-[30px] border-[7px] border-[#222] bg-black shadow-lg">
+          <div className="absolute top-[5px] left-1/2 h-[12px] w-[70px] -translate-x-1/2 rounded-[10px] bg-[#111] z-20" />
+          <Image 
+            src={videoMobileUrl}
+            alt="Phone"
+            fill
+            className="object-cover"
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* Text Content */}
+    <div className="flex flex-col flex-grow px-4 md:px-6 lg:px-10 py-6 justify-center">
+      <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-[#8a9a8c] transition-colors">
+        {title}
+      </h3>
+      <p className="mb-4 text-m text-white/70">{description}</p>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {technologies.map((tech) => (
+          <span key={tech} className="px-2 py-1 text-xs border rounded-full bg-white/5 border-white/10">
+            {tech}
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-3 flex-wrap">
+        <Link
+          href={demoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center px-3 py-2 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-[#8a9a8c]/20 transition-all"
+        >
+          <ExternalLink className="mr-1.5 w-3.5 h-3.5" /> Ver Demo
+        </Link>
+        {isPrivate ? (
+          <div className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium border rounded-lg cursor-not-allowed bg-white/5 border-white/10 text-white/40">
+            <Code className="mr-1.5 w-3.5 h-3.5" /> Privado
+          </div>
+        ) : (
           <Link
-            href={demoUrl}
+            href={repoUrl || "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center px-3 py-2 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-[#8a9a8c]/20 transition-all"
+            className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium transition-all border rounded-lg bg-white/5 border-white/10 hover:bg-white/10"
           >
-            <ExternalLink className="mr-1.5 w-3.5 h-3.5" /> Ver Demo
+            <Code className="mr-1.5 w-3.5 h-3.5" /> Ver Código
           </Link>
-          {isPrivate ? (
-            <div className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium border rounded-lg cursor-not-allowed bg-white/5 border-white/10 text-white/40">
-              <Code className="mr-1.5 w-3.5 h-3.5" /> Privado
-            </div>
-          ) : (
-            <Link
-              href={repoUrl || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium transition-all border rounded-lg bg-white/5 border-white/10 hover:bg-white/10"
-            >
-              <Code className="mr-1.5 w-3.5 h-3.5" /> Ver Código
-            </Link>
-          )}
-        </div>
+        )}
       </div>
-    </motion.div>
-  )
+    </div>
+  </motion.div>
+)
 }
+
+
+
+
+
+
+
+
+
+
+
 
 interface ContactItemProps {
   icon: React.ReactNode
@@ -755,4 +807,5 @@ function CertificationCard({
     </motion.div>
   )
 }
+
 
