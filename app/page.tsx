@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowUpRight, Github, Linkedin, Twitter, Mail, ExternalLink, Menu, X, Code, ChevronRight, ChevronDown } from "lucide-react"
+import { ArrowUpRight, Github, Linkedin, Twitter, Mail, ExternalLink, Menu, X, Code, ChevronRight, ChevronDown, User} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -432,7 +432,7 @@ export default function Home() {
                     demoUrl="https://great-burgers.vercel.app/"
                     repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
                     videoDesktopUrl="/great.mp4"
-                    videoMobileUrl="/greatmobile.png"
+                    videoMobileUrl="/greatmobile2.png"
                     isPrivate={true}
                   />
 
@@ -513,6 +513,13 @@ export default function Home() {
                       label="GitHub"
                       value="Ulises-Molina"
                       href="https://github.com/Ulises-Molina"
+                    />
+
+                    <ContactItem
+                      icon={<User className="w-5 h-5" />}
+                      label="CV"
+                      value="Ver CV"
+                      href="/Cv.Ulises.pdf"
                     />
                   </div>
                 </div>
@@ -618,7 +625,7 @@ export function ProjectCardVideo({
 
       {/* Phone (Mobile Video)*/}
       <div className="hidden md:block w-[130px] sm:w-[120px] md:w-[136px] absolute top-[44%] md:left-[85%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <div className="relative aspect-[9/19.5] overflow-hidden rounded-[30px] border-[7px] border-[#222] bg-black shadow-lg">
+        <div className="relative aspect-[9/19.5] overflow-hidden rounded-[30px] border-[7px] border-[#222] bg-[#444] shadow-lg">
           <div className="absolute top-[5px] left-1/2 h-[12px] w-[70px] -translate-x-1/2 rounded-[10px] bg-[#111] z-20" />
           <Image 
             src={videoMobileUrl}
