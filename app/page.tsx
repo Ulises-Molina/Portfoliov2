@@ -331,16 +331,16 @@ export default function Home() {
 
                   <div className="space-y-24">
                     <TimelineItem
-                      title="Desarrollador Web"
+                      title="Frontend Developer"
                       company="Qualita"
                       period="2025 - Presente"
-                      description="Desarrollo de sitios web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
-                      technologies={["Wordpress", "Elementor", "Shopify", "ClickUp","Zapier"]}
+                      description="Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce. HTML, CSS y JavaScript, diseño y optimización UX / UI, Responsive Design, automatización de procesos con Zapier, administración de servicios de Hosting, colaboración con equipo de diseño grafico y metodologías ágiles"
+                      technologies={["Wordpress", "Elementor", "Shopify", "ClickUp","Zapier","HTML5","CSS3","JavaScript"]}
                       isLeft={true}
                     />
 
                     <TimelineItem
-                      title="Pasante Desarrollo Web"
+                      title="Pasante Web Developer"
                       company="Qualita"
                       period="2025-2025"
                       description="Desarrollo de sitios web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
@@ -385,6 +385,15 @@ export default function Home() {
                     description="Certificación profesional que valida habilidades en fundamentos de JavaScript, programación funcional, estructuras de datos y algoritmos, aplicando estos conocimientos en desafíos y proyectos prácticos."
                     imageUrl="/free.png"
                     credentialUrl="https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8"
+                  />
+
+                  <CertificationCard
+                    title="Curso avanzado de React JS"
+                    organization="Gobierno de la Ciudad de Buenos Aires"
+                    date="Junio 2025"
+                    description="Certificación que demuestra conocimientos en React.JS, como componentes, eventos, estados, rutas, formularios y uso de Hooks. Trabajo con APIs y gestion de estados globalmente."
+                    imageUrl="/BA.png"
+                    credentialUrl="https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8"
                   />
 
                   <CertificationCard
