@@ -282,9 +282,10 @@ export default function Home() {
                         diseño y la programación.
                       </p>
                       <p className="text-sm sm:text-base">
-                        Cuando no estoy codeando, disfruto hacer deporte o leer. Siempre estoy buscando aprender
-                        nuevas tecnologías y mejorar mis habilidades.
+                        Cuento con una sólida capacidad de adaptación a nuevos entornos, pensamiento analítico y habilidades para el trabajo en equipo, lo que me permite contribuir de manera efectiva en proyectos de diversa complejidad.
+
                       </p>
+
                     </div>
 
                     <div>
@@ -299,7 +300,7 @@ export default function Home() {
                         <TechBadge label="SQL" />
                         <TechBadge label="Git" />
                         <TechBadge label="Zustand" />
-                        <TechBadge label="Figma" />
+                        <TechBadge label="n8n" />
                         <TechBadge label="Wordpress" />
                         <TechBadge label="Shopify" />
                       </div>
@@ -435,6 +436,51 @@ export default function Home() {
 
                 <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1">
                   <ProjectCardVideo
+                    title="SVN Designs"
+                    description="El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de un diseño responsivo y una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca."
+                    technologies={["Shopify", "Typeform", "Zapier"]}
+                    demoUrl="https://svn-designs.com/"
+                    repoUrl=""
+                    videoDesktopUrl="/svn.mp4"
+                    videoMobileUrl="/svnmobile.png"
+                    isPrivate={true}
+                  />
+
+                  <ProjectCardVideo
+                    title="Confidas Capital"
+                    description="El proyecto se centró en transmitir confianza y accesibilidad, facilitando el acceso a información sobre productos financieros. Como desarrollador trabajé en la construcción de un diseño moderno y responsivo, optimizando la navegación y asegurando una experiencia fluida tanto en desktop como en dispositivos móviles, con un enfoque en la usabilidad y la comunicación visual de la marca."
+                    technologies={["Wordpress", "Elementor", "CSS", "MetForm"]}
+                    demoUrl="https://confidascapital.com.ar/"
+                    repoUrl=""
+                    videoDesktopUrl="/confidas.mp4"
+                    videoMobileUrl="/confidasmobile.png"
+                    isPrivate={true}
+                  />
+
+                  <ProjectCardVideo
+                    title="GlowOn"
+                    description="GlowOn ofrece cursos, recetarios, rutinas y comunidad con énfasis en hábitos sostenibles. Mi trabajo como desarrollador se enfocó en construir una interfaz cálida y motivadora, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad."
+                    technologies={["Wordpress", "Elementor", "LearnPress", "WooCommerce"]}
+                    demoUrl="https://glowonok.com/"
+                    repoUrl=""
+                    videoDesktopUrl="/glowon.mp4"
+                    videoMobileUrl="/glowonmobile.png"
+                    isPrivate={true}
+                  />
+
+                  <ProjectCardVideo
+                    title="Skiway"
+                    description="Skiway es un sitio web para una marca argentina de calzado e indumentaria de seguridad industrial. Como desarrollador, trabajé en un diseño responsivo y funcional, optimizando la navegación, el catálogo de productos con filtros y la presentación de imágenes y detalles técnicos para ofrecer una experiencia clara y profesional."
+                    technologies={["Wordpress", "Elementor", "WooCommerce", "CSS"]}
+                    demoUrl="https://skiway.com.ar/"
+                    repoUrl=""
+                    videoDesktopUrl="/skiway.mp4"
+                    videoMobileUrl="/skiwaymobile.png"
+                    isPrivate={true}
+                  />
+
+
+                  <ProjectCardVideo
                     title="Great Burgers Website"
                     description="Great Burgers es una aplicación web de pedidos de comida desarrollada como proyecto de práctica de desarrollo front-end. La interfaz simula una experiencia de usuario moderna para un restaurante de hamburguesas, permitiendo explorar el menú, agregar productos al carrito y gestionar pedidos mediante un panel de administración."
                     technologies={["NextJS", "TypeScript", "TailwindCSS", "Supabase"]}
@@ -463,17 +509,6 @@ export default function Home() {
                     repoUrl="https://github.com/Ulises-Molina/NextJS-Eccomerce"
                     videoDesktopUrl="/nextjs.mp4"
                     videoMobileUrl="/nextmobile.png"
-                  />
-
-                  <ProjectCardVideo
-                    title="Room"
-                    description="SPA siguiendo un diseño en figma de Frontend Mentor."
-                    technologies={["NextJS", "TypeScript", "TailwindCSS", "Framer Motion"]}
-                    demoUrl="https://room-tan.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/Room"
-                    videoDesktopUrl="/room.mp4"
-                    videoMobileUrl="/roommobile.png"
-                    isPrivate={true}
                   />
                   
                 </div>
