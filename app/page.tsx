@@ -437,7 +437,7 @@ export default function Home() {
                 <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1">
                   <ProjectCardVideo
                     title="SVN Designs"
-                    description="El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de un diseño responsivo y una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca."
+                    description="El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca."
                     technologies={["Shopify", "Typeform", "Zapier"]}
                     demoUrl="https://svn-designs.com/"
                     repoUrl=""
@@ -458,13 +458,13 @@ export default function Home() {
                   />
 
                   <ProjectCardVideo
-                    title="GlowOn"
-                    description="GlowOn ofrece cursos, recetarios, rutinas y comunidad con énfasis en hábitos sostenibles. Mi trabajo como desarrollador se enfocó en construir una interfaz cálida y motivadora, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad."
-                    technologies={["Wordpress", "Elementor", "LearnPress", "WooCommerce"]}
-                    demoUrl="https://glowonok.com/"
+                    title="Green Company"
+                    description="Green Company ofrece soluciones logísticas de forma B2B para empresas. Mi trabajo como desarrollador se enfocó en construir una interfaz alineada con la identidad visual de la marca, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad para mostrar servicios."
+                    technologies={["Wordpress", "Elementor", "WooCommerce"]}
+                    demoUrl="#"
                     repoUrl=""
-                    videoDesktopUrl="/glowon.mp4"
-                    videoMobileUrl="/glowonmobile.png"
+                    videoDesktopUrl="/green.mp4"
+                    videoMobileUrl="/greenmobile.jpeg"
                     isPrivate={true}
                   />
 
