@@ -461,11 +461,12 @@ export default function Home() {
                     title="Green Company"
                     description="Green Company ofrece soluciones logísticas de forma B2B para empresas. Mi trabajo como desarrollador se enfocó en construir una interfaz alineada con la identidad visual de la marca, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad para mostrar servicios."
                     technologies={["Wordpress", "Elementor", "WooCommerce"]}
-                    demoUrl="#"
+                    demoUrl="https://greenmovingco.com/"
                     repoUrl=""
-                    videoDesktopUrl="/green.mp4"
-                    videoMobileUrl="/greenmobile.jpeg"
+                    videoDesktopUrl="/green2.mp4"
+                    videoMobileUrl="/greenmobile2.png"
                     isPrivate={true}
+                    
                   />
 
                   <ProjectCardVideo
