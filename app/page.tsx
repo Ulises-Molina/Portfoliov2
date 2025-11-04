@@ -334,7 +334,7 @@ export default function Home() {
                     <TimelineItem
                       title="Frontend Developer"
                       company="Qualita"
-                      period="2025 - Presente"
+                      period="Marzo 2025 - Presente"
                       description="Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce. HTML, CSS y JavaScript, diseño y optimización UX / UI, Responsive Design, automatización de procesos con Zapier, administración de servicios de Hosting, colaboración con equipo de diseño grafico y metodologías ágiles"
                       technologies={["Wordpress", "Elementor", "Shopify", "ClickUp","Zapier","HTML5","CSS3","JavaScript"]}
                       isLeft={true}
@@ -343,7 +343,7 @@ export default function Home() {
                     <TimelineItem
                       title="Pasante Web Developer"
                       company="Qualita"
-                      period="2025-2025"
+                      period="Febrero 2025 - Marzo 2025"
                       description="Desarrollo de sitios web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
                       technologies={["Wordpress", "Elementor", "Shopify", "ClickUp"]}
                       isLeft={false}
