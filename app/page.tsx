@@ -434,7 +434,20 @@ export default function Home() {
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
 
+
                 <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1">
+                  
+                  <ProjectCardVideo
+                    title="Fintrack"
+                    description="Aplicación web moderna para el control financiero personal, diseñada para ayudar a gestionar los ingresos y gastos de forma intuitiva y visual. Dashboard interactivo, gestión de transacciones y categorias, analísis financiero con IA, autenticación de usuarios y gestión de cuentas."
+                    technologies={["React", "Supabase","0Auth", "Vite", "TailwindCSS"]}
+                    demoUrl="https://fintrackgastos.vercel.app/"
+                    repoUrl="https://github.com/Ulises-Molina/Fintrack"
+                    videoDesktopUrl="/fintrack.mp4"
+                    videoMobileUrl="/fintrackmobile.png"
+                    isPrivate={true}
+                  />
+                  
                   <ProjectCardVideo
                     title="SVN Designs"
                     description="El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca."
