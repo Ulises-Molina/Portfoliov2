@@ -443,9 +443,9 @@ export default function Home() {
                     technologies={["React", "Supabase","0Auth", "Vite", "TailwindCSS"]}
                     demoUrl="https://fintrackgastos.vercel.app/"
                     repoUrl="https://github.com/Ulises-Molina/Fintrack"
-                    videoDesktopUrl="/fintrack.mp4"
-                    videoMobileUrl="/fintrackmobile.png"
-                    isPrivate={true}
+                    videoDesktopUrl="/Fintrack.mp4"
+                    videoMobileUrl="/FintrackMobile.png"
+                    isPrivate={false}
                   />
                   
                   <ProjectCardVideo
