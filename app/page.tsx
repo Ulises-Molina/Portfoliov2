@@ -681,8 +681,8 @@ export function ProjectCardVideo({
         </div>
       </div>
 
-      {/* Phone (Mobile Video)*/}
-      <div className="hidden md:block w-[130px] sm:w-[120px] md:w-[136px] absolute top-[44%] md:left-[85%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      {/* Phone (Mobile Video) - HIDDEN */}
+      <div className="hidden w-[130px] sm:w-[120px] md:w-[136px] absolute top-[44%] md:left-[85%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="relative aspect-[9/19.5] overflow-hidden rounded-[30px] border-[7px] border-[#222] bg-[#444] shadow-lg">
           <div className="absolute top-[5px] left-1/2 h-[12px] w-[70px] -translate-x-1/2 rounded-[10px] bg-[#111] z-20" />
           <Image 
