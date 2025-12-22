@@ -79,7 +79,7 @@ export default function Home() {
               <h1 className="text-lg font-bold bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] text-transparent bg-clip-text">
                 Ulises Molina
               </h1>
-              <p className="text-xs text-white/70">Desarrollador Web</p>
+              <p className="text-xs text-white/70">Software Developer</p>
             </div>
           </Link>
 
