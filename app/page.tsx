@@ -471,7 +471,7 @@ export default function Home() {
                             </div>
                             <div>
                               <h3 className="text-2xl font-bold text-white">Ulises Molina</h3>
-                              <p className="text-[#8a9a8c]">Frontend Developer</p>
+                              <p className="text-[#8a9a8c]">Software Developer</p>
                             </div>
                           </div>
 
