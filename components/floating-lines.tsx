@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import gsap from "gsap"
 
 export function FloatingLines() {
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -11,6 +12,13 @@ export function FloatingLines() {
 
         const ctx = canvas.getContext("2d")
         if (!ctx) return
+
+        // GSAP fade-in animation for canvas
+        gsap.fromTo(
+            canvas,
+            { opacity: 0 },
+            { opacity: 1, duration: 2, ease: "power2.out" }
+        )
 
         let animationFrameId: number
         let time = 0

@@ -4,6 +4,8 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ArrowUpRight, Github, Linkedin, Twitter, Mail, ExternalLink, Menu, X, Code, ChevronRight, ChevronDown, User } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -20,6 +22,18 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0)
   const [showArrow, setShowArrow] = useState(true)
   const aboutSectionRef = useRef<HTMLDivElement>(null)
+
+  // GSAP refs
+  const heroTitleRef = useRef<HTMLHeadingElement>(null)
+  const heroDescRef = useRef<HTMLParagraphElement>(null)
+  const aboutTitleRef = useRef<HTMLHeadingElement>(null)
+  const aboutContentRef = useRef<HTMLDivElement>(null)
+  const techBadgesRef = useRef<HTMLDivElement>(null)
+
+  // Register GSAP plugins
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+  }, [])
 
   const handleSectionClick = (section: string) => {
     setActiveSection(section)
@@ -64,6 +78,164 @@ export default function Home() {
 
     return () => observer.disconnect()
   }, [])
+
+  // GSAP Animations
+  // GSAP Animations
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+
+      // --- ABOUT SECTION ANIMATIONS ---
+      if (activeSection === "about") {
+        if (heroTitleRef.current) {
+          gsap.fromTo(
+            heroTitleRef.current,
+            { opacity: 0, y: 50, scale: 0.95 },
+            { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power3.out", delay: 0.2 }
+          )
+        }
+
+        if (heroDescRef.current) {
+          gsap.fromTo(
+            heroDescRef.current,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 1, ease: "power2.out", delay: 0.5 }
+          )
+        }
+
+        if (aboutTitleRef.current && mainRef.current) {
+          gsap.fromTo(
+            aboutTitleRef.current,
+            { opacity: 0, x: -50, rotateY: -15 },
+            {
+              opacity: 1, x: 0, rotateY: 0, duration: 1, ease: "power3.out",
+              scrollTrigger: {
+                trigger: aboutTitleRef.current,
+                scroller: mainRef.current,
+                start: "top 80%",
+                end: "top 50%",
+                toggleActions: "play none none reverse"
+              }
+            }
+          )
+        }
+
+        if (aboutContentRef.current && mainRef.current) {
+          gsap.fromTo(
+            aboutContentRef.current,
+            { opacity: 0, y: 50, scale: 0.95 },
+            {
+              opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out",
+              scrollTrigger: {
+                trigger: aboutContentRef.current,
+                scroller: mainRef.current,
+                start: "top 75%",
+                end: "top 40%",
+                toggleActions: "play none none reverse"
+              }
+            }
+          )
+        }
+
+        if (techBadgesRef.current && mainRef.current) {
+          const badges = techBadgesRef.current.querySelectorAll(".tech-badge")
+          gsap.fromTo(
+            badges,
+            { opacity: 0, scale: 0.8, y: 20, rotateX: -15 },
+            {
+              opacity: 1, scale: 1, y: 0, rotateX: 0, duration: 0.6,
+              stagger: { amount: 0.8, from: "start", ease: "power2.out" },
+              ease: "back.out(1.7)",
+              scrollTrigger: {
+                trigger: techBadgesRef.current,
+                scroller: mainRef.current,
+                start: "top 80%",
+                end: "top 50%",
+                toggleActions: "play none none reverse"
+              }
+            }
+          )
+
+          badges.forEach((badge) => {
+            badge.addEventListener("mouseenter", () => {
+              gsap.to(badge, { scale: 1.1, y: -5, duration: 0.3, ease: "power2.out" })
+            })
+            badge.addEventListener("mouseleave", () => {
+              gsap.to(badge, { scale: 1, y: 0, duration: 0.3, ease: "power2.out" })
+            })
+          })
+        }
+      }
+
+      // --- EXPERIENCE SECTION ANIMATIONS ---
+      if (activeSection === "experience" && mainRef.current) {
+        gsap.from(".timeline-line", {
+          scaleY: 0, transformOrigin: "top", duration: 1.5, ease: "power2.out", delay: 0.5
+        })
+
+        const items = gsap.utils.toArray(".timeline-item")
+        items.forEach((item: any, i) => {
+          gsap.fromTo(item,
+            { opacity: 0, x: i % 2 === 0 ? -50 : 50 },
+            {
+              opacity: 1, x: 0, duration: 0.8, ease: "power3.out", scrollTrigger: {
+                trigger: item,
+                scroller: mainRef.current,
+                start: "top 80%"
+              }
+            }
+          )
+        })
+      }
+
+      // --- PROJECTS SECTION ANIMATIONS ---
+      if (activeSection === "projects" && mainRef.current) {
+        const projects = gsap.utils.toArray(".project-card")
+        gsap.fromTo(projects,
+          { opacity: 0, y: 50, scale: 0.95 },
+          {
+            opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.2, ease: "power2.out",
+            scrollTrigger: {
+              trigger: ".projects-container",
+              scroller: mainRef.current,
+              start: "top 85%"
+            }
+          }
+        )
+      }
+
+      // --- CERTIFICATIONS SECTION ANIMATIONS ---
+      if (activeSection === "certifications" && mainRef.current) {
+        const certs = gsap.utils.toArray(".certification-card")
+        gsap.fromTo(certs,
+          { opacity: 0, y: 30, rotateX: 10 },
+          {
+            opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.15, ease: "back.out(1.2)",
+            scrollTrigger: {
+              trigger: ".certifications-container",
+              scroller: mainRef.current,
+              start: "top 80%"
+            }
+          }
+        )
+      }
+
+      // --- CONTACT SECTION ANIMATIONS ---
+      if (activeSection === "contact") {
+        gsap.from(".contact-title", {
+          opacity: 0, y: -30, duration: 1, delay: 0.2, ease: "power3.out"
+        })
+        gsap.from(".contact-item", {
+          opacity: 0, x: -30, duration: 0.8, stagger: 0.1, delay: 0.5, ease: "power2.out"
+        })
+      }
+
+    })
+
+    return () => {
+      ctx.revert()
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [activeSection])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] to-[#121212] text-white overflow-hidden">
@@ -198,10 +370,8 @@ export default function Home() {
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f0f0f] to-transparent z-10"></div>
 
                 <div className="container relative z-20 px-6 mx-auto md:px-12">
-                  <motion.h1
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.8 }}
+                  <h1
+                    ref={heroTitleRef}
                     className="mb-4 text-4xl font-bold leading-tight sm:text-5xl md:text-7xl sm:mb-6"
                   >
                     Creando{" "}
@@ -209,16 +379,14 @@ export default function Home() {
                       experiencias
                     </span>{" "}
                     digitales excepcionales
-                  </motion.h1>
-                  <motion.p
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.8 }}
+                  </h1>
+                  <p
+                    ref={heroDescRef}
                     className="max-w-2xl mb-6 text-lg sm:text-xl text-white/70 sm:mb-8"
                   >
                     Desarrollador Frontend especializado en crear interfaces modernas, atractivas y funcionales que
                     conectan con los usuarios.
-                  </motion.p>
+                  </p>
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -265,49 +433,115 @@ export default function Home() {
 
 
               {/* About content */}
-              <section className="container px-4 py-16 mx-auto sm:py-32 sm:px-6 md:px-12">
-                <div className="max-w-4xl mx-auto">
-                  <h2 className="relative inline-block mb-8 text-2xl font-bold sm:text-3xl sm:mb-12">
-                    Sobre mí
-                    <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
-                  </h2>
+              <section className="relative py-16 sm:py-32 overflow-hidden">
+                {/* Animated gradient background */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-[#8a9a8c]/15 rounded-full blur-[100px] animate-pulse"></div>
+                  <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-[#4a5a4d]/15 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+                </div>
 
-                  <div className="grid gap-8 mb-12 md:grid-cols-2 sm:gap-12 sm:mb-16">
-                    <div className="space-y-4 sm:space-y-6 text-white/80">
-                      <p className="text-sm sm:text-base">
-                        Hola, soy <span className="font-medium text-white">Ulises Molina</span>. Soy un desarrollador
-                        frontend apasionado por crear experiencias web atractivas y funcionales.
-                      </p>
-                      <p className="text-sm sm:text-base">
-                        Me especializo en construir aplicaciones
-                        modernas utilizando tecnologías como React, Next.js, TypeScript y Tailwind CSS. Me encanta trabajar en la intersección del
-                        diseño y la programación.
-                      </p>
-                      <p className="text-sm sm:text-base">
-                        Cuento con una sólida capacidad de adaptación a nuevos entornos, pensamiento analítico y habilidades para el trabajo en equipo, lo que me permite contribuir de manera efectiva en proyectos de diversa complejidad.
+                <div className="container px-4 mx-auto sm:px-6 md:px-12 max-w-6xl relative z-10">
+                  {/* Section Title with animated underline */}
+                  <div className="mb-16 text-center">
+                    <h2 ref={aboutTitleRef} className="relative inline-block mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                      <span className="bg-gradient-to-r from-white via-[#8a9a8c] to-white bg-clip-text text-transparent">
+                        Sobre mí
+                      </span>
+                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[#8a9a8c] to-transparent rounded-full"></div>
+                    </h2>
+                    <p className="mt-6 text-white/60 max-w-2xl mx-auto">
+                      Desarrollador apasionado por crear experiencias digitales excepcionales
+                    </p>
+                  </div>
 
-                      </p>
+                  {/* Main Content Grid */}
+                  <div className="grid gap-8 mb-16 lg:grid-cols-2">
+                    {/* About Card with Glassmorphism */}
+                    <div ref={aboutContentRef} className="group relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#8a9a8c]/20 to-[#4a5a4d]/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                      <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 hover:border-[#8a9a8c]/30 transition-all duration-500 h-full">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#8a9a8c]/10 to-transparent rounded-bl-full"></div>
 
+                        <div className="space-y-6 relative z-10">
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] flex items-center justify-center">
+                              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <h3 className="text-2xl font-bold text-white">Ulises Molina</h3>
+                              <p className="text-[#8a9a8c]">Frontend Developer</p>
+                            </div>
+                          </div>
+
+                          <p className="text-white/80 leading-relaxed">
+                            Soy un desarrollador frontend apasionado por crear experiencias web atractivas y funcionales que conectan con los usuarios.
+                          </p>
+                          <p className="text-white/80 leading-relaxed">
+                            Me especializo en construir aplicaciones modernas utilizando tecnologías como React, Next.js, TypeScript y Tailwind CSS. Me encanta trabajar en la intersección del diseño y la programación.
+                          </p>
+                          <p className="text-white/80 leading-relaxed">
+                            Cuento con una sólida capacidad de adaptación a nuevos entornos, pensamiento analítico y habilidades para el trabajo en equipo, lo que me permite contribuir de manera efectiva en proyectos de diversa complejidad.
+                          </p>
+
+                          {/* Stats */}
+                          <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10">
+                            <div className="text-center">
+                              <div className="text-2xl font-bold text-[#8a9a8c]">+2</div>
+                              <div className="text-xs text-white/60">Años</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-2xl font-bold text-[#8a9a8c]">+15</div>
+                              <div className="text-xs text-white/60">Proyectos</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-2xl font-bold text-[#8a9a8c]">+4</div>
+                              <div className="text-xs text-white/60">Certificaciones</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div>
-                      <h3 className="mb-4 text-lg font-semibold text-white sm:text-xl sm:mb-6">Tecnologías</h3>
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
-                        <TechBadge label="JavaScript" />
-                        <TechBadge label="React" />
-                        <TechBadge label="TypeScript" />
-                        <TechBadge label="Next.js" />
-                        <TechBadge label="HTML/CSS" />
-                        <TechBadge label="Tailwind CSS" />
-                        <TechBadge label="SQL" />
-                        <TechBadge label="Git" />
-                        <TechBadge label="Zustand" />
-                        <TechBadge label="n8n" />
-                        <TechBadge label="Wordpress" />
-                        <TechBadge label="Shopify" />
+                    {/* Technologies Card */}
+                    <div className="group relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#4a5a4d]/20 to-[#8a9a8c]/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                      <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 hover:border-[#8a9a8c]/30 transition-all duration-500 h-full">
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#4a5a4d]/10 to-transparent rounded-tr-full"></div>
+
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-3 mb-8">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] flex items-center justify-center">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                              </svg>
+                            </div>
+                            <h3 className="text-2xl font-bold text-white">Stack Tecnológico</h3>
+                          </div>
+
+                          <div ref={techBadgesRef} className="grid grid-cols-2 gap-3">
+                            <TechBadge label="JavaScript" iconPath="/iconos/javascript.svg" />
+                            <TechBadge label="React" iconPath="/iconos/react_light.svg" />
+                            <TechBadge label="TypeScript" iconPath="/iconos/typescript.svg" />
+                            <TechBadge label="Next.js" iconPath="/iconos/nextjs_icon_dark.svg" />
+                            <TechBadge label="HTML5" iconPath="/iconos/html5.svg" />
+                            <TechBadge label="CSS" iconPath="/iconos/css_old.svg" />
+                            <TechBadge label="Tailwind CSS" iconPath="/iconos/tailwindcss.svg" />
+                            <TechBadge label="SQL" iconPath="/iconos/postgresql.svg" />
+                            <TechBadge label="Git" iconPath="/iconos/git.svg" />
+                            <TechBadge label="AWS" iconPath="/iconos/aws_light.svg" />
+                            <TechBadge label="Elementor" iconPath="/iconos/elementor.svg" />
+                            <TechBadge label="n8n" iconPath="/iconos/n8n.svg" />
+                            <TechBadge label="Wordpress" iconPath="/iconos/wordpress.svg" />
+                            <TechBadge label="Shopify" iconPath="/iconos/shopify.svg" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Skills Highlights */}
                 </div>
               </section>
             </motion.div>
@@ -330,7 +564,7 @@ export default function Home() {
 
                 <div className="relative mt-16">
                   {/* Timeline line */}
-                  <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
+                  <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#8a9a8c] to-[#4a5a4d] rounded-full timeline-line"></div>
 
                   <div className="space-y-24">
                     <TimelineItem
@@ -374,13 +608,13 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="container min-h-screen px-6 py-20 mx-auto md:px-12"
             >
-              <div className="max-w-4xl mx-auto">
+              <div className=" mx-auto">
                 <h2 className="relative inline-block mb-12 text-3xl font-bold">
                   Certificaciones
                   <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#647566] to-[#7d8f7e] rounded-full"></div>
                 </h2>
 
-                <div className="grid gap-8 md:grid-cols-2">
+                <div className="grid gap-8 md:grid-cols-3 certifications-container">
                   <CertificationCard
                     title="JavaScript Algorithms and Data Structures"
                     organization="freeCodeCamp"
@@ -389,7 +623,6 @@ export default function Home() {
                     imageUrl="/free.png"
                     credentialUrl="https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8"
                   />
-
                   <CertificationCard
                     title="Curso avanzado de React JS"
                     organization="Gobierno de la Ciudad de Buenos Aires"
@@ -397,6 +630,17 @@ export default function Home() {
                     description="Certificación que demuestra conocimientos en React.JS, como componentes, eventos, estados, rutas, formularios y uso de Hooks. Trabajo con APIs y gestion de estados globalmente."
                     imageUrl="/BA.png"
                     credentialUrl="https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8"
+                  />
+
+
+
+                  <CertificationCard
+                    title="Curso avanzado de Node JS"
+                    organization="Gobierno de la Ciudad de Buenos Aires"
+                    date="Diciembre 2025"
+                    description="Certificación que demuestra conocimientos en Node.JS, creación de APIs, gestión de paquetes, manejo de errores y despliegue de aplicaciones."
+                    imageUrl="/BA.png"
+                    credentialUrl="https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8"
                   />
 
                   <CertificationCard
@@ -437,7 +681,7 @@ export default function Home() {
                 </h2>
 
 
-                <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1">
+                <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1 projects-container">
 
                   <ProjectCardVideo
                     title="Fintrack"
@@ -542,7 +786,7 @@ export default function Home() {
               className="container flex items-center min-h-screen px-6 py-20 mx-auto md:px-12"
             >
               <div className="w-full max-w-4xl mx-auto">
-                <h2 className="relative inline-block w-full mb-12 text-3xl font-bold text-center">
+                <h2 className="relative inline-block w-full mb-12 text-3xl font-bold text-center contact-title">
                   Contacto
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
                 </h2>
@@ -589,7 +833,7 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Footer */}
-        <footer className="py-8 mt-20 border-t border-white/10">
+        <footer className="py-8 mt-0 border-t border-white/10">
           <div className="container px-6 mx-auto md:px-12">
             <div className="flex items-center justify-center text-center">
               <p className="text-sm text-white/40">
@@ -617,17 +861,23 @@ function SocialLink({ href, icon, label }: { href: string; icon: React.ReactNode
   )
 }
 
-function TechBadge({ label }: { label: string }) {
+function TechBadge({ label, icon, iconPath }: { label: string; icon?: string; iconPath?: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3 }}
-      className="bg-gradient-to-br from-[#8a9a8c]/10 to-[#4a5a4d]/10 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2 text-center hover:border-[#8a9a8c]/30 transition-colors"
+    <div
+      className="tech-badge group relative overflow-hidden bg-gradient-to-br from-[#8a9a8c]/10 to-[#4a5a4d]/10 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hover:border-[#8a9a8c]/50 transition-all duration-300 cursor-pointer"
     >
-      <span className="text-sm font-medium text-white/90">{label}</span>
-    </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-br from-[#8a9a8c]/0 to-[#8a9a8c]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="relative z-10 flex items-center gap-3">
+        {iconPath ? (
+          <div className="relative w-5 h-5">
+            <Image src={iconPath} alt={label} fill className="object-contain" />
+          </div>
+        ) : icon ? (
+          <span className="text-lg">{icon}</span>
+        ) : null}
+        <span className="text-sm font-medium text-white/90">{label}</span>
+      </div>
+    </div>
   )
 }
 
@@ -654,10 +904,8 @@ export function ProjectCardVideo({
 }: ProjectCardVideoProps) {
 
   return (
-    <motion.div
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="group overflow-hidden transition-all flex flex-col xl:flex-row h-full lg:gap-8 border-b-2 border-[#8a9a8c]/10 lg:py-10"
+    <div
+      className="group overflow-hidden transition-all flex flex-col xl:flex-row h-full lg:gap-8 border-b-2 border-[#8a9a8c]/10 lg:py-10 project-card"
     >
       {/* Mockups */}
       <div className="flex justify-center items-center px-4 md:py-10 py-6 relative w-full md:w-auto">
@@ -735,7 +983,7 @@ export function ProjectCardVideo({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -763,7 +1011,7 @@ function ContactItem({ icon, label, value, href }: ContactItemProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center p-4 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 hover:border-[#8a9a8c]/30 transition-all group"
+      className="flex items-center p-4 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 hover:border-[#8a9a8c]/30 transition-all group contact-item"
     >
       <div className="mr-4 text-[#8a9a8c] group-hover:text-[#4a5a4d]">{icon}</div>
       <div>
@@ -786,12 +1034,8 @@ interface TimelineItemProps {
 
 function TimelineItem({ title, company, period, description, technologies, isLeft }: TimelineItemProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className={`relative flex flex-col md:flex-row ${isLeft ? "md:flex-row-reverse" : ""}`}
+    <div
+      className={`relative flex flex-col md:flex-row ${isLeft ? "md:flex-row-reverse" : ""} timeline-item`}
     >
       {/* Timeline dot */}
       <div className="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] border-4 border-[#0f0f0f] z-10"></div>
@@ -814,7 +1058,7 @@ function TimelineItem({ title, company, period, description, technologies, isLef
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -836,13 +1080,8 @@ function CertificationCard({
   credentialUrl,
 }: CertificationCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -5 }}
-      className="bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#647566]/30 transition-all"
+    <div
+      className="bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#647566]/30 transition-all certification-card group hover:shadow-lg hover:shadow-[#8a9a8c]/10"
     >
       <div className="flex flex-col gap-6 p-6 md:flex-row">
         <div className="flex-shrink-0">
@@ -871,7 +1110,7 @@ function CertificationCard({
           </Link>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
