@@ -476,17 +476,17 @@ export default function Home() {
                           </div>
 
                           <p className="text-white/80 leading-relaxed">
-                            Soy un desarrollador frontend apasionado por crear experiencias web atractivas y funcionales que conectan con los usuarios.
+                            Me enfoco en crear sistemas claros, rápidos y eficientes, donde el diseño y el desarrollo se alinean para dar resultados sólidos y escalables, siempre con el usuario como eje principal.
                           </p>
                           <p className="text-white/80 leading-relaxed">
-                            Me especializo en construir aplicaciones modernas utilizando tecnologías como React, Next.js, TypeScript y Tailwind CSS. Me encanta trabajar en la intersección del diseño y la programación.
+                           Me adapto con facilidad a nuevos contextos y desafíos. Disfruto analizar problemas complejos, proponer soluciones claras y colaborar con equipos.
                           </p>
                           <p className="text-white/80 leading-relaxed">
-                            Cuento con una sólida capacidad de adaptación a nuevos entornos, pensamiento analítico y habilidades para el trabajo en equipo, lo que me permite contribuir de manera efectiva en proyectos de diversa complejidad.
+                            El aprendizaje constante es parte de mi rutina: exploro, pruebo y busco crear soluciones que resuelvan problemas reales, aporten valor y eleven el estándar del producto.
                           </p>
 
                           {/* Stats */}
-                          <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10">
+                          <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
                             <div className="text-center">
                               <div className="text-2xl font-bold text-[#8a9a8c]">+2</div>
                               <div className="text-xs text-white/60">Años</div>
@@ -494,10 +494,6 @@ export default function Home() {
                             <div className="text-center">
                               <div className="text-2xl font-bold text-[#8a9a8c]">+15</div>
                               <div className="text-xs text-white/60">Proyectos</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-[#8a9a8c]">+4</div>
-                              <div className="text-xs text-white/60">Certificaciones</div>
                             </div>
                           </div>
                         </div>
