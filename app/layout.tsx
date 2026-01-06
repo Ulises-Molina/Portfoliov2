@@ -24,6 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <link rel="icon" type="image/svg+xml" href="/icons8-studio-display-50 .png" />
       <head>
        <Script
       id="gtm-script"
