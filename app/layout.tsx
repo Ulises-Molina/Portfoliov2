@@ -40,8 +40,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     />
       </head>
       <body className={poppins.className}>{children}
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-57WR95TV"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+         <noscript>
+  <iframe
+    src="https://www.googletagmanager.com/ns.html?id=GTM-5WR95TV"
+    height="0"
+    width="0"
+    style={{ display: "none", visibility: "hidden" }}
+  />
+</noscript>
+
         <Analytics/>
         </body>
     </html>
