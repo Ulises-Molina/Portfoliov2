@@ -384,8 +384,7 @@ export default function Home() {
                     ref={heroDescRef}
                     className="max-w-2xl mb-6 text-lg sm:text-xl text-white/70 sm:mb-8"
                   >
-                    Desarrollador Frontend especializado en crear interfaces modernas, atractivas y funcionales que
-                    conectan con los usuarios.
+                    Diseño y desarrollo de landing pages, sitios corporativos y productos web rápidos, claros y optimizados para convertir.
                   </p>
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
@@ -455,19 +454,23 @@ export default function Home() {
                   </div>
 
                   {/* Main Content Grid */}
-                  <div className="grid gap-8 mb-16 lg:grid-cols-2">
-                    {/* About Card with Glassmorphism */}
-                    <div ref={aboutContentRef} className="group relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#8a9a8c]/20 to-[#4a5a4d]/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                      <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 hover:border-[#8a9a8c]/30 transition-all duration-500 h-full">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#8a9a8c]/10 to-transparent rounded-bl-full"></div>
+                  <div className="grid gap-10 mb-16 lg:grid-cols-[0.85fr_1.15fr]">
+                    {/* Profile Panel */}
+                    <div ref={aboutContentRef} className="relative h-full">
+                      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-br from-[#8a9a8c]/35 via-transparent to-[#4a5a4d]/35 blur-2xl"></div>
+                      <div className="relative h-full rounded-[28px] border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent p-8 sm:p-10 backdrop-blur-2xl shadow-[0_30px_90px_rgba(0,0,0,0.45)] flex flex-col">
+                        <div className="absolute inset-0 rounded-[28px] ring-1 ring-white/10"></div>
+                        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gradient-to-br from-[#8a9a8c]/25 to-transparent blur-2xl"></div>
 
-                        <div className="space-y-6 relative z-10">
-                          <div className="flex items-center gap-4 mb-6">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] flex items-center justify-center">
-                              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
+                        <div className="relative z-10 space-y-8">
+                          <div className="flex items-center gap-5">
+                            <div className="relative">
+                              <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] opacity-70 blur-md"></div>
+                              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d]">
+                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                              </div>
                             </div>
                             <div>
                               <h3 className="text-2xl font-bold text-white">Ulises Molina</h3>
@@ -475,48 +478,67 @@ export default function Home() {
                             </div>
                           </div>
 
-                          <p className="text-white/80 leading-relaxed">
-                            Me enfoco en crear sistemas claros, rápidos y eficientes, donde el diseño y el desarrollo se alinean para dar resultados sólidos y escalables, siempre con el usuario como eje principal.
-                          </p>
-                          <p className="text-white/80 leading-relaxed">
-                           Me adapto con facilidad a nuevos contextos y desafíos. Disfruto analizar problemas complejos, proponer soluciones claras y colaborar con equipos.
-                          </p>
-                          <p className="text-white/80 leading-relaxed">
-                            El aprendizaje constante es parte de mi rutina: exploro, pruebo y busco crear soluciones que resuelvan problemas reales, aporten valor y eleven el estándar del producto.
-                          </p>
+                          <div className="space-y-2">
+                            <div className="h-[2px] w-16 rounded-full bg-gradient-to-r from-[#8a9a8c] to-transparent"></div>
+                            <p className="text-white/70">Soluciones digitales con foco en claridad, performance y diseño.</p>
+                          </div>
 
                           {/* Stats */}
-                          <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
-                            <div className="text-center">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
                               <div className="text-2xl font-bold text-[#8a9a8c]">+2</div>
-                              <div className="text-xs text-white/60">Años</div>
+                              <div className="text-xs tracking-wider text-white/50">Años</div>
                             </div>
-                            <div className="text-center">
+                            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
                               <div className="text-2xl font-bold text-[#8a9a8c]">+15</div>
-                              <div className="text-xs text-white/60">Proyectos</div>
+                              <div className="text-xs tracking-wider text-white/50">Proyectos</div>
                             </div>
                           </div>
+
                         </div>
                       </div>
                     </div>
 
-                    {/* Technologies Card */}
-                    <div className="group relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#4a5a4d]/20 to-[#8a9a8c]/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                      <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 hover:border-[#8a9a8c]/30 transition-all duration-500 h-full">
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#4a5a4d]/10 to-transparent rounded-tr-full"></div>
+                    {/* Narrative Panels */}
+                    <div className="space-y-6">
+                      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.06] p-6 sm:p-8 backdrop-blur-2xl">
+                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-[#8a9a8c]/20 to-transparent blur-2xl"></div>
+                        <p className="relative z-10 text-white/80 leading-relaxed">
+                          Me enfoco transformar ideas en sitios web rápidos, estéticos y orientados a resultados. Priorizo performance, accesibilidad y una experiencia clara. También cuido la jerarquía visual y la coherencia de cada sección.
+                        </p>
+                      </div>
 
+                      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-8 backdrop-blur-2xl">
+                        <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-gradient-to-br from-[#4a5a4d]/25 to-transparent blur-2xl"></div>
+                        <p className="relative z-10 text-white/80 leading-relaxed">
+                          Me involucro desde la estrategia y el diseño hasta la implementación, asegurando consistencia visual y mensajes que conviertan. Acompaño el proceso con comunicación clara y foco en los objetivos.
+                        </p>
+                      </div>
+
+                    </div>
+
+                    {/* Technologies Card */}
+                    <div className="relative lg:col-span-2">
+                      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-br from-[#4a5a4d]/35 via-transparent to-[#8a9a8c]/35 blur-2xl"></div>
+                      <div className="relative rounded-[28px] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-8 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+                        <div className="absolute inset-0 rounded-[28px] ring-1 ring-white/10"></div>
                         <div className="relative z-10">
                           <div className="flex items-center gap-3 mb-8">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] flex items-center justify-center">
-                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                              </svg>
+                            <div className="relative">
+                              <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] opacity-60 blur-md"></div>
+                              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] flex items-center justify-center">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                </svg>
+                              </div>
                             </div>
-                            <h3 className="text-2xl font-bold text-white">Stack Tecnológico</h3>
+                            <div>
+                              <h3 className="text-2xl font-bold text-white">Stack Tecnológico</h3>
+                              <p className="text-sm text-white/50">Herramientas y tecnologías.</p>
+                            </div>
                           </div>
 
-                          <div ref={techBadgesRef} className="grid grid-cols-2 gap-3">
+                          <div ref={techBadgesRef} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                             <TechBadge label="JavaScript" iconPath="/iconos/javascript.svg" />
                             <TechBadge label="React" iconPath="/iconos/react_light.svg" />
                             <TechBadge label="TypeScript" iconPath="/iconos/typescript.svg" />
@@ -689,7 +711,7 @@ export default function Home() {
                     videoMobileUrl="/FintrackMobile.png"
                     isPrivate={false}
                   />
-
+{/* SVN Designs 
                   <ProjectCardVideo
                     title="SVN Designs"
                     description="El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca."
@@ -700,7 +722,7 @@ export default function Home() {
                     videoMobileUrl="/svnmobile.png"
                     isPrivate={true}
                   />
-
+*/}{/* CONFIDAS 
                   <ProjectCardVideo
                     title="Confidas Capital"
                     description="El proyecto se centró en transmitir confianza y accesibilidad, facilitando el acceso a información sobre productos financieros. Como desarrollador trabajé en la construcción de un diseño moderno y responsivo, optimizando la navegación y asegurando una experiencia fluida tanto en desktop como en dispositivos móviles, con un enfoque en la usabilidad y la comunicación visual de la marca."
@@ -711,7 +733,7 @@ export default function Home() {
                     videoMobileUrl="/confidasmobile.png"
                     isPrivate={true}
                   />
-
+*/}{/* GREEN COMPANY
                   <ProjectCardVideo
                     title="Green Company"
                     description="Green Company ofrece soluciones logísticas de forma B2B para empresas. Mi trabajo como desarrollador se enfocó en construir una interfaz alineada con la identidad visual de la marca, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad para mostrar servicios."
@@ -723,7 +745,7 @@ export default function Home() {
                     isPrivate={true}
 
                   />
-
+*/}{/* Footer 
                   <ProjectCardVideo
                     title="Skiway"
                     description="Skiway es un sitio web para una marca argentina de calzado e indumentaria de seguridad industrial. Como desarrollador, trabajé en un diseño responsivo y funcional, optimizando la navegación, el catálogo de productos con filtros y la presentación de imágenes y detalles técnicos para ofrecer una experiencia clara y profesional."
@@ -735,7 +757,7 @@ export default function Home() {
                     isPrivate={true}
                   />
 
-
+*/}
                   <ProjectCardVideo
                     title="Great Burgers Website"
                     description="Great Burgers es una aplicación web de pedidos de comida desarrollada como proyecto de práctica de desarrollo front-end. La interfaz simula una experiencia de usuario moderna para un restaurante de hamburguesas, permitiendo explorar el menú, agregar productos al carrito y gestionar pedidos mediante un panel de administración."

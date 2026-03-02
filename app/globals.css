@@ -33,10 +33,60 @@
   }
   body {
     @apply bg-background text-foreground;
+    position: relative;
   }
 
   html {
     scroll-behavior: smooth;
+  }
+}
+
+/* Vintage grain overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.2' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.95'/%3E%3C/svg%3E");
+  animation: grain-shift 3s steps(6) infinite;
+}
+
+@keyframes grain-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  10% {
+    transform: translate3d(-1%, -1%, 0);
+  }
+  20% {
+    transform: translate3d(1%, -2%, 0);
+  }
+  30% {
+    transform: translate3d(-2%, 1%, 0);
+  }
+  40% {
+    transform: translate3d(2%, 2%, 0);
+  }
+  50% {
+    transform: translate3d(-1%, 2%, 0);
+  }
+  60% {
+    transform: translate3d(2%, -1%, 0);
+  }
+  70% {
+    transform: translate3d(-2%, -1%, 0);
+  }
+  80% {
+    transform: translate3d(1%, 1%, 0);
+  }
+  90% {
+    transform: translate3d(-1%, 1%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
   }
 }
 
