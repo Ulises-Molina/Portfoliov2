@@ -710,6 +710,7 @@ export default function Home() {
                     repoUrl="https://github.com/Ulises-Molina/Fintrack"
                     videoDesktopUrl="/Fintrack.mp4"
                     videoMobileUrl="/FintrackMobile.png"
+                    screenshotUrl="/fintrack-sh-mobile.jpeg"
                     isPrivate={false}
                   />
 {/* SVN Designs 
@@ -767,6 +768,7 @@ export default function Home() {
                     repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
                     videoDesktopUrl="/great.mp4"
                     videoMobileUrl="/greatmobile2.png"
+                    screenshotUrl="/great-sh-mobile.jpeg"
                     isPrivate={true}
                   />
 
@@ -778,6 +780,7 @@ export default function Home() {
                     repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
                     videoDesktopUrl="/marketcrypto.mp4"
                     videoMobileUrl="/marketcrypto.png"
+                    screenshotUrl="/crypto-sh-mobile.jpeg"
                   />
 
                   <ProjectCardVideo
@@ -788,6 +791,7 @@ export default function Home() {
                     repoUrl="https://github.com/Ulises-Molina/NextJS-Eccomerce"
                     videoDesktopUrl="/nextjs.mp4"
                     videoMobileUrl="/nextmobile.png"
+                    screenshotUrl="/next-sh-mobile.jpeg"
                   />
 
                 </div>
@@ -908,6 +912,7 @@ interface ProjectCardVideoProps {
   repoUrl: string
   videoDesktopUrl: string
   videoMobileUrl: string
+  screenshotUrl?: string
   isPrivate?: boolean
 }
 
@@ -919,6 +924,7 @@ export function ProjectCardVideo({
   repoUrl,
   videoDesktopUrl,
   videoMobileUrl,
+  screenshotUrl,
   isPrivate,
 }: ProjectCardVideoProps) {
 
@@ -928,9 +934,25 @@ export function ProjectCardVideo({
     >
       {/* Mockups */}
       <div className="flex justify-center items-center px-4 md:py-10 py-6 relative w-full md:w-auto">
-        {/* Outer container sized to match scaled content (750×410px at each breakpoint scale) */}
-        <div className="relative overflow-hidden w-[338px] h-[185px] sm:w-[375px] sm:h-[205px] md:w-[488px] md:h-[267px] lg:w-[525px] lg:h-[287px] xl:w-[600px] xl:h-[328px]">
-          <div className="absolute top-0 left-0 origin-top-left scale-[0.45] sm:scale-[0.5] md:scale-[0.65] lg:scale-[0.7] xl:scale-[0.8]">
+
+        {/* Mobile: laptop frame with static image (explicit small dimensions, no scale transform) */}
+        <div className="md:hidden flex flex-col items-center">
+          <div className="relative flex h-[145px] w-[235px] items-center justify-center rounded-[8px] bg-black p-[4px] pb-[9px] shadow-[inset_0_0_0_1px_#c8cacb,inset_0_0_0_4px_#000]">
+            <div className="absolute top-[4px] left-1/2 h-[5px] w-[40px] -translate-x-1/2 rounded-b-[3px] bg-black z-20" />
+            {screenshotUrl ? (
+              <Image src={screenshotUrl} alt={title} fill className="rounded-[4px] object-cover p-[1px]" />
+            ) : (
+              <div className="h-full w-full rounded-[4px] bg-zinc-800" />
+            )}
+          </div>
+          <div className="relative mt-[-4px] h-[11px] w-[280px] rounded-b-[5px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-1px_3px_0_#6c7074] z-10">
+            <div className="absolute top-0 left-1/2 h-[4px] w-[44px] -translate-x-1/2 rounded-b-[4px] bg-[#e2e3e4] shadow-[inset_0_0_2px_1px_#babdbf]" />
+          </div>
+        </div>
+
+        {/* Desktop: laptop frame with video (scale transform) */}
+        <div className="hidden md:block relative overflow-hidden md:w-[488px] md:h-[267px] lg:w-[525px] lg:h-[287px] xl:w-[600px] xl:h-[328px]">
+          <div className="absolute top-0 left-0 origin-top-left md:scale-[0.65] lg:scale-[0.7] xl:scale-[0.8]">
             <div className="relative mx-auto flex h-[390px] w-[630px] items-center justify-center rounded-[20px] bg-black p-[9px] pt-[9px] pb-[23px] shadow-[inset_0_0_0_2px_#c8cacb,inset_0_0_0_10px_#000] [transform-style:preserve-3d] [transform-origin:bottom_center]">
               <div className="absolute top-[10px] left-1/2 h-[12px] w-[100px] -translate-x-1/2 rounded-b-[6px] bg-black z-20" />
               <video
@@ -938,7 +960,7 @@ export function ProjectCardVideo({
                 muted
                 loop
                 playsInline
-                poster={videoMobileUrl}
+                poster={screenshotUrl}
                 className="h-full w-full rounded-[12px] object-cover p-1"
               >
                 <source src={videoDesktopUrl} type="video/mp4" />
@@ -952,6 +974,7 @@ export function ProjectCardVideo({
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Text Content */}
