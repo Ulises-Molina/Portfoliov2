@@ -384,7 +384,8 @@ export default function Home() {
                     ref={heroDescRef}
                     className="max-w-2xl mb-6 text-lg sm:text-xl text-white/70 sm:mb-8"
                   >
-                    Diseño y desarrollo de landing pages, sitios corporativos y productos web rápidos, claros y optimizados para convertir.
+                    Desarrollador de Software especializado en crear interfaces modernas, atractivas y funcionales que
+                    conectan con los usuarios.
                   </p>
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
@@ -927,38 +928,28 @@ export function ProjectCardVideo({
     >
       {/* Mockups */}
       <div className="flex justify-center items-center px-4 md:py-10 py-6 relative w-full md:w-auto">
-        {/* Laptop (Desktop Video) */}
-        <div className="transform scale-[0.45] sm:scale-[0.5] md:scale-[0.65] lg:scale-[0.7] xl:scale-[0.8]">
-          <div className="relative mx-auto flex h-[390px] w-[630px] items-center justify-center rounded-[20px] bg-black p-[9px] pt-[9px] pb-[23px] shadow-[inset_0_0_0_2px_#c8cacb,inset_0_0_0_10px_#000] [transform-style:preserve-3d] [transform-origin:bottom_center]">
-            <div className="absolute top-[10px] left-1/2 h-[12px] w-[100px] -translate-x-1/2 rounded-b-[6px] bg-black z-20" />
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full rounded-[12px] object-cover p-1"
-            >
-              <source src={videoDesktopUrl} type="video/mp4" />
-            </video>
-            <div className="absolute top-[-3px] h-[12px] w-[630px] rounded-t-[5px] bg-gradient-to-b from-[#979899] to-transparent [transform:rotateX(90deg)]" />
-            <div className="absolute bottom-[2px] left-[2px] h-[24px] w-[626px] rounded-b-[20px] bg-gradient-to-b from-[#272727] to-[#0d0d0d]" />
-          </div>
-          <div className="relative mx-auto mt-[-10px] h-[30px] w-[750px] rounded-b-[12px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-2px_8px_0_#6c7074] z-10">
-            <div className="absolute top-0 left-1/2 h-[10px] w-[120px] -translate-x-1/2 rounded-b-[10px] bg-[#e2e3e4] shadow-[inset_0_0_4px_2px_#babdbf]" />
-            <div className="absolute bottom-[-2px] left-1/2 h-[2px] w-[40px] -translate-x-1/2 rounded-b-[3px] shadow-[-320px_0_#272727,300px_0_#272727]" />
-          </div>
-        </div>
-
-        {/* Phone (Mobile Video) - HIDDEN */}
-        <div className="hidden w-[130px] sm:w-[120px] md:w-[136px] absolute top-[44%] md:left-[85%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="relative aspect-[9/19.5] overflow-hidden rounded-[30px] border-[7px] border-[#222] bg-[#444] shadow-lg">
-            <div className="absolute top-[5px] left-1/2 h-[12px] w-[70px] -translate-x-1/2 rounded-[10px] bg-[#111] z-20" />
-            <Image
-              src={videoMobileUrl}
-              alt="Phone"
-              fill
-              className="object-cover"
-            />
+        {/* Outer container sized to match scaled content (750×410px at each breakpoint scale) */}
+        <div className="relative overflow-hidden w-[338px] h-[185px] sm:w-[375px] sm:h-[205px] md:w-[488px] md:h-[267px] lg:w-[525px] lg:h-[287px] xl:w-[600px] xl:h-[328px]">
+          <div className="absolute top-0 left-0 origin-top-left scale-[0.45] sm:scale-[0.5] md:scale-[0.65] lg:scale-[0.7] xl:scale-[0.8]">
+            <div className="relative mx-auto flex h-[390px] w-[630px] items-center justify-center rounded-[20px] bg-black p-[9px] pt-[9px] pb-[23px] shadow-[inset_0_0_0_2px_#c8cacb,inset_0_0_0_10px_#000] [transform-style:preserve-3d] [transform-origin:bottom_center]">
+              <div className="absolute top-[10px] left-1/2 h-[12px] w-[100px] -translate-x-1/2 rounded-b-[6px] bg-black z-20" />
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={videoMobileUrl}
+                className="h-full w-full rounded-[12px] object-cover p-1"
+              >
+                <source src={videoDesktopUrl} type="video/mp4" />
+              </video>
+              <div className="absolute top-[-3px] h-[12px] w-[630px] rounded-t-[5px] bg-gradient-to-b from-[#979899] to-transparent [transform:rotateX(90deg)]" />
+              <div className="absolute bottom-[2px] left-[2px] h-[24px] w-[626px] rounded-b-[20px] bg-gradient-to-b from-[#272727] to-[#0d0d0d]" />
+            </div>
+            <div className="relative mx-auto mt-[-10px] h-[30px] w-[750px] rounded-b-[12px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-2px_8px_0_#6c7074] z-10">
+              <div className="absolute top-0 left-1/2 h-[10px] w-[120px] -translate-x-1/2 rounded-b-[10px] bg-[#e2e3e4] shadow-[inset_0_0_4px_2px_#babdbf]" />
+              <div className="absolute bottom-[-2px] left-1/2 h-[2px] w-[40px] -translate-x-1/2 rounded-b-[3px] shadow-[-320px_0_#272727,300px_0_#272727]" />
+            </div>
           </div>
         </div>
       </div>
