@@ -42,6 +42,10 @@
 }
 
 /* Vintage grain overlay */
+body.no-grain::before {
+  display: none;
+}
+
 body::before {
   content: "";
   position: fixed;

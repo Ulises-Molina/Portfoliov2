@@ -237,6 +237,15 @@ export default function Home() {
     }
   }, [activeSection])
 
+  useEffect(() => {
+    if (activeSection === "projects") {
+      document.body.classList.add("no-grain")
+    } else {
+      document.body.classList.remove("no-grain")
+    }
+    return () => document.body.classList.remove("no-grain")
+  }, [activeSection])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] to-[#121212] text-white overflow-hidden">
       {/* Header */}
@@ -419,7 +428,7 @@ export default function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ delay: 1, duration: 0.8 }}
-                    className="relative z-50 -mt-2 -translate-x-1/2 left-1/2"
+                    className="relative z-50 -mt-2 -translate-x-1/2 left-1/2 hidden md:block"
                   >
                     <motion.div
                       animate={{ y: [0, 10, 0] }}
@@ -939,11 +948,13 @@ export function ProjectCardVideo({
         <div className="md:hidden flex flex-col items-center">
           <div className="relative flex h-[145px] w-[235px] items-center justify-center rounded-[8px] bg-black p-[4px] pb-[9px] shadow-[inset_0_0_0_1px_#c8cacb,inset_0_0_0_4px_#000]">
             <div className="absolute top-[4px] left-1/2 h-[5px] w-[40px] -translate-x-1/2 rounded-b-[3px] bg-black z-20" />
-            {screenshotUrl ? (
-              <Image src={screenshotUrl} alt={title} fill className="rounded-[4px] object-cover p-[1px]" />
-            ) : (
-              <div className="h-full w-full rounded-[4px] bg-zinc-800" />
-            )}
+            <div className="relative w-full h-full rounded-[4px] overflow-hidden">
+              {screenshotUrl ? (
+                <Image src={screenshotUrl} alt={title} fill className="object-cover" />
+              ) : (
+                <div className="h-full w-full bg-zinc-800" />
+              )}
+            </div>
           </div>
           <div className="relative mt-[-4px] h-[11px] w-[280px] rounded-b-[5px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-1px_3px_0_#6c7074] z-10">
             <div className="absolute top-0 left-1/2 h-[4px] w-[44px] -translate-x-1/2 rounded-b-[4px] bg-[#e2e3e4] shadow-[inset_0_0_2px_1px_#babdbf]" />
