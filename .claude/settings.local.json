@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for d in \"e:/Users/Ulises/Desktop/portfoliov2/.agents/skills/\"*/)",
+      "Bash(do echo \"=== $d ===\")",
+      "Read(//e/Users/Ulises/Desktop/portfoliov2/**)",
+      "Bash(done)",
+      "Bash(npm install lenis @gsap/react --save)",
+      "Bash(npx next build)",
+      "WebFetch(domain:alche.studio)"
+    ]
+  }
+}

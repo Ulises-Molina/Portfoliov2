@@ -1,1160 +1,690 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { ArrowUpRight, Github, Linkedin, Twitter, Mail, ExternalLink, Menu, X, Code, ChevronRight, ChevronDown, User } from "lucide-react"
+import { useRef, useEffect, useState, useCallback } from "react"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap"
+import { ArrowUpRight, Github, Linkedin, Mail, ExternalLink, Code, FileText } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { FloatingLines } from "@/components/floating-lines"
+import { SmoothScroll } from "@/components/smooth-scroll"
+import { WarpedGrid } from "@/components/warped-grid"
 
-export default function Home() {
-  const [activeSection, setActiveSection] = useState("about")
-  const [menuOpen, setMenuOpen] = useState(false)
-  const mainRef = useRef<HTMLElement>(null)
-  const [scrollY, setScrollY] = useState(0)
-  const [showArrow, setShowArrow] = useState(true)
-  const aboutSectionRef = useRef<HTMLDivElement>(null)
+/* ═══════════════════════════════════════════
+   ACCENT COLOR — single source of truth
+   ═══════════════════════════════════════════ */
+const ACCENT = "165, 80%, 48%"
+const ac = (alpha = 1) => `hsl(${ACCENT} / ${alpha})`
 
-  // GSAP refs
-  const heroTitleRef = useRef<HTMLHeadingElement>(null)
-  const heroDescRef = useRef<HTMLParagraphElement>(null)
-  const aboutTitleRef = useRef<HTMLHeadingElement>(null)
-  const aboutContentRef = useRef<HTMLDivElement>(null)
-  const techBadgesRef = useRef<HTMLDivElement>(null)
+/* ═══════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════ */
 
-  // Register GSAP plugins
+const SOCIAL_LINKS = [
+  { href: "https://github.com/Ulises-Molina", icon: Github, label: "GH" },
+  { href: "https://www.linkedin.com/in/ulises-rafael-molina/", icon: Linkedin, label: "LI" },
+  { href: "mailto:ulisesmolinadev@gmail.com", icon: Mail, label: "EM" },
+]
+
+const TECH_STACK = [
+  { label: "JavaScript", icon: "/iconos/javascript.svg" },
+  { label: "TypeScript", icon: "/iconos/typescript.svg" },
+  { label: "React", icon: "/iconos/react_light.svg" },
+  { label: "Next.js", icon: "/iconos/nextjs_icon_dark.svg" },
+  { label: "HTML5", icon: "/iconos/html5.svg" },
+  { label: "CSS", icon: "/iconos/css_old.svg" },
+  { label: "Tailwind CSS", icon: "/iconos/tailwindcss.svg" },
+  { label: "SQL", icon: "/iconos/postgresql.svg" },
+  { label: "Git", icon: "/iconos/git.svg" },
+  { label: "AWS", icon: "/iconos/aws_light.svg" },
+  { label: "Wordpress", icon: "/iconos/wordpress.svg" },
+  { label: "Shopify", icon: "/iconos/shopify.svg" },
+  { label: "Elementor", icon: "/iconos/elementor.svg" },
+  { label: "n8n", icon: "/iconos/n8n.svg" },
+]
+
+const EXPERIENCE = [
+  {
+    role: "Frontend Developer",
+    company: "Qualita",
+    period: "MAR 2025 — PRESENTE",
+    current: true,
+    description:
+      "Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce. Diseño y optimización UX/UI, Responsive Design, automatización de procesos y colaboración con equipo de diseño gráfico.",
+    technologies: ["Wordpress", "Elementor", "Shopify", "ClickUp", "Zapier", "HTML5", "CSS3", "JavaScript"],
+  },
+  {
+    role: "Pasante Web Developer",
+    company: "Qualita",
+    period: "FEB 2025 — MAR 2025",
+    current: false,
+    description:
+      "Desarrollo de sitios web con enfoque en interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración con equipos de diseño y marketing.",
+    technologies: ["Wordpress", "Elementor", "Shopify", "ClickUp"],
+  },
+  {
+    role: "Encargado de local",
+    company: "Great Burgers",
+    period: "2023 — 2025",
+    current: false,
+    description:
+      "Responsable de la atención al cliente, manejo de caja, grupo de trabajo y control de inventario.",
+    technologies: [],
+  },
+]
+
+const PROJECTS = [
+  {
+    title: "Fintrack",
+    subtitle: "Control financiero personal",
+    description:
+      "Dashboard interactivo para gestionar ingresos y gastos con análisis financiero IA, autenticación y gestión de cuentas.",
+    technologies: ["React", "Supabase", "0Auth", "Vite", "TailwindCSS"],
+    demoUrl: "https://fintrackgastos.vercel.app/",
+    repoUrl: "https://github.com/Ulises-Molina/Fintrack",
+    video: "/Fintrack.mp4",
+    screenshot: "/fintrack-sh-mobile.jpeg",
+    isPrivate: false,
+  },
+  {
+    title: "Great Burgers",
+    subtitle: "App de pedidos",
+    description:
+      "Interfaz moderna para restaurante con menú interactivo, carrito de compras y panel de administración.",
+    technologies: ["NextJS", "TypeScript", "TailwindCSS", "Supabase"],
+    demoUrl: "https://great-burgers.vercel.app/",
+    repoUrl: "https://github.com/Ulises-Molina/Market-Crypto",
+    video: "/great.mp4",
+    screenshot: "/great-sh-mobile.jpeg",
+    isPrivate: true,
+  },
+  {
+    title: "Crypto Market",
+    subtitle: "Precios cripto real-time",
+    description:
+      "Visualización de precios de criptomonedas en tiempo real con gráfico interactivo y noticias.",
+    technologies: ["React", "TypeScript", "TailwindCSS", "Chart.js", "NewsAPI"],
+    demoUrl: "https://marketcrypto-psi.vercel.app/",
+    repoUrl: "https://github.com/Ulises-Molina/Market-Crypto",
+    video: "/marketcrypto.mp4",
+    screenshot: "/crypto-sh-mobile.jpeg",
+    isPrivate: false,
+  },
+  {
+    title: "NextJS E-Commerce",
+    subtitle: "Tienda online full-stack",
+    description:
+      "E-commerce con exploración de productos, carrito de compras y sistema de autenticación.",
+    technologies: ["NextJS", "TypeScript", "TailwindCSS", "PostgreSQL", "NextAuth"],
+    demoUrl: "https://next-js-eccomerce-nine.vercel.app/",
+    repoUrl: "https://github.com/Ulises-Molina/NextJS-Eccomerce",
+    video: "/nextjs.mp4",
+    screenshot: "/next-sh-mobile.jpeg",
+    isPrivate: false,
+  },
+]
+
+const CERTIFICATIONS = [
+  { title: "JavaScript Algorithms & Data Structures", org: "freeCodeCamp", date: "02.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8" },
+  { title: "Curso avanzado de React JS", org: "GCBA", date: "06.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
+  { title: "Curso avanzado de Node JS", org: "GCBA", date: "12.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
+  { title: "Responsive Web Design", org: "freeCodeCamp", date: "01.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/responsive-web-design" },
+  { title: "English Certificate B2 — Upper Intermediate", org: "EF SET", date: "02.2025", url: "https://cert.efset.org/es/7WVPUE" },
+]
+
+/* ═══════════════════════════════════════════
+   MAGNETIC CURSOR
+   ═══════════════════════════════════════════ */
+
+function MagneticCursor() {
+  const outerRef = useRef<HTMLDivElement>(null)
+  const dotRef = useRef<HTMLDivElement>(null)
+  const [hovering, setHovering] = useState(false)
+  const pos = useRef({ x: -100, y: -100 })
+
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-  }, [])
-
-  const handleSectionClick = (section: string) => {
-    setActiveSection(section)
-    setMenuOpen(false)
-    if (mainRef.current) {
-      mainRef.current.scrollTo(0, 0)
+    const onMove = (e: MouseEvent) => { pos.current = { x: e.clientX, y: e.clientY } }
+    const onOver = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest("a, button, [role='button'], .magnetic")) setHovering(true)
     }
-  }
+    const onOut = () => setHovering(false)
 
-  // Parallax effect for hero section
+    window.addEventListener("mousemove", onMove)
+    document.addEventListener("mouseover", onOver)
+    document.addEventListener("mouseout", onOut)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (mainRef.current) {
-        setScrollY(mainRef.current.scrollTop)
-      }
+    const tick = () => {
+      if (outerRef.current) gsap.set(outerRef.current, { x: pos.current.x, y: pos.current.y })
+      if (dotRef.current) gsap.set(dotRef.current, { x: pos.current.x, y: pos.current.y })
+      requestAnimationFrame(tick)
     }
-
-    const currentMainRef = mainRef.current
-    if (currentMainRef) {
-      currentMainRef.addEventListener("scroll", handleScroll)
-    }
-
+    const raf = requestAnimationFrame(tick)
     return () => {
-      if (currentMainRef) {
-        currentMainRef.removeEventListener("scroll", handleScroll)
-      }
+      window.removeEventListener("mousemove", onMove)
+      document.removeEventListener("mouseover", onOver)
+      document.removeEventListener("mouseout", onOut)
+      cancelAnimationFrame(raf)
     }
   }, [])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowArrow(entry.isIntersecting)
-      },
-      { threshold: 0.3 }
-    )
-
-    if (aboutSectionRef.current) {
-      observer.observe(aboutSectionRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
-
-  // GSAP Animations
-  // GSAP Animations
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-
-      // --- ABOUT SECTION ANIMATIONS ---
-      if (activeSection === "about") {
-        if (heroTitleRef.current) {
-          gsap.fromTo(
-            heroTitleRef.current,
-            { opacity: 0, y: 50, scale: 0.95 },
-            { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power3.out", delay: 0.2 }
-          )
-        }
-
-        if (heroDescRef.current) {
-          gsap.fromTo(
-            heroDescRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 1, ease: "power2.out", delay: 0.5 }
-          )
-        }
-
-        if (aboutTitleRef.current && mainRef.current) {
-          gsap.fromTo(
-            aboutTitleRef.current,
-            { opacity: 0, x: -50, rotateY: -15 },
-            {
-              opacity: 1, x: 0, rotateY: 0, duration: 1, ease: "power3.out",
-              scrollTrigger: {
-                trigger: aboutTitleRef.current,
-                scroller: mainRef.current,
-                start: "top 80%",
-                end: "top 50%",
-                toggleActions: "play none none reverse"
-              }
-            }
-          )
-        }
-
-        if (aboutContentRef.current && mainRef.current) {
-          gsap.fromTo(
-            aboutContentRef.current,
-            { opacity: 0, y: 50, scale: 0.95 },
-            {
-              opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out",
-              scrollTrigger: {
-                trigger: aboutContentRef.current,
-                scroller: mainRef.current,
-                start: "top 75%",
-                end: "top 40%",
-                toggleActions: "play none none reverse"
-              }
-            }
-          )
-        }
-
-        if (techBadgesRef.current && mainRef.current) {
-          const badges = techBadgesRef.current.querySelectorAll(".tech-badge")
-          gsap.fromTo(
-            badges,
-            { opacity: 0, scale: 0.8, y: 20, rotateX: -15 },
-            {
-              opacity: 1, scale: 1, y: 0, rotateX: 0, duration: 0.6,
-              stagger: { amount: 0.8, from: "start", ease: "power2.out" },
-              ease: "back.out(1.7)",
-              scrollTrigger: {
-                trigger: techBadgesRef.current,
-                scroller: mainRef.current,
-                start: "top 80%",
-                end: "top 50%",
-                toggleActions: "play none none reverse"
-              }
-            }
-          )
-
-          badges.forEach((badge) => {
-            badge.addEventListener("mouseenter", () => {
-              gsap.to(badge, { scale: 1.1, y: -5, duration: 0.3, ease: "power2.out" })
-            })
-            badge.addEventListener("mouseleave", () => {
-              gsap.to(badge, { scale: 1, y: 0, duration: 0.3, ease: "power2.out" })
-            })
-          })
-        }
-      }
-
-      // --- EXPERIENCE SECTION ANIMATIONS ---
-      if (activeSection === "experience" && mainRef.current) {
-        gsap.from(".timeline-line", {
-          scaleY: 0, transformOrigin: "top", duration: 1.5, ease: "power2.out", delay: 0.5
-        })
-
-        const items = gsap.utils.toArray(".timeline-item")
-        items.forEach((item: any, i) => {
-          gsap.fromTo(item,
-            { opacity: 0, x: i % 2 === 0 ? -50 : 50 },
-            {
-              opacity: 1, x: 0, duration: 0.8, ease: "power3.out", scrollTrigger: {
-                trigger: item,
-                scroller: mainRef.current,
-                start: "top 80%"
-              }
-            }
-          )
-        })
-      }
-
-      // --- PROJECTS SECTION ANIMATIONS ---
-      if (activeSection === "projects" && mainRef.current) {
-        const projects = gsap.utils.toArray(".project-card")
-        gsap.fromTo(projects,
-          { opacity: 0, y: 50, scale: 0.95 },
-          {
-            opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.2, ease: "power2.out",
-            scrollTrigger: {
-              trigger: ".projects-container",
-              scroller: mainRef.current,
-              start: "top 85%"
-            }
-          }
-        )
-      }
-
-      // --- CERTIFICATIONS SECTION ANIMATIONS ---
-      if (activeSection === "certifications" && mainRef.current) {
-        const certs = gsap.utils.toArray(".certification-card")
-        gsap.fromTo(certs,
-          { opacity: 0, y: 30, rotateX: 10 },
-          {
-            opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.15, ease: "back.out(1.2)",
-            scrollTrigger: {
-              trigger: ".certifications-container",
-              scroller: mainRef.current,
-              start: "top 80%"
-            }
-          }
-        )
-      }
-
-      // --- CONTACT SECTION ANIMATIONS ---
-      if (activeSection === "contact") {
-        gsap.from(".contact-title", {
-          opacity: 0, y: -30, duration: 1, delay: 0.2, ease: "power3.out"
-        })
-        gsap.from(".contact-item", {
-          opacity: 0, x: -30, duration: 0.8, stagger: 0.1, delay: 0.5, ease: "power2.out"
-        })
-      }
-
-    })
-
-    return () => {
-      ctx.revert()
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, [activeSection])
-
-  useEffect(() => {
-    if (activeSection === "projects") {
-      document.body.classList.add("no-grain")
-    } else {
-      document.body.classList.remove("no-grain")
-    }
-    return () => document.body.classList.remove("no-grain")
-  }, [activeSection])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] to-[#121212] text-white overflow-hidden">
-      {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-br from-[#8a9a8c]/20 to-[#4a5a4d]/20 backdrop-blur-lg border-b border-white/10">
-        <div className="container flex items-center justify-between px-6 py-4 mx-auto">
-          <Link href="https://www.linkedin.com/in/ulises-rafael-molina/" target="_blank" className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] p-0.5">
-              <div className="absolute inset-0 bg-black rounded-lg overflow-hidden m-0.5">
-                <Image src="/foto.jpg" alt="Profile" fill className="object-cover" />
-              </div>
-            </div>
-            <div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] text-transparent bg-clip-text">
-                Ulises Molina
-              </h1>
-              <p className="text-xs text-white/70">Software Developer</p>
-            </div>
-          </Link>
+    <>
+      <div ref={outerRef} className={`custom-cursor fixed top-0 left-0 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-300 ${hovering ? "w-14 h-14 border-[hsl(165,80%,48%)] bg-[hsl(165,80%,48%)]/10" : "w-8 h-8 border-white/20"}`} />
+      <div ref={dotRef} className="custom-cursor fixed top-0 left-0 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[hsl(165,80%,48%)]" />
+    </>
+  )
+}
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:block">
-            <ul className="flex space-x-1">
-              {[
-                { id: "about", label: "Sobre mí" },
-                { id: "experience", label: "Experiencia" },
-                { id: "projects", label: "Proyectos" },
-                { id: "certifications", label: "Certificaciones" },
-                { id: "contact", label: "Contacto" },
-              ].map((section) => (
-                <li key={section.id}>
-                  <button
-                    onClick={() => handleSectionClick(section.id)}
-                    className={cn(
-                      "px-4 py-2 rounded-lg transition-all",
-                      activeSection === section.id
-                        ? "bg-gradient-to-r from-[#8a9a8c]/20 to-[#4a5a4d]/20 text-white font-medium"
-                        : "text-white/60 hover:text-white hover:bg-white/5",
-                    )}
-                  >
-                    {section.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
+/* ═══════════════════════════════════════════
+   TECH MARQUEE
+   ═══════════════════════════════════════════ */
 
-          {/* Social Links - Desktop */}
-          <div className="hidden space-x-2 md:flex">
-            <SocialLink href="https://github.com/Ulises-Molina" icon={<Github className="w-4 h-4" />} label="GitHub" />
-            <SocialLink href="https://www.linkedin.com/in/ulises-rafael-molina/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
-            <SocialLink href="mailto:tu@ulisesmolinadev@gmail.com" icon={<Mail className="w-4 h-4" />} label="Email" />
+function TechMarquee() {
+  const items = [...TECH_STACK, ...TECH_STACK] // duplicate for seamless loop
+
+  return (
+    <div className="overflow-hidden py-10 -mx-6 md:-mx-10 lg:-mx-20">
+      <div className="marquee-track flex items-center gap-10 w-max">
+        {items.map((tech, i) => (
+          <div key={`${tech.label}-${i}`} className="flex items-center gap-3 shrink-0 group">
+            <div className="relative w-7 h-7 opacity-40 group-hover:opacity-90 transition-opacity">
+              <Image src={tech.icon} alt={tech.label} fill className="object-contain" />
+            </div>
+            <span className="text-sm font-medium text-white/30 group-hover:text-white/80 transition-colors whitespace-nowrap">
+              {tech.label}
+            </span>
           </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-          {/* Mobile Menu Button */}
-          <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-lg md:hidden bg-white/5">
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+/* ═══════════════════════════════════════════
+   LAPTOP MOCKUP
+   ═══════════════════════════════════════════ */
+
+function LaptopMockup({ video, screenshot, title }: { video: string; screenshot: string; title: string }) {
+  return (
+    <div className="relative w-full max-w-[480px] mx-auto">
+      {/* Screen bezel */}
+      <div className="relative rounded-t-xl bg-[#1a1a1e] p-[6px] pt-[6px] pb-[14px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
+        {/* Camera notch */}
+        <div className="absolute top-[5px] left-1/2 -translate-x-1/2 w-[50px] h-[6px] rounded-b-md bg-[#1a1a1e] z-20" />
+        {/* Screen */}
+        <div className="relative rounded-[6px] overflow-hidden aspect-[16/10] bg-black">
+          <video autoPlay muted loop playsInline poster={screenshot} className="w-full h-full object-cover">
+            <source src={video} type="video/mp4" />
+          </video>
         </div>
-      </header>
+      </div>
+      {/* Base */}
+      <div className="relative h-[12px] mx-[-8px] rounded-b-md border border-t-0 border-[#555] bg-gradient-to-b from-[#d4d4d8] to-[#a1a1aa]">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60px] h-[5px] rounded-b-md bg-[#d4d4d8] shadow-[inset_0_0_2px_1px_#999]" />
+      </div>
+    </div>
+  )
+}
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 flex flex-col px-6 pt-20 pb-6 bg-black/95 backdrop-blur-lg md:hidden"
-          >
-            <nav className="mb-8">
-              <ul className="space-y-2">
-                {[
-                  { id: "about", label: "Sobre mí" },
-                  { id: "experience", label: "Experiencia" },
-                  { id: "projects", label: "Proyectos" },
-                  { id: "contact", label: "Contacto" },
-                ].map((section) => (
-                  <li key={section.id}>
-                    <button
-                      onClick={() => handleSectionClick(section.id)}
-                      className={cn(
-                        "text-left w-full px-4 py-3 rounded-xl transition-all flex items-center",
-                        activeSection === section.id
-                          ? "bg-gradient-to-r from-[#8a9a8c]/20 to-[#4a5a4d]/20 text-white font-medium"
-                          : "text-white/60 hover:text-white hover:bg-white/5",
-                      )}
-                    >
-                      {section.label}
-                      {activeSection === section.id && <ChevronRight className="w-4 h-4 ml-auto" />}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+/* ═══════════════════════════════════════════
+   MAIN COMPONENT
+   ═══════════════════════════════════════════ */
 
-            <div className="mt-auto">
-              <div className="flex justify-center mb-6 space-x-4">
-                <SocialLink href="https://github.com/Ulises-Molina" icon={<Github className="w-4 h-4" />} label="GitHub" />
-                <SocialLink href="https://www.linkedin.com/in/ulises-rafael-molina/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
-                <SocialLink href="mailto:tu@ulisesmolinadev@gmail.com" icon={<Mail className="w-4 h-4" />} label="Email" />
-              </div>
-              <p className="text-xs text-center text-white/40">© {new Date().getFullYear()} Ulises Molina</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+export default function Home() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion()
+  const [mounted, setMounted] = useState(false)
+  const [activeNav, setActiveNav] = useState("hero")
+  const [navVisible, setNavVisible] = useState(false)
+  const [time, setTime] = useState("")
 
-      {/* Main content */}
-      <main ref={mainRef} className="h-screen pt-16 overflow-x-hidden overflow-y-auto scrollbar-hide">
-        <AnimatePresence mode="wait">
-          {activeSection === "about" && (
-            <motion.div
-              key="about"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="min-h-screen"
+  useEffect(() => {
+    setMounted(true)
+    const tick = () => {
+      setTime(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }))
+    }
+    tick()
+    const id = setInterval(tick, 60000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    const sections = document.querySelectorAll("section[data-section]")
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) setActiveNav(e.target.getAttribute("data-section") || "") })
+    }, { threshold: 0.25 })
+    sections.forEach((s) => obs.observe(s))
+    return () => obs.disconnect()
+  }, [mounted])
+
+  useEffect(() => {
+    if (!mounted) return
+    const onScroll = () => setNavVisible(window.scrollY > window.innerHeight * 0.5)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [mounted])
+
+  // ─── GSAP ───
+  useGSAP(() => {
+    if (prefersReducedMotion || !mounted) return
+
+    // Hero entrance
+    const tl = gsap.timeline({ delay: 0.2 })
+    tl.fromTo(".hero-line", { y: "110%", rotateX: -20 }, {
+      y: "0%", rotateX: 0, duration: 1.2, stagger: 0.08, ease: "power4.out",
+    })
+    tl.fromTo(".hero-meta", { opacity: 0, y: 20 }, {
+      opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: "power3.out",
+    }, "-=0.5")
+    tl.fromTo(".hero-cta-btn", { opacity: 0, scale: 0.9 }, {
+      opacity: 1, scale: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.4)",
+    }, "-=0.3")
+
+    // Hero dissolve
+    gsap.to(".hero-content", {
+      yPercent: 20, opacity: 0, ease: "none",
+      scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: true },
+    })
+
+    // About cards
+    gsap.utils.toArray<HTMLElement>(".about-reveal").forEach((el, i) => {
+      gsap.fromTo(el, { y: 60, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, delay: i * 0.1, ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none reverse" },
+      })
+    })
+
+    // Experience entries
+    gsap.utils.toArray<HTMLElement>(".exp-entry").forEach((el) => {
+      gsap.fromTo(el, { y: 50, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" },
+      })
+    })
+
+    // Project blocks
+    gsap.utils.toArray<HTMLElement>(".project-block").forEach((block) => {
+      const mockup = block.querySelector(".project-mockup")
+      const info = block.querySelector(".project-info")
+      if (mockup) {
+        gsap.fromTo(mockup, { y: 60, opacity: 0, scale: 0.95 }, {
+          y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: block, start: "top 80%", toggleActions: "play none none reverse" },
+        })
+      }
+      if (info) {
+        gsap.fromTo(info, { y: 40, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 0.8, delay: 0.15, ease: "power3.out",
+          scrollTrigger: { trigger: block, start: "top 80%", toggleActions: "play none none reverse" },
+        })
+      }
+    })
+
+    // Certs
+    gsap.utils.toArray<HTMLElement>(".cert-row").forEach((el, i) => {
+      gsap.fromTo(el, { x: -40, opacity: 0 }, {
+        x: 0, opacity: 1, duration: 0.6, delay: i * 0.05, ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "play none none reverse" },
+      })
+    })
+
+    // Contact
+    gsap.fromTo(".contact-big", { y: 60, opacity: 0 }, {
+      y: 0, opacity: 1, duration: 1, ease: "power3.out",
+      scrollTrigger: { trigger: ".contact-section", start: "top 70%" },
+    })
+    gsap.utils.toArray<HTMLElement>(".contact-row").forEach((el, i) => {
+      gsap.fromTo(el, { y: 25, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.5, delay: 0.2 + i * 0.07, ease: "power2.out",
+        scrollTrigger: { trigger: ".contact-section", start: "top 60%" },
+      })
+    })
+  }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted] })
+
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
+  }, [])
+
+  if (!mounted) return null
+
+  return (
+    <SmoothScroll>
+      <div ref={containerRef} className="relative bg-[hsl(220,15%,5%)]">
+        <WarpedGrid />
+        <MagneticCursor />
+
+        {/* ─── SIDE NAV ─── */}
+        <AnimatePresence>
+          {navVisible && (
+            <motion.nav
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
+              className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-3"
             >
-              {/* Hero section with parallax */}
-              <section ref={aboutSectionRef} className="relative h-[80vh] flex items-center overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-br from-[#8a9a8c]/20 to-[#4a5a4d]/20 z-0"
-                  style={{ transform: `translateY(${scrollY * 0.2}px)` }}
-                ></div>
-                <div
-                  className="absolute inset-0 z-0 opacity-10"
-                  style={{ transform: `translateY(${scrollY * 0.1}px)` }}
-                ></div>
-                <FloatingLines />
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f0f0f] to-transparent z-10"></div>
-
-                <div className="container relative z-20 px-6 mx-auto md:px-12">
-                  <h1
-                    ref={heroTitleRef}
-                    className="mb-4 text-4xl font-bold leading-tight sm:text-5xl md:text-7xl sm:mb-6"
-                  >
-                    Creando{" "}
-                    <span className="bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] text-transparent bg-clip-text">
-                      experiencias
-                    </span>{" "}
-                    digitales excepcionales
-                  </h1>
-                  <p
-                    ref={heroDescRef}
-                    className="max-w-2xl mb-6 text-lg sm:text-xl text-white/70 sm:mb-8"
-                  >
-                    Desarrollador de Software especializado en crear interfaces modernas, atractivas y funcionales que
-                    conectan con los usuarios.
-                  </p>
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
-                    className="flex flex-col gap-3 sm:flex-row sm:gap-4"
-                  >
-                    <Link
-                      href="#contact"
-                      onClick={() => handleSectionClick("contact")}
-                      className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full font-medium hover:shadow-lg hover:shadow-[#8a9a8c]/20 transition-all flex items-center justify-center"
-                    >
-                      Contactar <ArrowUpRight className="w-4 h-4 ml-2" />
-                    </Link>
-                    <Link
-                      href="#projects"
-                      onClick={() => handleSectionClick("projects")}
-                      className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-full font-medium hover:bg-white/10 transition-all text-center"
-                    >
-                      Ver proyectos
-                    </Link>
-                  </motion.div>
-                </div>
-              </section>
-
-              {/* Scroll indicator */}
-              <AnimatePresence>
-                {showArrow && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ delay: 1, duration: 0.8 }}
-                    className="relative z-50 -mt-2 -translate-x-1/2 left-1/2 hidden md:block"
-                  >
-                    <motion.div
-                      animate={{ y: [0, 10, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      <ChevronDown className="w-8 h-8 text-white/60" />
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-
-              {/* About content */}
-              <section className="relative py-16 sm:py-32 overflow-hidden">
-                {/* Animated gradient background */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-[#8a9a8c]/15 rounded-full blur-[100px] animate-pulse"></div>
-                  <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-[#4a5a4d]/15 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-                </div>
-
-                <div className="container px-4 mx-auto sm:px-6 md:px-12 max-w-6xl relative z-10">
-                  {/* Section Title with animated underline */}
-                  <div className="mb-16 text-center">
-                    <h2 ref={aboutTitleRef} className="relative inline-block mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
-                      <span className="bg-gradient-to-r from-white via-[#8a9a8c] to-white bg-clip-text text-transparent">
-                        Sobre mí
-                      </span>
-                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[#8a9a8c] to-transparent rounded-full"></div>
-                    </h2>
-                    <p className="mt-6 text-white/60 max-w-2xl mx-auto">
-                      Desarrollador apasionado por crear experiencias digitales excepcionales
-                    </p>
-                  </div>
-
-                  {/* Main Content Grid */}
-                  <div className="grid gap-10 mb-16 lg:grid-cols-[0.85fr_1.15fr]">
-                    {/* Profile Panel */}
-                    <div ref={aboutContentRef} className="relative h-full">
-                      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-br from-[#8a9a8c]/35 via-transparent to-[#4a5a4d]/35 blur-2xl"></div>
-                      <div className="relative h-full rounded-[28px] border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent p-8 sm:p-10 backdrop-blur-2xl shadow-[0_30px_90px_rgba(0,0,0,0.45)] flex flex-col">
-                        <div className="absolute inset-0 rounded-[28px] ring-1 ring-white/10"></div>
-                        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gradient-to-br from-[#8a9a8c]/25 to-transparent blur-2xl"></div>
-
-                        <div className="relative z-10 space-y-8">
-                          <div className="flex items-center gap-5">
-                            <div className="relative">
-                              <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] opacity-70 blur-md"></div>
-                              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d]">
-                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                              </div>
-                            </div>
-                            <div>
-                              <h3 className="text-2xl font-bold text-white">Ulises Molina</h3>
-                              <p className="text-[#8a9a8c]">Software Developer</p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <div className="h-[2px] w-16 rounded-full bg-gradient-to-r from-[#8a9a8c] to-transparent"></div>
-                            <p className="text-white/70">Soluciones digitales con foco en claridad, performance y diseño.</p>
-                          </div>
-
-                          {/* Stats */}
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
-                              <div className="text-2xl font-bold text-[#8a9a8c]">+2</div>
-                              <div className="text-xs tracking-wider text-white/50">Años</div>
-                            </div>
-                            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
-                              <div className="text-2xl font-bold text-[#8a9a8c]">+15</div>
-                              <div className="text-xs tracking-wider text-white/50">Proyectos</div>
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Narrative Panels */}
-                    <div className="space-y-6">
-                      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.06] p-6 sm:p-8 backdrop-blur-2xl">
-                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-[#8a9a8c]/20 to-transparent blur-2xl"></div>
-                        <p className="relative z-10 text-white/80 leading-relaxed">
-                          Me enfoco transformar ideas en sitios web rápidos, estéticos y orientados a resultados. Priorizo performance, accesibilidad y una experiencia clara. También cuido la jerarquía visual y la coherencia de cada sección.
-                        </p>
-                      </div>
-
-                      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-8 backdrop-blur-2xl">
-                        <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-gradient-to-br from-[#4a5a4d]/25 to-transparent blur-2xl"></div>
-                        <p className="relative z-10 text-white/80 leading-relaxed">
-                          Me involucro desde la estrategia y el diseño hasta la implementación, asegurando consistencia visual y mensajes que conviertan. Acompaño el proceso con comunicación clara y foco en los objetivos.
-                        </p>
-                      </div>
-
-                    </div>
-
-                    {/* Technologies Card */}
-                    <div className="relative lg:col-span-2">
-                      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-br from-[#4a5a4d]/35 via-transparent to-[#8a9a8c]/35 blur-2xl"></div>
-                      <div className="relative rounded-[28px] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-8 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
-                        <div className="absolute inset-0 rounded-[28px] ring-1 ring-white/10"></div>
-                        <div className="relative z-10">
-                          <div className="flex items-center gap-3 mb-8">
-                            <div className="relative">
-                              <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] opacity-60 blur-md"></div>
-                              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#8a9a8c] to-[#4a5a4d] flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                </svg>
-                              </div>
-                            </div>
-                            <div>
-                              <h3 className="text-2xl font-bold text-white">Stack Tecnológico</h3>
-                              <p className="text-sm text-white/50">Herramientas y tecnologías.</p>
-                            </div>
-                          </div>
-
-                          <div ref={techBadgesRef} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                            <TechBadge label="JavaScript" iconPath="/iconos/javascript.svg" />
-                            <TechBadge label="React" iconPath="/iconos/react_light.svg" />
-                            <TechBadge label="TypeScript" iconPath="/iconos/typescript.svg" />
-                            <TechBadge label="Next.js" iconPath="/iconos/nextjs_icon_dark.svg" />
-                            <TechBadge label="HTML5" iconPath="/iconos/html5.svg" />
-                            <TechBadge label="CSS" iconPath="/iconos/css_old.svg" />
-                            <TechBadge label="Tailwind CSS" iconPath="/iconos/tailwindcss.svg" />
-                            <TechBadge label="SQL" iconPath="/iconos/postgresql.svg" />
-                            <TechBadge label="Git" iconPath="/iconos/git.svg" />
-                            <TechBadge label="AWS" iconPath="/iconos/aws_light.svg" />
-                            <TechBadge label="Elementor" iconPath="/iconos/elementor.svg" />
-                            <TechBadge label="n8n" iconPath="/iconos/n8n.svg" />
-                            <TechBadge label="Wordpress" iconPath="/iconos/wordpress.svg" />
-                            <TechBadge label="Shopify" iconPath="/iconos/shopify.svg" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Skills Highlights */}
-                </div>
-              </section>
-            </motion.div>
-          )}
-
-          {activeSection === "experience" && (
-            <motion.div
-              key="experience"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="container min-h-screen px-6 py-20 mx-auto md:px-12"
-            >
-              <div className="max-w-4xl mx-auto">
-                <h2 className="relative inline-block mb-12 text-3xl font-bold">
-                  Experiencia
-                  <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
-                </h2>
-
-                <div className="relative mt-16">
-                  {/* Timeline line */}
-                  <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#8a9a8c] to-[#4a5a4d] rounded-full timeline-line"></div>
-
-                  <div className="space-y-24">
-                    <TimelineItem
-                      title="Frontend Developer"
-                      company="Qualita"
-                      period="Marzo 2025 - Presente"
-                      description="Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce. HTML, CSS y JavaScript, diseño y optimización UX / UI, Responsive Design, automatización de procesos con Zapier, administración de servicios de Hosting, colaboración con equipo de diseño grafico y metodologías ágiles"
-                      technologies={["Wordpress", "Elementor", "Shopify", "ClickUp", "Zapier", "HTML5", "CSS3", "JavaScript"]}
-                      isLeft={true}
-                    />
-
-                    <TimelineItem
-                      title="Pasante Web Developer"
-                      company="Qualita"
-                      period="Febrero 2025 - Marzo 2025"
-                      description="Desarrollo de sitios web utilizando Wordpress y Shopify, con enfoque en la implementación de interfaces responsivas, accesibles y alineadas con los objetivos del negocio. Colaboración activa con equipos de diseño y marketing para garantizar una experiencia de usuario coherente y atractiva."
-                      technologies={["Wordpress", "Elementor", "Shopify", "ClickUp"]}
-                      isLeft={false}
-                    />
-
-                    <TimelineItem
-                      title="Encargado de local"
-                      company="Great Burgers"
-                      period="2023-2025"
-                      description="Responsable de la atención al cliente, el manejo de caja, grupo de trabajo y el control de inventario."
-                      technologies={[]}
-                      isLeft={true}
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeSection === "certifications" && (
-            <motion.div
-              key="certifications"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="container min-h-screen px-6 py-20 mx-auto md:px-12"
-            >
-              <div className=" mx-auto">
-                <h2 className="relative inline-block mb-12 text-3xl font-bold">
-                  Certificaciones
-                  <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#647566] to-[#7d8f7e] rounded-full"></div>
-                </h2>
-
-                <div className="grid gap-8 md:grid-cols-3 certifications-container">
-                  <CertificationCard
-                    title="JavaScript Algorithms and Data Structures"
-                    organization="freeCodeCamp"
-                    date="Febrero 2025"
-                    description="Certificación profesional que valida habilidades en fundamentos de JavaScript, programación funcional, estructuras de datos y algoritmos, aplicando estos conocimientos en desafíos y proyectos prácticos."
-                    imageUrl="/free.png"
-                    credentialUrl="https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8"
+              {[
+                { id: "about", n: "01" }, { id: "experience", n: "02" },
+                { id: "projects", n: "03" }, { id: "certifications", n: "04" }, { id: "contact", n: "05" },
+              ].map((item) => (
+                <button key={item.id} onClick={() => scrollTo(item.id)}
+                  className={`group flex items-center gap-2 transition-all duration-300 ${activeNav === item.id ? "opacity-100" : "opacity-25 hover:opacity-60"}`}
+                  aria-label={item.id}
+                >
+                  <div className={`h-[1px] transition-all duration-500 ${activeNav === item.id ? `w-8 bg-[${ac()}]` : "w-4 bg-white/40"}`}
+                    style={activeNav === item.id ? { backgroundColor: ac() } : undefined}
                   />
-                  <CertificationCard
-                    title="Curso avanzado de React JS"
-                    organization="Gobierno de la Ciudad de Buenos Aires"
-                    date="Junio 2025"
-                    description="Certificación que demuestra conocimientos en React.JS, como componentes, eventos, estados, rutas, formularios y uso de Hooks. Trabajo con APIs y gestion de estados globalmente."
-                    imageUrl="/BA.png"
-                    credentialUrl="https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8"
-                  />
-
-
-
-                  <CertificationCard
-                    title="Curso avanzado de Node JS"
-                    organization="Gobierno de la Ciudad de Buenos Aires"
-                    date="Diciembre 2025"
-                    description="Certificación que demuestra conocimientos en Node.JS, creación de APIs, gestión de paquetes, manejo de errores y despliegue de aplicaciones."
-                    imageUrl="/BA.png"
-                    credentialUrl="https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8"
-                  />
-
-                  <CertificationCard
-                    title="Responsive Web Design"
-                    organization="freeCodeCamp"
-                    date="Enero 2025"
-                    description="Certificación que demuestra conocimientos HTML y CSS para crear sitios web accesibles y adaptables a cualquier dispositivo. Implementé Flexbox, Grid y diseño responsivo, desarrollando proyectos prácticos para aplicar estos conocimientos."
-                    imageUrl="/free.png"
-                    credentialUrl="https://www.freecodecamp.org/certification/Ulises-Molina/responsive-web-design"
-                  />
-
-                  <CertificationCard
-                    title="EF SET English Certificate 53/100 (B2 Upper Intermediate)"
-                    organization="EF SET"
-                    date="Febrero 2025"
-                    description="Certificación en inglés con nivel B2 (Intermedio), validado por EF SET. Demuestra habilidades avanzadas en comprensión escrita y auditiva, con capacidad para comunicar ideas de forma clara y efectiva en contextos profesionales y académicos."
-                    imageUrl="/logo.svg"
-                    credentialUrl="https://cert.efset.org/es/7WVPUE"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeSection === "projects" && (
-            <motion.div
-              key="projects"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="container min-h-screen px-6 py-20 mx-auto md:px-12"
-            >
-              <div className="max-w-8xl mx-auto">
-                <h2 className="relative inline-block mb-12 text-3xl font-bold">
-                  Proyectos
-                  <div className="absolute -bottom-3 left-0 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
-                </h2>
-
-
-                <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-1 projects-container">
-
-                  <ProjectCardVideo
-                    title="Fintrack"
-                    description="Aplicación web moderna para el control financiero personal, diseñada para ayudar a gestionar los ingresos y gastos de forma intuitiva y visual. Dashboard interactivo, gestión de transacciones y categorias, analísis financiero con IA, autenticación de usuarios y gestión de cuentas."
-                    technologies={["React", "Supabase", "0Auth", "Vite", "TailwindCSS"]}
-                    demoUrl="https://fintrackgastos.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/Fintrack"
-                    videoDesktopUrl="/Fintrack.mp4"
-                    videoMobileUrl="/FintrackMobile.png"
-                    screenshotUrl="/fintrack-sh-mobile.jpeg"
-                    isPrivate={false}
-                  />
-{/* SVN Designs 
-                  <ProjectCardVideo
-                    title="SVN Designs"
-                    description="El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca."
-                    technologies={["Shopify", "Typeform", "Zapier"]}
-                    demoUrl="https://svn-designs.com/"
-                    repoUrl=""
-                    videoDesktopUrl="/svn.mp4"
-                    videoMobileUrl="/svnmobile.png"
-                    isPrivate={true}
-                  />
-*/}{/* CONFIDAS 
-                  <ProjectCardVideo
-                    title="Confidas Capital"
-                    description="El proyecto se centró en transmitir confianza y accesibilidad, facilitando el acceso a información sobre productos financieros. Como desarrollador trabajé en la construcción de un diseño moderno y responsivo, optimizando la navegación y asegurando una experiencia fluida tanto en desktop como en dispositivos móviles, con un enfoque en la usabilidad y la comunicación visual de la marca."
-                    technologies={["Wordpress", "Elementor", "CSS", "MetForm"]}
-                    demoUrl="https://confidascapital.com.ar/"
-                    repoUrl=""
-                    videoDesktopUrl="/confidas.mp4"
-                    videoMobileUrl="/confidasmobile.png"
-                    isPrivate={true}
-                  />
-*/}{/* GREEN COMPANY
-                  <ProjectCardVideo
-                    title="Green Company"
-                    description="Green Company ofrece soluciones logísticas de forma B2B para empresas. Mi trabajo como desarrollador se enfocó en construir una interfaz alineada con la identidad visual de la marca, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad para mostrar servicios."
-                    technologies={["Wordpress", "Elementor", "WooCommerce"]}
-                    demoUrl="https://greenmovingco.com/"
-                    repoUrl=""
-                    videoDesktopUrl="/green2.mp4"
-                    videoMobileUrl="/greenmobile2.png"
-                    isPrivate={true}
-
-                  />
-*/}{/* Footer 
-                  <ProjectCardVideo
-                    title="Skiway"
-                    description="Skiway es un sitio web para una marca argentina de calzado e indumentaria de seguridad industrial. Como desarrollador, trabajé en un diseño responsivo y funcional, optimizando la navegación, el catálogo de productos con filtros y la presentación de imágenes y detalles técnicos para ofrecer una experiencia clara y profesional."
-                    technologies={["Wordpress", "Elementor", "WooCommerce", "CSS"]}
-                    demoUrl="https://skiway.com.ar/"
-                    repoUrl=""
-                    videoDesktopUrl="/skiway.mp4"
-                    videoMobileUrl="/skiwaymobile.png"
-                    isPrivate={true}
-                  />
-
-*/}
-                  <ProjectCardVideo
-                    title="Great Burgers Website"
-                    description="Great Burgers es una aplicación web de pedidos de comida desarrollada como proyecto de práctica de desarrollo front-end. La interfaz simula una experiencia de usuario moderna para un restaurante de hamburguesas, permitiendo explorar el menú, agregar productos al carrito y gestionar pedidos mediante un panel de administración."
-                    technologies={["NextJS", "TypeScript", "TailwindCSS", "Supabase"]}
-                    demoUrl="https://great-burgers.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
-                    videoDesktopUrl="/great.mp4"
-                    videoMobileUrl="/greatmobile2.png"
-                    screenshotUrl="/great-sh-mobile.jpeg"
-                    isPrivate={true}
-                  />
-
-                  <ProjectCardVideo
-                    title="Crypto Market"
-                    description="Permite a los usuarios visualizar el precio de diversas criptomonedas en tiempo real con grafico interactivo y acceder a las últimas noticias del mundo cripto."
-                    technologies={["React", "TypeScript", "TailwindCSS", "Chart.js", "NewsAPI"]}
-                    demoUrl="https://marketcrypto-psi.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/Market-Crypto"
-                    videoDesktopUrl="/marketcrypto.mp4"
-                    videoMobileUrl="/marketcrypto.png"
-                    screenshotUrl="/crypto-sh-mobile.jpeg"
-                  />
-
-                  <ProjectCardVideo
-                    title="NextJS E-Commerce"
-                    description="Next.js E-Commerce es una aplicación web de comercio electrónico desarrollada como proyecto de práctica de desarrollo front-end. La interfaz simula una experiencia de usuario moderna para una tienda en línea, permitiendo explorar productos, agregarlos al carrito y utiliza un sistema de register y login."
-                    technologies={["NextJS", "TypeScript", "TailwindCSS", "PostgreSQL", "NextAuth"]}
-                    demoUrl="https://next-js-eccomerce-nine.vercel.app/"
-                    repoUrl="https://github.com/Ulises-Molina/NextJS-Eccomerce"
-                    videoDesktopUrl="/nextjs.mp4"
-                    videoMobileUrl="/nextmobile.png"
-                    screenshotUrl="/next-sh-mobile.jpeg"
-                  />
-
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeSection === "contact" && (
-            <motion.div
-              key="contact"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="container flex items-center min-h-screen px-6 py-20 mx-auto md:px-12"
-            >
-              <div className="w-full max-w-4xl mx-auto">
-                <h2 className="relative inline-block w-full mb-12 text-3xl font-bold text-center contact-title">
-                  Contacto
-                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-full"></div>
-                </h2>
-
-                <div className="max-w-xl mx-auto">
-                  <p className="mb-8 text-center text-white/80">
-                    Actualmente estoy abierto a nuevas oportunidades. No dudes en contactarme si
-                    queres trabajar conmigo.
-                  </p>
-
-                  <div className="space-y-4">
-                    <ContactItem
-                      icon={<Mail className="w-5 h-5" />}
-                      label="Email"
-                      value="ulisesmolinadev@gmail.com"
-                      href="mailto:ulisesmolinadev@gmail.com"
-                    />
-
-                    <ContactItem
-                      icon={<Linkedin className="w-5 h-5" />}
-                      label="LinkedIn"
-                      value="Ulises Molina"
-                      href="https://www.linkedin.com/in/ulises-rafael-molina/"
-                    />
-
-                    <ContactItem
-                      icon={<Github className="w-5 h-5" />}
-                      label="GitHub"
-                      value="Ulises-Molina"
-                      href="https://github.com/Ulises-Molina"
-                    />
-
-                    <ContactItem
-                      icon={<User className="w-5 h-5" />}
-                      label="CV"
-                      value="Ver CV"
-                      href="/Cv.Ulises.pdf"
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+                  <span className="font-mono text-[10px] tracking-widest text-white/50">{item.n}</span>
+                </button>
+              ))}
+            </motion.nav>
           )}
         </AnimatePresence>
 
-        {/* Footer */}
-        <footer className="py-8 mt-0 border-t border-white/10">
-          <div className="container px-6 mx-auto md:px-12">
-            <div className="flex items-center justify-center text-center">
-              <p className="text-sm text-white/40">
-                Desarrollado por Ulises Molina
+        {/* ─── HEADER ─── */}
+        <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between mix-blend-difference">
+          <button onClick={() => scrollTo("hero")} className="font-sans font-bold text-base tracking-tight text-white" aria-label="Inicio">
+            ULISES<span style={{ color: ac() }}>.</span>M
+          </button>
+          <div className="flex items-center gap-6">
+            <span className="hidden md:block font-mono text-[10px] text-white/30 tracking-widest">BUE {time}</span>
+            {SOCIAL_LINKS.map((s) => (
+              <Link key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                className="font-mono text-[10px] tracking-widest text-white/30 hover:text-white transition-colors duration-300" aria-label={s.label}>
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        </header>
+
+        {/* ═══ HERO ═══ */}
+        <section data-section="hero" className="hero-section relative min-h-screen flex items-center">
+          <div className="hero-content relative z-10 w-full px-6 md:px-10 lg:px-20">
+            <div className="max-w-7xl mx-auto">
+              <div className="hero-meta font-mono text-[11px] tracking-[0.4em] text-white/40 uppercase mb-8 flex items-center gap-4">
+                <div className="w-8 h-[1px]" style={{ backgroundColor: ac() }} />
+                Software Developer
+              </div>
+
+              <h1 className="text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.92] tracking-tighter mb-10">
+                <span className="block overflow-hidden"><span className="hero-line block text-white">Creando</span></span>
+                <span className="block overflow-hidden"><span className="hero-line block" style={{ color: ac() }}>experiencias</span></span>
+                <span className="block overflow-hidden">
+                  <span className="hero-line block text-white">
+                    digitales
+                    <span className="inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ml-2 mb-2 md:mb-4" style={{ backgroundColor: ac() }} />
+                  </span>
+                </span>
+              </h1>
+
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+                <p className="hero-meta max-w-md text-white/50 text-sm leading-relaxed">
+                  Desarrollador de Software especializado en interfaces modernas y funcionales.
+                  Foco en performance, diseño y experiencia de usuario.
+                </p>
+                <div className="flex gap-3 hero-meta">
+                  <button onClick={() => scrollTo("projects")}
+                    className="hero-cta-btn magnetic group px-6 py-3 text-[hsl(220,15%,5%)] font-semibold text-sm rounded-full overflow-hidden hover:scale-105 transition-transform flex items-center gap-2"
+                    style={{ backgroundColor: ac() }}>
+                    Proyectos <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </button>
+                  <button onClick={() => scrollTo("contact")}
+                    className="hero-cta-btn magnetic px-6 py-3 border border-white/15 text-white/80 font-medium text-sm rounded-full hover:border-white/30 hover:text-white transition-all">
+                    Contacto
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hero-meta">
+            <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              className="w-[1px] h-12 mx-auto" style={{ background: `linear-gradient(to bottom, transparent, ${ac(0.5)}, transparent)` }} />
+          </div>
+        </section>
+
+        {/* ═══ ABOUT — conciso + marquee ═══ */}
+        <section id="about" data-section="about" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+          <div className="max-w-6xl mx-auto">
+            <SectionHeader index="01" label="Sobre mí" />
+
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              {/* Bio */}
+              <div className="about-reveal p-8 md:p-10 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors duration-500">
+                <h2 className="text-2xl md:text-3xl font-bold leading-tight mb-5 text-white">
+                  Soy <span style={{ color: ac() }}>Ulises Molina</span>, desarrollador enfocado en crear interfaces que conectan.
+                </h2>
+                <p className="text-white/50 leading-relaxed">
+                  Transformo ideas en sitios rápidos, estéticos y orientados a resultados. Me involucro desde la estrategia hasta la implementación.
+                </p>
+              </div>
+
+              {/* Stats */}
+              <div className="about-reveal grid grid-cols-2 gap-4">
+                <div className="p-8 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors duration-500 flex flex-col justify-center">
+                  <div className="text-[3rem] font-bold leading-none" style={{ color: ac() }}>+2</div>
+                  <div className="font-mono text-[10px] tracking-[0.3em] text-white/25 uppercase mt-2">Años exp.</div>
+                </div>
+                <div className="p-8 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors duration-500 flex flex-col justify-center">
+                  <div className="text-[3rem] font-bold leading-none" style={{ color: ac() }}>+15</div>
+                  <div className="font-mono text-[10px] tracking-[0.3em] text-white/25 uppercase mt-2">Proyectos</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tech Marquee */}
+            <div className="about-reveal">
+              <div className="font-mono text-[10px] tracking-[0.3em] uppercase mb-2 px-1" style={{ color: ac(0.6) }}>
+                Stack tecnológico
+              </div>
+              <div className="rounded-2xl bg-white/[0.02] border border-white/[0.04] overflow-hidden">
+                <TechMarquee />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ EXPERIENCE — cards con accent sidebar ═══ */}
+        <section id="experience" data-section="experience" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+          <div className="max-w-5xl mx-auto">
+            <SectionHeader index="02" label="Experiencia" />
+
+            <div className="space-y-5">
+              {EXPERIENCE.map((exp, i) => (
+                <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
+                  {/* Accent sidebar */}
+                  <div className="flex flex-col items-center pt-2 shrink-0">
+                    <div className="w-3 h-3 rounded-full border-2 transition-colors duration-500"
+                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.15)", backgroundColor: exp.current ? ac(0.2) : "transparent" }} />
+                    {i < EXPERIENCE.length - 1 && (
+                      <div className="w-[1px] flex-1 mt-2 bg-white/[0.06]" />
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="pb-10 flex-1">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>
+                        {exp.period}
+                      </span>
+                      <span className="text-xs text-white/25">— {exp.company}</span>
+                      {exp.current && (
+                        <span className="font-mono text-[9px] tracking-wider px-2 py-0.5 rounded-full border text-white/60"
+                          style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>
+                          ACTUAL
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">
+                      {exp.role}
+                    </h3>
+                    <p className="text-white/40 leading-relaxed mb-4 text-sm max-w-2xl">{exp.description}</p>
+                    {exp.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.technologies.map((tech) => (
+                          <span key={tech} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.06] rounded text-white/25">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ PROJECTS — laptop mockups + info ═══ */}
+        <section id="projects" data-section="projects" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+          <div className="max-w-6xl mx-auto">
+            <SectionHeader index="03" label="Proyectos" />
+
+            <div className="space-y-28 md:space-y-36">
+              {PROJECTS.map((project, i) => (
+                <div key={i} className={`project-block grid md:grid-cols-2 gap-10 md:gap-14 items-center ${i % 2 === 1 ? "md:[direction:rtl]" : ""}`}>
+                  {/* Laptop */}
+                  <div className={`project-mockup ${i % 2 === 1 ? "md:[direction:ltr]" : ""}`}>
+                    <LaptopMockup video={project.video} screenshot={project.screenshot} title={project.title} />
+                  </div>
+
+                  {/* Info */}
+                  <div className={`project-info space-y-4 ${i % 2 === 1 ? "md:[direction:ltr]" : ""}`}>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[10px] tracking-[0.3em] uppercase" style={{ color: ac() }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="font-mono text-[10px] tracking-wider text-white/20 uppercase">{project.subtitle}</span>
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-white">{project.title}</h3>
+                    <p className="text-white/40 leading-relaxed text-sm">{project.description}</p>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {project.technologies.map((tech) => (
+                        <span key={tech} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.06] rounded text-white/25">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-3 pt-3">
+                      <Link href={project.demoUrl} target="_blank" rel="noopener noreferrer"
+                        className="magnetic inline-flex items-center gap-2 px-5 py-2.5 font-semibold text-sm rounded-full text-[hsl(220,15%,5%)] hover:scale-105 transition-transform"
+                        style={{ backgroundColor: ac() }}>
+                        Demo <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                      {!project.isPrivate && project.repoUrl && (
+                        <Link href={project.repoUrl} target="_blank" rel="noopener noreferrer"
+                          className="magnetic inline-flex items-center gap-2 px-5 py-2.5 border border-white/10 text-white/60 font-medium text-sm rounded-full hover:border-white/20 hover:text-white transition-all">
+                          Código <Code className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
+                      {project.isPrivate && (
+                        <span className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/[0.06] text-white/20 text-sm rounded-full">
+                          <Code className="w-3.5 h-3.5" /> Privado
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ CERTIFICATIONS ═══ */}
+        <section id="certifications" data-section="certifications" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+          <div className="max-w-5xl mx-auto">
+            <SectionHeader index="04" label="Certificaciones" />
+
+            <div>
+              {CERTIFICATIONS.map((cert, i) => (
+                <Link key={i} href={cert.url} target="_blank" rel="noopener noreferrer" className="cert-row magnetic group block">
+                  <div className="h-[1px] bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors duration-500" />
+                  <div className="py-5 md:py-7 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-6">
+                    <h3 className="text-base md:text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300 flex-1">
+                      {cert.title}
+                    </h3>
+                    <div className="flex items-center gap-4 md:gap-6 shrink-0">
+                      <span className="font-mono text-[10px] tracking-wider text-white/20">{cert.org}</span>
+                      <span className="font-mono text-[10px] tracking-wider text-white/20">{cert.date}</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-white/10 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
+                        style={{ color: undefined }} />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              <div className="h-[1px] bg-white/[0.04]" />
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ CONTACT ═══ */}
+        <section id="contact" data-section="contact" className="contact-section relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20 overflow-hidden">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vh] rounded-full opacity-[0.05] blur-[160px] pointer-events-none"
+            style={{ backgroundColor: ac() }} />
+
+          <div className="max-w-5xl mx-auto relative z-10">
+            <div className="contact-big mb-16 md:mb-20">
+              <div className="font-mono text-[11px] tracking-[0.3em] uppercase mb-8" style={{ color: ac() }}>05 — Contacto</div>
+              <h2 className="text-[clamp(2.2rem,6vw,5rem)] font-bold leading-[1] tracking-tight text-white">
+                ¿Trabajamos<br />
+                <span style={{ color: ac() }}>juntos</span>?
+              </h2>
+              <p className="text-white/35 mt-6 max-w-md text-sm leading-relaxed">
+                Actualmente estoy abierto a nuevas oportunidades. No dudes en contactarme si querés trabajar conmigo.
               </p>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { icon: <Mail className="w-5 h-5" />, label: "Email", value: "ulisesmolinadev@gmail.com", href: "mailto:ulisesmolinadev@gmail.com" },
+                { icon: <Linkedin className="w-5 h-5" />, label: "LinkedIn", value: "Ulises Molina", href: "https://www.linkedin.com/in/ulises-rafael-molina/" },
+                { icon: <Github className="w-5 h-5" />, label: "GitHub", value: "Ulises-Molina", href: "https://github.com/Ulises-Molina" },
+                { icon: <FileText className="w-5 h-5" />, label: "CV", value: "Descargar CV", href: "/Cv.Ulises.pdf" },
+              ].map((item, i) => (
+                <Link key={i} href={item.href} target="_blank" rel="noopener noreferrer"
+                  className="contact-row magnetic group flex items-center gap-5 py-5 px-6 rounded-xl border border-white/[0.04] hover:border-white/[0.12] hover:bg-white/[0.02] transition-all duration-500">
+                  <div className="text-white/20 group-hover:transition-colors duration-300" style={{ color: undefined }}>
+                    {item.icon}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-mono text-[9px] tracking-[0.25em] text-white/15 uppercase">{item.label}</div>
+                    <div className="text-white/60 group-hover:text-white text-sm transition-colors duration-300">{item.value}</div>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-white/[0.08] group-hover:text-white/50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── FOOTER ─── */}
+        <footer className="relative z-10 px-6 md:px-10 lg:px-20 py-8 border-t border-white/[0.04]">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="font-mono text-[10px] text-white/15 tracking-wider">&copy; {new Date().getFullYear()} ULISES MOLINA</p>
+            <div className="flex gap-6">
+              {SOCIAL_LINKS.map((s) => (
+                <Link key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                  className="font-mono text-[10px] tracking-wider text-white/15 hover:text-white/60 transition-colors duration-300" aria-label={s.label}>
+                  {s.label}
+                </Link>
+              ))}
             </div>
           </div>
         </footer>
-      </main>
+      </div>
+    </SmoothScroll>
+  )
+}
+
+/* ═══════════════════════════════════════════
+   SHARED COMPONENTS
+   ═══════════════════════════════════════════ */
+
+function SectionHeader({ index, label }: { index: string; label: string }) {
+  return (
+    <div className="flex items-center gap-4 mb-16 md:mb-20">
+      <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>{index}</span>
+      <div className="h-[1px] flex-1 bg-white/[0.06]" />
+      <span className="font-mono text-[11px] tracking-[0.3em] text-white/20 uppercase">{label}</span>
     </div>
   )
 }
-
-function SocialLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center justify-center w-8 h-8 transition-colors rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white"
-      aria-label={label}
-    >
-      {icon}
-    </Link>
-  )
-}
-
-function TechBadge({ label, icon, iconPath }: { label: string; icon?: string; iconPath?: string }) {
-  return (
-    <div
-      className="tech-badge group relative overflow-hidden bg-gradient-to-br from-[#8a9a8c]/10 to-[#4a5a4d]/10 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hover:border-[#8a9a8c]/50 transition-all duration-300 cursor-pointer"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#8a9a8c]/0 to-[#8a9a8c]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      <div className="relative z-10 flex items-center gap-3">
-        {iconPath ? (
-          <div className="relative w-5 h-5">
-            <Image src={iconPath} alt={label} fill className="object-contain" />
-          </div>
-        ) : icon ? (
-          <span className="text-lg">{icon}</span>
-        ) : null}
-        <span className="text-sm font-medium text-white/90">{label}</span>
-      </div>
-    </div>
-  )
-}
-
-interface ProjectCardVideoProps {
-  title: string
-  description: string
-  technologies: string[]
-  demoUrl: string
-  repoUrl: string
-  videoDesktopUrl: string
-  videoMobileUrl: string
-  screenshotUrl?: string
-  isPrivate?: boolean
-}
-
-export function ProjectCardVideo({
-  title,
-  description,
-  technologies,
-  demoUrl,
-  repoUrl,
-  videoDesktopUrl,
-  videoMobileUrl,
-  screenshotUrl,
-  isPrivate,
-}: ProjectCardVideoProps) {
-
-  return (
-    <div
-      className="group overflow-hidden transition-all flex flex-col xl:flex-row h-full lg:gap-8 border-b-2 border-[#8a9a8c]/10 lg:py-10 project-card"
-    >
-      {/* Mockups */}
-      <div className="flex justify-center items-center px-4 md:py-10 py-6 relative w-full md:w-auto">
-
-        {/* Mobile: laptop frame with static image (explicit small dimensions, no scale transform) */}
-        <div className="md:hidden flex flex-col items-center">
-          <div className="relative flex h-[145px] w-[235px] items-center justify-center rounded-[8px] bg-black p-[4px] pb-[9px] shadow-[inset_0_0_0_1px_#c8cacb,inset_0_0_0_4px_#000]">
-            <div className="absolute top-[4px] left-1/2 h-[5px] w-[40px] -translate-x-1/2 rounded-b-[3px] bg-black z-20" />
-            <div className="relative w-full h-full rounded-[4px] overflow-hidden">
-              {screenshotUrl ? (
-                <Image src={screenshotUrl} alt={title} fill className="object-cover" />
-              ) : (
-                <div className="h-full w-full bg-zinc-800" />
-              )}
-            </div>
-          </div>
-          <div className="relative mt-[-4px] h-[11px] w-[280px] rounded-b-[5px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-1px_3px_0_#6c7074] z-10">
-            <div className="absolute top-0 left-1/2 h-[4px] w-[44px] -translate-x-1/2 rounded-b-[4px] bg-[#e2e3e4] shadow-[inset_0_0_2px_1px_#babdbf]" />
-          </div>
-        </div>
-
-        {/* Desktop: laptop frame with video (scale transform) */}
-        <div className="hidden md:block relative overflow-hidden md:w-[488px] md:h-[267px] lg:w-[525px] lg:h-[287px] xl:w-[600px] xl:h-[328px]">
-          <div className="absolute top-0 left-0 origin-top-left md:scale-[0.65] lg:scale-[0.7] xl:scale-[0.8]">
-            <div className="relative mx-auto flex h-[390px] w-[630px] items-center justify-center rounded-[20px] bg-black p-[9px] pt-[9px] pb-[23px] shadow-[inset_0_0_0_2px_#c8cacb,inset_0_0_0_10px_#000] [transform-style:preserve-3d] [transform-origin:bottom_center]">
-              <div className="absolute top-[10px] left-1/2 h-[12px] w-[100px] -translate-x-1/2 rounded-b-[6px] bg-black z-20" />
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                poster={screenshotUrl}
-                className="h-full w-full rounded-[12px] object-cover p-1"
-              >
-                <source src={videoDesktopUrl} type="video/mp4" />
-              </video>
-              <div className="absolute top-[-3px] h-[12px] w-[630px] rounded-t-[5px] bg-gradient-to-b from-[#979899] to-transparent [transform:rotateX(90deg)]" />
-              <div className="absolute bottom-[2px] left-[2px] h-[24px] w-[626px] rounded-b-[20px] bg-gradient-to-b from-[#272727] to-[#0d0d0d]" />
-            </div>
-            <div className="relative mx-auto mt-[-10px] h-[30px] w-[750px] rounded-b-[12px] border border-t-0 border-[#a0a3a7] bg-[radial-gradient(circle_at_center,#e2e3e4_85%,#a9abac_100%)] shadow-[inset_0_-2px_8px_0_#6c7074] z-10">
-              <div className="absolute top-0 left-1/2 h-[10px] w-[120px] -translate-x-1/2 rounded-b-[10px] bg-[#e2e3e4] shadow-[inset_0_0_4px_2px_#babdbf]" />
-              <div className="absolute bottom-[-2px] left-1/2 h-[2px] w-[40px] -translate-x-1/2 rounded-b-[3px] shadow-[-320px_0_#272727,300px_0_#272727]" />
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Text Content */}
-      <div className="flex flex-col flex-grow px-4 md:px-6 lg:px-10 py-6 justify-center">
-        <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-[#8a9a8c] transition-colors">
-          {title}
-        </h3>
-        <p className="mb-4 text-m text-white/70">{description}</p>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {technologies.map((tech) => (
-            <span key={tech} className="px-2 py-1 text-xs border rounded-full bg-white/5 border-white/10">
-              {tech}
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-3 flex-wrap">
-          <Link
-            href={demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center px-3 py-2 bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-[#8a9a8c]/20 transition-all"
-          >
-            <ExternalLink className="mr-1.5 w-3.5 h-3.5" /> Ver Demo
-          </Link>
-          {isPrivate ? (
-            <div className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium border rounded-lg cursor-not-allowed bg-white/5 border-white/10 text-white/40">
-              <Code className="mr-1.5 w-3.5 h-3.5" /> Privado
-            </div>
-          ) : (
-            <Link
-              href={repoUrl || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium transition-all border rounded-lg bg-white/5 border-white/10 hover:bg-white/10"
-            >
-              <Code className="mr-1.5 w-3.5 h-3.5" /> Ver Código
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
-
-
-
-
-
-
-
-
-
-
-interface ContactItemProps {
-  icon: React.ReactNode
-  label: string
-  value: string
-  href: string
-}
-
-function ContactItem({ icon, label, value, href }: ContactItemProps) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center p-4 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 hover:border-[#8a9a8c]/30 transition-all group contact-item"
-    >
-      <div className="mr-4 text-[#8a9a8c] group-hover:text-[#4a5a4d]">{icon}</div>
-      <div>
-        <p className="text-sm text-white/60">{label}</p>
-        <p className="text-white group-hover:text-[#8a9a8c] transition-colors">{value}</p>
-      </div>
-      <ArrowUpRight className="ml-auto text-white/40 group-hover:text-[#8a9a8c] transition-colors w-4 h-4" />
-    </Link>
-  )
-}
-
-interface TimelineItemProps {
-  title: string
-  company: string
-  period: string
-  description: string
-  technologies: string[]
-  isLeft: boolean
-}
-
-function TimelineItem({ title, company, period, description, technologies, isLeft }: TimelineItemProps) {
-  return (
-    <div
-      className={`relative flex flex-col md:flex-row ${isLeft ? "md:flex-row-reverse" : ""} timeline-item`}
-    >
-      {/* Timeline dot */}
-      <div className="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-[#8a9a8c] to-[#4a5a4d] border-4 border-[#0f0f0f] z-10"></div>
-
-      {/* Content */}
-      <div className={`md:w-1/2 ${isLeft ? "md:pr-12" : "md:pl-12"} pl-10 md:pl-0`}>
-        <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-[#8a9a8c]/30 transition-all">
-          <div className="flex flex-col mb-4">
-            <h3 className="text-xl font-semibold text-white">{title}</h3>
-            <span className="px-3 py-1 mt-2 text-sm rounded-full text-white/60 bg-white/5 w-fit">{period}</span>
-          </div>
-          <p className="text-[#8a9a8c] mb-3">{company}</p>
-          <p className="mb-6 text-white/70">{description}</p>
-          <div className="flex flex-wrap gap-2">
-            {technologies.map((tech) => (
-              <span key={tech} className="px-3 py-1 text-xs border rounded-full bg-white/5 border-white/10">
-                {tech}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface CertificationCardProps {
-  title: string
-  organization: string
-  date: string
-  description: string
-  imageUrl: string
-  credentialUrl: string
-}
-
-function CertificationCard({
-  title,
-  organization,
-  date,
-  description,
-  imageUrl,
-  credentialUrl,
-}: CertificationCardProps) {
-  return (
-    <div
-      className="bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#647566]/30 transition-all certification-card group hover:shadow-lg hover:shadow-[#8a9a8c]/10"
-    >
-      <div className="flex flex-col gap-6 p-6 md:flex-row">
-        <div className="flex-shrink-0">
-          <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gradient-to-br from-[#647566]/20 to-[#7d8f7e]/20 p-0.5">
-            <div className="absolute inset-0 bg-black/50 rounded-lg overflow-hidden m-0.5">
-              <Image src={imageUrl || "/placeholder.svg"} alt={organization} fill className="object-cover" />
-            </div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <h3 className="mb-1 text-xl font-semibold text-white">{title}</h3>
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-[#7d8f7e] font-medium">{organization}</span>
-            <span className="text-sm text-white/40">•</span>
-            <span className="text-sm text-white/40">{date}</span>
-          </div>
-          <p className="mb-4 text-sm text-white/70">{description}</p>
-          <Link
-            href={credentialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-sm text-[#7d8f7e] hover:text-[#8fa190] transition-colors"
-          >
-            <div className="mr-1.5 w-3.5 h-3.5" /> Ver credencial
-            <ArrowUpRight className="w-3 h-3 ml-1" />
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
