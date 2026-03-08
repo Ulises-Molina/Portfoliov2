@@ -7,7 +7,26 @@
       "Bash(done)",
       "Bash(npm install lenis @gsap/react --save)",
       "Bash(npx next build)",
-      "WebFetch(domain:alche.studio)"
+      "WebFetch(domain:alche.studio)",
+      "WebSearch",
+      "WebFetch(domain:quentinhocde.com)",
+      "WebFetch(domain:tympanus.net)",
+      "WebFetch(domain:www.awwwards.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -sL \"https://github.com/quentinhocde\")",
+      "Bash(curl -sL \"https://quentinhocde.com/\")",
+      "Bash(curl -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://quentinhocde.com/\")",
+      "Bash(curl -v -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\" \"https://quentinhocde.com/\")",
+      "Bash(curl -k -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\" \"https://quentinhocde.com/assets/Layout.astro_astro_type_script_index_1_lang.yRz-VGRG.js\")",
+      "Bash(curl -k -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\" \"https://quentinhocde.com/assets/Layout.B_a1Xra6.css\")",
+      "Bash(grep -oP '\\(?:vertex|fragment|vert|frag\\).*?=.*?`[^`]*`' /tmp/qh-background.js)",
+      "Bash(tr ';' '\\\\n')",
+      "Bash(grep -o 'const ci=`[^`]*`')",
+      "Bash(node -e \":*)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }
