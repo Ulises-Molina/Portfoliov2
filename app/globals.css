@@ -42,6 +42,7 @@
 
   html {
     background: hsl(0 0% 8%);
+    overflow-x: hidden;
   }
 
   a, button, [role="button"] {
@@ -52,6 +53,30 @@
     background: hsl(165 80% 48% / 0.25);
     color: hsl(0 0% 100%);
   }
+}
+
+/* ─── Custom scrollbar ─── */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(0 0% 25%) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(0 0% 25%);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0 0% 35%);
 }
 
 /* Noise overlay */
@@ -72,7 +97,7 @@ body::before {
 }
 
 .marquee-track {
-  animation: marquee 40s linear infinite;
+  animation: marquee 70s linear infinite;
 }
 
 @keyframes marquee-reverse {
@@ -81,7 +106,7 @@ body::before {
 }
 
 .marquee-track-reverse {
-  animation: marquee-reverse 45s linear infinite;
+  animation: marquee-reverse 75s linear infinite;
 }
 
 .marquee-track:hover,

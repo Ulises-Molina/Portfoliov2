@@ -101,29 +101,34 @@ function MagneticCursor() {
   const outerRef = useRef<HTMLDivElement>(null)
   const dotRef = useRef<HTMLDivElement>(null)
   const [hov, setHov] = useState(false)
+
   const pos = useRef({ x: -100, y: -100 })
 
   useEffect(() => {
+    if (!outerRef.current || !dotRef.current) return
+
     const onM = (e: MouseEvent) => { pos.current = { x: e.clientX, y: e.clientY } }
     const onOver = (e: MouseEvent) => {
       if ((e.target as HTMLElement).closest("a, button, [role='button'], .magnetic")) setHov(true)
     }
     const onOut = () => setHov(false)
-    window.addEventListener("mousemove", onM)
+    window.addEventListener("mousemove", onM, { passive: true })
     document.addEventListener("mouseover", onOver)
     document.addEventListener("mouseout", onOut)
+
     const tick = () => {
-      if (outerRef.current) gsap.set(outerRef.current, { x: pos.current.x, y: pos.current.y })
-      if (dotRef.current) gsap.set(dotRef.current, { x: pos.current.x, y: pos.current.y })
+      gsap.set(dotRef.current, { x: pos.current.x, y: pos.current.y })
+      gsap.set(outerRef.current, { x: pos.current.x, y: pos.current.y })
       requestAnimationFrame(tick)
     }
     const raf = requestAnimationFrame(tick)
+
     return () => { window.removeEventListener("mousemove", onM); document.removeEventListener("mouseover", onOver); document.removeEventListener("mouseout", onOut); cancelAnimationFrame(raf) }
   }, [])
 
   return (
     <>
-      <div ref={outerRef} className={`custom-cursor fixed top-0 left-0 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-300 ${hov ? "w-14 h-14 border-[hsl(165,80%,48%)] bg-[hsl(165,80%,48%)]/10" : "w-8 h-8 border-white/20"}`} />
+      <div ref={outerRef} className={`custom-cursor fixed top-0 left-0 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-300 ${hov ? "w-14 h-14 border-[hsl(165,80%,48%)] bg-[hsl(165,80%,48%)]/10 opacity-100" : "w-8 h-8 border-white/20 opacity-0 scale-50"}`} />
       <div ref={dotRef} className="custom-cursor fixed top-0 left-0 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[hsl(165,80%,48%)]" />
     </>
   )
@@ -132,36 +137,30 @@ function MagneticCursor() {
 /* ═══ MARQUEE — dual row, full bleed ═══ */
 
 function TechMarquee() {
-  const row1 = [...TECH, ...TECH, ...TECH]
-  const row2 = [...[...TECH].reverse(), ...[...TECH].reverse(), ...[...TECH].reverse()]
+  const reversed = [...TECH].reverse()
+
+  const TechItem = ({ t, prefix }: { t: typeof TECH[number]; prefix: string }) => (
+    <div className="flex items-center gap-3 shrink-0 px-5 py-3 rounded-full border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 group">
+      <div className="relative w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity">
+        <Image src={t.icon} alt={t.label} fill className="object-contain" />
+      </div>
+      <span className="text-sm text-white/35 group-hover:text-white/90 transition-colors whitespace-nowrap font-medium">
+        {t.label}
+      </span>
+    </div>
+  )
 
   return (
     <div className="w-screen relative left-1/2 -translate-x-1/2 overflow-hidden space-y-3 py-8">
-      {/* Row 1 — left */}
+      {/* Row 1 — left: two identical sets, animation translates -50% for seamless loop */}
       <div className="marquee-track flex items-center gap-8 w-max">
-        {row1.map((t, i) => (
-          <div key={`a${i}`} className="flex items-center gap-3 shrink-0 px-5 py-3 rounded-full border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 group">
-            <div className="relative w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity">
-              <Image src={t.icon} alt={t.label} fill className="object-contain" />
-            </div>
-            <span className="text-sm text-white/35 group-hover:text-white/90 transition-colors whitespace-nowrap font-medium">
-              {t.label}
-            </span>
-          </div>
-        ))}
+        {TECH.map((t, i) => <TechItem key={`a1-${i}`} t={t} prefix="a1" />)}
+        {TECH.map((t, i) => <TechItem key={`a2-${i}`} t={t} prefix="a2" />)}
       </div>
-      {/* Row 2 — right (reversed) */}
+      {/* Row 2 — right (reversed): two identical sets */}
       <div className="marquee-track-reverse flex items-center gap-8 w-max">
-        {row2.map((t, i) => (
-          <div key={`b${i}`} className="flex items-center gap-3 shrink-0 px-5 py-3 rounded-full border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 group">
-            <div className="relative w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity">
-              <Image src={t.icon} alt={t.label} fill className="object-contain" />
-            </div>
-            <span className="text-sm text-white/35 group-hover:text-white/90 transition-colors whitespace-nowrap font-medium">
-              {t.label}
-            </span>
-          </div>
-        ))}
+        {reversed.map((t, i) => <TechItem key={`b1-${i}`} t={t} prefix="b1" />)}
+        {reversed.map((t, i) => <TechItem key={`b2-${i}`} t={t} prefix="b2" />)}
       </div>
     </div>
   )
@@ -171,8 +170,8 @@ function TechMarquee() {
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const horizontalRef = useRef<HTMLDivElement>(null)
-  const horizontalWrapRef = useRef<HTMLDivElement>(null)
+  const projectsRef = useRef<HTMLDivElement>(null)
+  const [activeProject, setActiveProject] = useState(0)
   const prefersReducedMotion = useReducedMotion()
   const [mounted, setMounted] = useState(false)
   const [activeNav, setActiveNav] = useState("hero")
@@ -194,7 +193,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!mounted) return
-    const fn = () => setNavVisible(window.scrollY > window.innerHeight * 0.5)
+    const fn = () => setNavVisible(window.scrollY > window.innerHeight * 0.05)
     window.addEventListener("scroll", fn, { passive: true }); return () => window.removeEventListener("scroll", fn)
   }, [mounted])
 
@@ -219,12 +218,19 @@ export default function Home() {
       gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } })
     })
 
-    // Horizontal scroll projects
-    if (horizontalRef.current && horizontalWrapRef.current) {
-      const totalWidth = horizontalWrapRef.current.scrollWidth - window.innerWidth
-      gsap.to(horizontalWrapRef.current, {
-        x: -totalWidth, ease: "none",
-        scrollTrigger: { trigger: horizontalRef.current, start: "top top", end: () => `+=${totalWidth}`, scrub: 1, pin: true, anticipatePin: 1 },
+    // 3D Carousel projects
+    if (projectsRef.current) {
+      const count = PROJECTS.length
+      ScrollTrigger.create({
+        trigger: projectsRef.current,
+        start: "top top",
+        end: () => `+=${count * 200}vh`,
+        pin: true,
+        scrub: 1,
+        onUpdate: (self) => {
+          const idx = Math.min(Math.round(self.progress * (count - 1)), count - 1)
+          setActiveProject(idx)
+        },
       })
     }
 
@@ -269,16 +275,29 @@ export default function Home() {
         </AnimatePresence>
 
         {/* ─── HEADER ─── */}
-        <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between mix-blend-difference">
-          <button onClick={() => scrollTo("hero")} className="font-sans font-bold text-base tracking-tight text-white" aria-label="Inicio">
+        <header className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between transition-all duration-500 ${navVisible ? "bg-black/40 backdrop-blur-md border-b border-white/[0.04]" : ""}`}>
+          <button onClick={() => scrollTo("hero")} className="magnetic font-sans font-bold text-base tracking-tight text-white" aria-label="Inicio">
             ULISES<span style={{ color: ac() }}>.</span>M
           </button>
-          <div className="flex items-center gap-6">
-            <span className="hidden md:block font-mono text-[10px] text-white/30 tracking-widest">BUE {time}</span>
+          <nav className="hidden md:flex items-center gap-8">
+            {[
+              { id: "about", label: "Sobre mí" },
+              { id: "experience", label: "Experiencia" },
+              { id: "projects", label: "Proyectos" },
+              { id: "contact", label: "Contacto" },
+            ].map((item) => (
+              <button key={item.id} onClick={() => scrollTo(item.id)}
+                className={`magnetic font-mono text-[11px] tracking-wider transition-colors duration-300 ${activeNav === item.id ? "text-white" : "text-white/40 hover:text-white/70"}`}>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div className="flex items-center gap-4">
+            <span className="hidden lg:block font-mono text-[10px] text-white/30 tracking-widest mr-10">BUE {time}</span>
             {SOCIAL.map((s) => (
               <Link key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                className="font-mono text-[10px] tracking-widest text-white/30 hover:text-white transition-colors duration-300" aria-label={s.label}>
-                {s.label}
+                className="magnetic text-white/30 hover:text-white transition-colors duration-300 hidden sm:block" aria-label={s.label}>
+                <s.icon className="w-4 h-4" />
               </Link>
             ))}
           </div>
@@ -307,8 +326,8 @@ export default function Home() {
                 </p>
                 <div className="flex gap-3 hero-meta">
                   <button onClick={() => scrollTo("projects")}
-                    className="hero-cta-btn magnetic group px-6 py-3 text-[hsl(220,15%,5%)] font-semibold text-sm rounded-full hover:scale-105 transition-transform flex items-center gap-2"
-                    style={{ backgroundColor: ac() }}>
+                    className="hero-cta-btn magnetic group px-6 py-3 text-white font-semibold text-sm rounded-full hover:scale-105 transition-transform flex items-center gap-2 border border-white/20"
+                    style={{ backgroundColor: "rgba(255,255,255,0.08)", boxShadow: `0 0 20px ${ac(0.15)}` }}>
                     Proyectos <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </button>
                   <button onClick={() => scrollTo("contact")}
@@ -332,7 +351,7 @@ export default function Home() {
 
             {/* Big statement */}
             <h2 className="about-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl mb-8">
-              Soy <span style={{ color: ac() }}>Ulises Molina</span>, desarrollador de software enfocado en crear
+              Desarrollador de software enfocado en crear
               interfaces que conectan con los usuarios.
             </h2>
 
@@ -407,69 +426,131 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ PROJECTS — horizontal scroll, compact ═══ */}
-        <section id="projects" data-section="projects" ref={horizontalRef} className="horizontal-scroll-section relative z-10">
-          <div className="h-screen flex flex-col justify-center">
-            <div className="px-6 md:px-10 lg:px-20 mb-8">
-              <div className="max-w-7xl mx-auto">
-                <SectionHeader index="03" label="Proyectos" />
+        {/* ═══ PROJECTS — 3D Carousel ═══ */}
+        <section id="projects" data-section="projects" ref={projectsRef} className="relative z-10 h-screen overflow-hidden">
+          <div className="h-full flex flex-col justify-center items-center px-6">
+            {/* Header */}
+            <div className="absolute top-10 left-6 md:left-10 lg:left-20 z-20">
+              <SectionHeader index="03" label="Proyectos" />
+            </div>
+
+            {/* Counter */}
+            <div className="absolute top-10 right-6 md:right-10 lg:right-20 z-20 font-mono text-sm tracking-widest">
+              <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
+              <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
+            </div>
+
+            {/* 3D Carousel container */}
+            <div className="relative w-full max-w-[850px] mx-auto" style={{ perspective: "1200px", perspectiveOrigin: "50% 45%" }}>
+              <div className="relative" style={{ height: "clamp(340px, 50vh, 520px)", transformStyle: "preserve-3d" }}>
+                {PROJECTS.map((p, i) => {
+                  const offset = i - activeProject
+                  const isActive = offset === 0
+                  const absOffset = Math.abs(offset)
+                  const sign = offset > 0 ? 1 : -1
+
+                  return (
+                    <div
+                      key={i}
+                      className="absolute inset-0 transition-all duration-[900ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
+                      style={{
+                        transformStyle: "preserve-3d",
+                        transform: isActive
+                          ? "translateX(0) translateZ(0) rotateY(0deg)"
+                          : `translateX(${sign * (55 + absOffset * 20)}%) translateZ(${-absOffset * 350}px) rotateY(${offset * -45}deg)`,
+                        opacity: absOffset > 2 ? 0 : absOffset > 1 ? 0.1 : isActive ? 1 : 0.45,
+                        zIndex: PROJECTS.length - absOffset,
+                        pointerEvents: isActive ? "auto" : "none",
+                        filter: isActive ? "none" : `brightness(0.3) saturate(0.3)`,
+                      }}
+                    >
+                      {/* Card — screen-like with shadow */}
+                      <div className="h-full flex flex-col gap-5 justify-center">
+                        {/* Video/Image — wide 16:9, screen mockup feel */}
+                        <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                          className="magnetic block relative overflow-hidden rounded-xl w-full"
+                          style={{
+                            boxShadow: isActive
+                              ? "0 25px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)"
+                              : "0 15px 40px -10px rgba(0,0,0,0.4)",
+                          }}>
+                          <div className="aspect-[16/9] bg-black/40 overflow-hidden rounded-xl">
+                            <video
+                              autoPlay={isActive} muted loop playsInline poster={p.screenshot}
+                              className={`w-full h-full object-cover transition-all duration-700 ${isActive ? "opacity-90 scale-100" : "opacity-50 scale-[0.98]"}`}
+                              ref={(el) => {
+                                if (el) { isActive ? el.play().catch(() => {}) : el.pause() }
+                              }}
+                            >
+                              <source src={p.video} type="video/mp4" />
+                            </video>
+                          </div>
+                          {/* Hover overlay */}
+                          {isActive && (
+                            <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-500 flex items-center justify-center group/link">
+                              <span className="opacity-0 group-hover/link:opacity-100 transition-opacity duration-500 text-white text-xs font-mono tracking-widest uppercase flex items-center gap-2">
+                                Ver proyecto <ExternalLink className="w-3.5 h-3.5" />
+                              </span>
+                            </div>
+                          )}
+                        </Link>
+
+                        {/* Info panel — below video, horizontal layout */}
+                        <div className={`w-full transition-all duration-700 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+                          <div className="flex items-start justify-between gap-6">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-1">
+                                <h3 className="text-xl md:text-2xl font-bold text-white">{p.title}</h3>
+                                <span className="font-mono text-[10px] tracking-wider text-white/20 uppercase">{p.subtitle}</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {p.technologies.map((t) => (
+                                  <span key={t} className="font-mono text-[9px] tracking-wider text-white/20">{t}</span>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="flex gap-3 shrink-0">
+                              <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                                className="magnetic inline-flex items-center gap-1.5 px-5 py-2.5 font-semibold text-xs rounded-full text-[hsl(220,15%,5%)] hover:scale-105 transition-transform"
+                                style={{ backgroundColor: ac() }}>
+                                Demo <ExternalLink className="w-3 h-3" />
+                              </Link>
+                              {!p.isPrivate && p.repoUrl ? (
+                                <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
+                                  className="magnetic inline-flex items-center gap-1.5 px-5 py-2.5 border border-white/10 text-white/50 font-medium text-xs rounded-full hover:border-white/20 hover:text-white transition-all">
+                                  Código <Code className="w-3 h-3" />
+                                </Link>
+                              ) : p.isPrivate ? (
+                                <span className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-white/[0.04] text-white/15 text-xs rounded-full">
+                                  <Code className="w-3 h-3" /> Privado
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
-            <div ref={horizontalWrapRef} className="flex gap-12 md:gap-16 lg:gap-20 pl-6 md:pl-10 lg:pl-20 pr-[20vw] items-center" style={{ width: "max-content" }}>
-              {PROJECTS.map((p, i) => (
-                <div key={i} className="project-card flex-shrink-0 w-[65vw] sm:w-[45vw] md:w-[35vw] lg:w-[26vw] group">
-                  {/* Laptop mockup */}
-                  <div className="relative mb-5">
-                    <div className="rounded-t-lg bg-[#111116] p-[5px] pb-[10px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
-                      <div className="absolute top-[4px] left-1/2 -translate-x-1/2 w-[35px] h-[4px] rounded-b-sm bg-[#111116] z-10" />
-                      <div className="rounded-[4px] overflow-hidden aspect-[16/10] bg-black">
-                        <video autoPlay muted loop playsInline poster={p.screenshot}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700">
-                          <source src={p.video} type="video/mp4" />
-                        </video>
-                      </div>
-                    </div>
-                    <div className="h-[8px] mx-[-4px] rounded-b-md border border-t-0 border-[#444] bg-gradient-to-b from-[#c4c4c8] to-[#8a8a90]">
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40px] h-[3px] rounded-b-sm bg-[#c4c4c8]" />
-                    </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="px-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="font-mono text-[10px] tracking-[0.3em]" style={{ color: ac() }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="font-mono text-[10px] tracking-wider text-white/20 uppercase">{p.subtitle}</span>
-                    </div>
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-2">{p.title}</h3>
-                    <p className="text-white/35 text-sm leading-relaxed mb-3">{p.description}</p>
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {p.technologies.map((t) => (
-                        <span key={t} className="font-mono px-2 py-0.5 text-[9px] tracking-wider border border-white/[0.06] rounded text-white/20">{t}</span>
-                      ))}
-                    </div>
-                    <div className="flex gap-2">
-                      <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                        className="magnetic inline-flex items-center gap-1.5 px-4 py-2 font-semibold text-xs rounded-full text-[hsl(220,15%,5%)] hover:scale-105 transition-transform"
-                        style={{ backgroundColor: ac() }}>
-                        Demo <ExternalLink className="w-3 h-3" />
-                      </Link>
-                      {!p.isPrivate && p.repoUrl ? (
-                        <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
-                          className="magnetic inline-flex items-center gap-1.5 px-4 py-2 border border-white/10 text-white/50 font-medium text-xs rounded-full hover:border-white/20 hover:text-white transition-all">
-                          Código <Code className="w-3 h-3" />
-                        </Link>
-                      ) : p.isPrivate ? (
-                        <span className="inline-flex items-center gap-1.5 px-4 py-2 border border-white/[0.04] text-white/15 text-xs rounded-full">
-                          <Code className="w-3 h-3" /> Privado
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
+            {/* Dot indicators */}
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+              {PROJECTS.map((_, i) => (
+                <button key={i} className="w-2 h-2 rounded-full transition-all duration-500"
+                  style={{
+                    backgroundColor: i === activeProject ? ac() : "rgba(255,255,255,0.15)",
+                    transform: i === activeProject ? "scale(1.4)" : "scale(1)",
+                  }}
+                  aria-label={`Proyecto ${i + 1}`}
+                />
               ))}
+            </div>
+
+            {/* Scroll hint */}
+            <div className="absolute bottom-10 right-6 md:right-10 font-mono text-[10px] tracking-wider text-white/20 z-20">
+              SCROLL ↓
             </div>
           </div>
         </section>
@@ -553,7 +634,7 @@ function SectionHeader({ index, label }: { index: string; label: string }) {
     <div className="flex items-center gap-4 mb-16 md:mb-20">
       <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>{index}</span>
       <div className="h-[1px] flex-1 bg-white/[0.06]" />
-      <span className="font-mono text-[11px] tracking-[0.3em] text-white/20 uppercase">{label}</span>
+      <span className="font-mono text-sm tracking-[0.3em] text-white/50 uppercase">{label}</span>
     </div>
   )
 }

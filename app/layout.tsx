@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Ulises Molina — Software Developer",
+  title: "Ulises Molina — Software Dev",
   description: "Frontend Developer — Creando experiencias digitales excepcionales",
 }
 
