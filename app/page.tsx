@@ -40,12 +40,12 @@ const TECH = [
 
 const EXPERIENCE = [
   {
-    role: "Frontend Developer", company: "Qualita", period: "MAR 2025 — PRESENTE", current: true,
+    role: "Frontend Developer", company: "Qualita Studio", period: "MAR 2025 — PRESENTE", current: true,
     description: "Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce. Diseño y optimización UX/UI, Responsive Design, automatización de procesos y colaboración con equipo de diseño gráfico.",
     technologies: ["Wordpress", "Elementor", "Shopify", "ClickUp", "Zapier", "HTML5", "CSS3", "JavaScript"],
   },
   {
-    role: "Pasante Web Developer", company: "Qualita", period: "FEB — MAR 2025", current: false,
+    role: "Pasante Web Developer", company: "Qualita Studio", period: "FEB — MAR 2025", current: false,
     description: "Desarrollo de sitios web con enfoque en interfaces responsivas, accesibles y alineadas con los objetivos del negocio.",
     technologies: ["Wordpress", "Elementor", "Shopify", "ClickUp"],
   },
@@ -89,10 +89,11 @@ const PROJECTS = [
 
 const CERTS = [
   { title: "JavaScript Algorithms & Data Structures", org: "freeCodeCamp", date: "02.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8" },
-  { title: "Curso avanzado de React JS", org: "GCBA", date: "06.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
-  { title: "Curso avanzado de Node JS", org: "GCBA", date: "12.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
+  { title: "Curso avanzado de React JS", org: "Gobierno de la Ciudad de Buenos Aires", date: "06.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
+  { title: "Curso avanzado de Node JS", org: "Gobierno de la Ciudad de Buenos Aires", date: "12.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
   { title: "Responsive Web Design", org: "freeCodeCamp", date: "01.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/responsive-web-design" },
   { title: "English Certificate B2 — Upper Intermediate", org: "EF SET", date: "02.2025", url: "https://cert.efset.org/es/7WVPUE" },
+  { title: "Claude Code in Action", org: "Anthropic", date: "03.2026", url: "https://verify.skilljar.com/c/d45ub3kt6epf" },
 ]
 
 /* ═══ CURSOR ═══ */
@@ -284,6 +285,7 @@ export default function Home() {
               { id: "about", label: "Sobre mí" },
               { id: "experience", label: "Experiencia" },
               { id: "projects", label: "Proyectos" },
+              { id: "certifications", label: "Certificaciones" },
               { id: "contact", label: "Contacto" },
             ].map((item) => (
               <button key={item.id} onClick={() => scrollTo(item.id)}
@@ -371,11 +373,11 @@ export default function Home() {
             <div className="about-reveal flex gap-16 mb-16">
               <div>
                 <span className="text-[2.5rem] md:text-[3rem] font-bold leading-none" style={{ color: ac() }}>+2</span>
-                <span className="block font-mono text-[10px] tracking-[0.3em] text-white/25 uppercase mt-1">Años</span>
+                <span className="block font-mono text-[10px] tracking-[0.3em] text-white/50 uppercase mt-1">Años</span>
               </div>
               <div>
                 <span className="text-[2.5rem] md:text-[3rem] font-bold leading-none" style={{ color: ac() }}>+15</span>
-                <span className="block font-mono text-[10px] tracking-[0.3em] text-white/25 uppercase mt-1">Proyectos</span>
+                <span className="block font-mono text-[10px] tracking-[0.3em] text-white/50 uppercase mt-1">Proyectos</span>
               </div>
             </div>
 
@@ -393,29 +395,29 @@ export default function Home() {
         <section id="experience" data-section="experience" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
           <div className="max-w-5xl mx-auto">
             <SectionHeader index="02" label="Experiencia" />
-            <div className="space-y-1">
+            <div className="space-y-10">
               {EXPERIENCE.map((exp, i) => (
                 <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
                   <div className="flex flex-col items-center pt-2 shrink-0">
                     <div className="w-3 h-3 rounded-full border-2 transition-colors duration-500"
-                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.12)", backgroundColor: exp.current ? ac(0.15) : "transparent" }} />
-                    {i < EXPERIENCE.length - 1 && <div className="w-[1px] flex-1 mt-2 bg-white/[0.06]" />}
+                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.15)", backgroundColor: exp.current ? ac(0.15) : "transparent" }} />
+                    {i < EXPERIENCE.length - 1 && <div className="w-[1px] flex-1 mt-2 bg-white/[0.08]" />}
                   </div>
-                  <div className="pb-10 flex-1">
+                  <div className="pb-14 flex-1">
                     <div className="flex flex-wrap items-center gap-3 mb-2">
                       <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>{exp.period}</span>
-                      <span className="text-xs text-white/25">— {exp.company}</span>
+                      <span className="text-xs text-white/40">— {exp.company}</span>
                       {exp.current && (
                         <span className="font-mono text-[9px] tracking-wider px-2 py-0.5 rounded-full border text-white/60"
                           style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>ACTUAL</span>
                       )}
                     </div>
                     <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
-                    <p className="text-white/40 leading-relaxed mb-4 text-sm max-w-2xl">{exp.description}</p>
+                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl">{exp.description}</p>
                     {exp.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {exp.technologies.map((t) => (
-                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.06] rounded text-white/25">{t}</span>
+                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
                         ))}
                       </div>
                     )}
@@ -634,7 +636,7 @@ function SectionHeader({ index, label }: { index: string; label: string }) {
     <div className="flex items-center gap-4 mb-16 md:mb-20">
       <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>{index}</span>
       <div className="h-[1px] flex-1 bg-white/[0.06]" />
-      <span className="font-mono text-sm tracking-[0.3em] text-white/50 uppercase">{label}</span>
+      <span className="font-mono text-base md:text-lg tracking-[0.25em] text-white/50 uppercase">{label}</span>
     </div>
   )
 }
