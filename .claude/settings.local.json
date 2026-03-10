@@ -23,7 +23,15 @@
       "Bash(grep -oP '\\(?:vertex|fragment|vert|frag\\).*?=.*?`[^`]*`' /tmp/qh-background.js)",
       "Bash(tr ';' '\\\\n')",
       "Bash(grep -o 'const ci=`[^`]*`')",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(for commit:*)",
+      "WebFetch(domain:codepen.io)",
+      "WebFetch(domain:devicescss.xyz)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:marvelapp.github.io)",
+      "WebFetch(domain:ulisesmolina.vercel.app)"
     ],
     "additionalDirectories": [
       "\\tmp"

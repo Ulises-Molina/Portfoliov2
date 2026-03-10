@@ -9,6 +9,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { WarpedGrid } from "@/components/warped-grid"
+import { LoadingScreen } from "@/components/loading-screen"
 
 const ACCENT = "165, 80%, 48%"
 const ac = (a = 1) => `hsl(${ACCENT} / ${a})`
@@ -172,12 +173,25 @@ function TechMarquee() {
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
   const projectsRef = useRef<HTMLDivElement>(null)
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeProject, setActiveProject] = useState(0)
   const prefersReducedMotion = useReducedMotion()
   const [mounted, setMounted] = useState(false)
   const [activeNav, setActiveNav] = useState("hero")
   const [navVisible, setNavVisible] = useState(false)
   const [time, setTime] = useState("")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!loading) return
+    const prevent = (e: Event) => e.preventDefault()
+    window.addEventListener("wheel", prevent, { passive: false })
+    window.addEventListener("touchmove", prevent, { passive: false })
+    return () => {
+      window.removeEventListener("wheel", prevent)
+      window.removeEventListener("touchmove", prevent)
+    }
+  }, [loading])
 
   useEffect(() => {
     setMounted(true)
@@ -199,7 +213,24 @@ export default function Home() {
   }, [mounted])
 
   useGSAP(() => {
-    if (prefersReducedMotion || !mounted) return
+    if (!mounted) return
+
+    // Pre-set hero elements to their initial (hidden) state immediately on mount.
+    // This ensures they're invisible while the loader iris is closing, preventing
+    // the flash of fully-visible content before GSAP animates them in.
+    gsap.set(".hero-line", { y: "110%", rotateX: -20 })
+    gsap.set(".hero-meta", { opacity: 0, y: 20 })
+    gsap.set(".hero-cta-btn", { opacity: 0, scale: 0.9 })
+
+    if (loading) return // Stay hidden while loader is active
+
+    if (prefersReducedMotion) {
+      // Skip animations — immediately reveal content
+      gsap.set(".hero-line", { y: "0%", rotateX: 0 })
+      gsap.set(".hero-meta", { opacity: 1, y: 0 })
+      gsap.set(".hero-cta-btn", { opacity: 1, scale: 1 })
+      return
+    }
 
     // Hero
     const tl = gsap.timeline({ delay: 0.2 })
@@ -222,15 +253,45 @@ export default function Home() {
     // 3D Carousel projects
     if (projectsRef.current) {
       const count = PROJECTS.length
+
+      // Shared function: set a card's 3D state based on its continuous offset from center
+      const setCardState = (card: HTMLDivElement, offset: number) => {
+        const abs = Math.abs(offset)
+        // Opacity: quadratic falloff, stays high near center
+        const tOp        = Math.min(abs / 2.5, 1)
+        const opacity    = Math.max(0, 1 - tOp * tOp)
+        const rotateY    = Math.max(-28, Math.min(28, offset * 16))
+        const scale      = Math.max(0.80, 1 - abs * 0.085)
+        // Brightness/saturate: always applied as a continuous function (no hard threshold → no jump)
+        const tBr        = Math.min(abs / 2.0, 1)
+        const brightness = Math.max(0.15, 1 - tBr * tBr * 0.85)
+        const saturate   = Math.max(0.25, 1 - tBr * tBr * 0.75)
+        const filter     = `brightness(${brightness.toFixed(3)}) saturate(${saturate.toFixed(3)})`
+        gsap.set(card, {
+          xPercent: offset * 155 - 50,
+          yPercent: -50,
+          rotateY,
+          scale,
+          opacity,
+          zIndex: PROJECTS.length - Math.round(abs),
+          pointerEvents: abs < 0.5 ? "auto" : "none",
+          filter,
+        })
+      }
+
+      // Initialize card positions
+      cardRefs.current.forEach((card, i) => { if (card) setCardState(card, i) })
+
       ScrollTrigger.create({
         trigger: projectsRef.current,
         start: "top top",
-        end: () => `+=${count * 200}vh`,
+        end: () => `+=${count * 350}vh`,
         pin: true,
-        scrub: 1,
+        scrub: 2.5,
         onUpdate: (self) => {
-          const idx = Math.min(Math.round(self.progress * (count - 1)), count - 1)
-          setActiveProject(idx)
+          const raw = self.progress * (count - 1)
+          setActiveProject(Math.min(Math.round(raw), count - 1))
+          cardRefs.current.forEach((card, i) => { if (card) setCardState(card, i - raw) })
         },
       })
     }
@@ -245,7 +306,7 @@ export default function Home() {
     gsap.utils.toArray<HTMLElement>(".contact-row").forEach((el, i) => {
       gsap.fromTo(el, { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.2 + i * 0.07, ease: "power2.out", scrollTrigger: { trigger: ".contact-section", start: "top 60%" } })
     })
-  }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted] })
+  }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted, loading] })
 
   const scrollTo = useCallback((id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }) }, [])
 
@@ -253,6 +314,7 @@ export default function Home() {
 
   return (
     <SmoothScroll>
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
       <div ref={containerRef} className="relative">
         <WarpedGrid />
         <MagneticCursor />
@@ -428,132 +490,211 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ PROJECTS — 3D Carousel ═══ */}
+        {/* ═══ PROJECTS — horizontal carousel, info panel left ═══ */}
         <section id="projects" data-section="projects" ref={projectsRef} className="relative z-10 h-screen overflow-hidden">
-          <div className="h-full flex flex-col justify-center items-center px-6">
-            {/* Header */}
-            <div className="absolute top-10 left-6 md:left-10 lg:left-20 z-20">
-              <SectionHeader index="03" label="Proyectos" />
-            </div>
 
-            {/* Counter */}
-            <div className="absolute top-10 right-6 md:right-10 lg:right-20 z-20 font-mono text-sm tracking-widest">
-              <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
-              <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
-            </div>
+          {/* Horizontal carousel — anchor at 65% from left, slides behind info panel */}
+          <div className="absolute top-1/2 -translate-y-1/2" style={{ left: "63%", perspective: "1400px" }}>
+            {PROJECTS.map((p, i) => {
+              const isActive = i === activeProject
+              return (
+                <div
+                  key={i}
+                  ref={(el) => { cardRefs.current[i] = el }}
+                  className="absolute top-1/2"
+                  style={{
+                    width: "min(52vw, 680px)",
+                    left: "50%",
+                  }}
+                >
+                  {/* ── MacBook Pro mockup ── */}
+                  <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                    className="magnetic block relative w-full group/proj select-none">
 
-            {/* 3D Carousel container */}
-            <div className="relative w-full max-w-[850px] mx-auto" style={{ perspective: "1200px", perspectiveOrigin: "50% 45%" }}>
-              <div className="relative" style={{ height: "clamp(340px, 50vh, 520px)", transformStyle: "preserve-3d" }}>
-                {PROJECTS.map((p, i) => {
-                  const offset = i - activeProject
-                  const isActive = offset === 0
-                  const absOffset = Math.abs(offset)
-                  const sign = offset > 0 ? 1 : -1
+                    {/*
+                      Layout: screen is 84% of card width (centered via 8% padding each side).
+                      Keyboard is 100% of card width → ratio 100/84 ≈ 1.19 (same as original).
+                      Nothing overflows the card div, so rotateY from GSAP applies uniformly
+                      to both screen and keyboard — no broken 3D effect.
+                    */}
 
-                  return (
-                    <div
-                      key={i}
-                      className="absolute inset-0 transition-all duration-[900ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
-                      style={{
-                        transformStyle: "preserve-3d",
-                        transform: isActive
-                          ? "translateX(0) translateZ(0) rotateY(0deg)"
-                          : `translateX(${sign * (55 + absOffset * 20)}%) translateZ(${-absOffset * 350}px) rotateY(${offset * -45}deg)`,
-                        opacity: absOffset > 2 ? 0 : absOffset > 1 ? 0.1 : isActive ? 1 : 0.45,
-                        zIndex: PROJECTS.length - absOffset,
-                        pointerEvents: isActive ? "auto" : "none",
-                        filter: isActive ? "none" : `brightness(0.3) saturate(0.3)`,
-                      }}
-                    >
-                      {/* Card — screen-like with shadow */}
-                      <div className="h-full flex flex-col gap-5 justify-center">
-                        {/* Video/Image — wide 16:9, screen mockup feel */}
-                        <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                          className="magnetic block relative overflow-hidden rounded-xl w-full"
-                          style={{
-                            boxShadow: isActive
-                              ? "0 25px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)"
-                              : "0 15px 40px -10px rgba(0,0,0,0.4)",
-                          }}>
-                          <div className="aspect-[16/9] bg-black/40 overflow-hidden rounded-xl">
-                            <video
-                              autoPlay={isActive} muted loop playsInline poster={p.screenshot}
-                              className={`w-full h-full object-cover transition-all duration-700 ${isActive ? "opacity-90 scale-100" : "opacity-50 scale-[0.98]"}`}
-                              ref={(el) => {
-                                if (el) { isActive ? el.play().catch(() => {}) : el.pause() }
-                              }}
-                            >
-                              <source src={p.video} type="video/mp4" />
-                            </video>
-                          </div>
+                    {/* Screen wrapper — 8% padding each side keeps screen at 84% width */}
+                    <div style={{ padding: "0 8%" }}>
+                      <div style={{
+                        position: "relative",
+                        width: "100%",
+                        aspectRatio: "63/39",
+                        borderRadius: "14px",
+                        background: "#0d0d0d",
+                        boxShadow: `inset 0 0 0 2px #c8cacb, inset 0 0 0 13px #0d0d0d, ${isActive ? "0 28px 65px rgba(0,0,0,0.85)" : "0 10px 30px rgba(0,0,0,0.5)"}`,
+                        padding: "2% 2% 4.2%",
+                        display: "flex",
+                        alignItems: "stretch",
+                      }}>
+                        {/* Notch */}
+                        <div style={{
+                          position: "absolute",
+                          top: "2%", left: "50%",
+                          transform: "translateX(-50%)",
+                          width: "16%", height: "3.2%",
+                          borderRadius: "0 0 6px 6px",
+                          background: "#0d0d0d",
+                          zIndex: 20,
+                        }} />
+
+                        {/* Screen content */}
+                        <div style={{ position: "relative", width: "100%", borderRadius: "4px", overflow: "hidden", background: "#000" }}>
+                          <video
+                            autoPlay={isActive} muted loop playsInline poster={p.screenshot}
+                            className="w-full h-full object-cover"
+                            ref={(el) => { if (el) { isActive ? el.play().catch(() => {}) : el.pause() } }}
+                          >
+                            <source src={p.video} type="video/mp4" />
+                          </video>
+
+                          {/* Glass glare */}
+                          <div style={{
+                            position: "absolute", inset: 0, pointerEvents: "none",
+                            background: "linear-gradient(130deg, rgba(255,255,255,0.05) 0%, transparent 40%)",
+                          }} />
+
                           {/* Hover overlay */}
                           {isActive && (
-                            <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-500 flex items-center justify-center group/link">
-                              <span className="opacity-0 group-hover/link:opacity-100 transition-opacity duration-500 text-white text-xs font-mono tracking-widest uppercase flex items-center gap-2">
+                            <div className="absolute inset-0 bg-black/0 group-hover/proj:bg-black/30 transition-colors duration-500 flex items-center justify-center" style={{ zIndex: 10 }}>
+                              <span className="opacity-0 group-hover/proj:opacity-100 transition-opacity duration-500 text-white text-xs font-mono tracking-widest uppercase flex items-center gap-2">
                                 Ver proyecto <ExternalLink className="w-3.5 h-3.5" />
                               </span>
                             </div>
                           )}
-                        </Link>
-
-                        {/* Info panel — below video, horizontal layout */}
-                        <div className={`w-full transition-all duration-700 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-                          <div className="flex items-start justify-between gap-6">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-3 mb-1">
-                                <h3 className="text-xl md:text-2xl font-bold text-white">{p.title}</h3>
-                                <span className="font-mono text-[10px] tracking-wider text-white/20 uppercase">{p.subtitle}</span>
-                              </div>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                {p.technologies.map((t) => (
-                                  <span key={t} className="font-mono text-[9px] tracking-wider text-white/20">{t}</span>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="flex gap-3 shrink-0">
-                              <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                                className="magnetic inline-flex items-center gap-1.5 px-5 py-2.5 font-semibold text-xs rounded-full text-[hsl(220,15%,5%)] hover:scale-105 transition-transform"
-                                style={{ backgroundColor: ac() }}>
-                                Demo <ExternalLink className="w-3 h-3" />
-                              </Link>
-                              {!p.isPrivate && p.repoUrl ? (
-                                <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
-                                  className="magnetic inline-flex items-center gap-1.5 px-5 py-2.5 border border-white/10 text-white/50 font-medium text-xs rounded-full hover:border-white/20 hover:text-white transition-all">
-                                  Código <Code className="w-3 h-3" />
-                                </Link>
-                              ) : p.isPrivate ? (
-                                <span className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-white/[0.04] text-white/15 text-xs rounded-full">
-                                  <Code className="w-3 h-3" /> Privado
-                                </span>
-                              ) : null}
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
-                  )
-                })}
+
+                    {/* Keyboard base — 100% of card = ~119% of screen, no overflow */}
+                    <div style={{
+                      position: "relative",
+                      zIndex: 10,
+                      width: "100%",
+                      marginTop: "-1.2%",
+                      height: "26px",
+                      borderRadius: "0 0 10px 10px",
+                      border: "1px solid #a0a3a7",
+                      borderTop: "none",
+                      background: "radial-gradient(ellipse at center, #e8e8ea 60%, #b0b2b4 100%)",
+                    }} />
+                  </Link>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Left info panel — gradient, fades top/bottom, cards pass behind */}
+          <div className="absolute left-0 top-0 h-full w-[46%] z-20 hidden lg:flex flex-col justify-center pl-44 xl:pl-52 pr-12"
+            style={{
+              background: "linear-gradient(to right, rgba(4,6,10,0.96) 40%, rgba(4,6,10,0.65) 70%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+              maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+            }}>
+
+            {/* Section header — fixed at top of panel */}
+            <div className="absolute top-32 flex items-center gap-3">
+              <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>03</span>
+              <div className="h-[1px] w-12 bg-white/[0.06]" />
+              <span className="font-mono text-base tracking-[0.25em] text-white/50 uppercase text-4xl">Proyectos</span>
+            </div>
+
+            {/* Project info */}
+            <div className="relative z-10 mt-14">
+              {/* Active project info — animated */}
+              <div className="relative">
+                {PROJECTS.map((p, i) => (
+                  <div key={i} className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${i === activeProject ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 absolute inset-0 pointer-events-none"}`}>
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
+                      <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
+                    </div>
+                    <h3 className="text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
+                    <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm">{p.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {p.technologies.map((t) => (
+                        <span key={t} className="font-mono px-3 py-1 text-[11px] tracking-wider border border-white/[0.15] rounded text-white/60" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>{t}</span>
+                      ))}
+                    </div>
+                    <div className="flex flex-row items-center gap-3 pt-8">
+                      <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                        className="magnetic inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm rounded-full hover:scale-105 transition-transform border border-white/20 text-white/70 bg-transparent hover:border-white/40 hover:text-white">
+                        Demo <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                      {!p.isPrivate && p.repoUrl ? (
+                        <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
+                          className="magnetic inline-flex items-center gap-2 px-6 py-3 border border-[hsl(165_80%_48%)] text-[hsl(165_80%_48%)] font-medium text-sm rounded-full transition-all hover:scale-105">
+                          Código <Code className="w-3.5 h-3.5" />
+                        </Link>
+                      ) : p.isPrivate ? (
+                        <span className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/30 text-sm rounded-full">
+                          <Code className="w-3.5 h-3.5" /> Privado
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
 
-            {/* Dot indicators */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-              {PROJECTS.map((_, i) => (
-                <button key={i} className="w-2 h-2 rounded-full transition-all duration-500"
-                  style={{
-                    backgroundColor: i === activeProject ? ac() : "rgba(255,255,255,0.15)",
-                    transform: i === activeProject ? "scale(1.4)" : "scale(1)",
-                  }}
-                  aria-label={`Proyecto ${i + 1}`}
-                />
-              ))}
-            </div>
+              {/* Counter */}
+              <div className="mt-12 font-mono text-sm tracking-widest">
+                <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
+                <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
+              </div>
 
-            {/* Scroll hint */}
-            <div className="absolute bottom-10 right-6 md:right-10 font-mono text-[10px] tracking-wider text-white/20 z-20">
-              SCROLL ↓
+              {/* Dot indicators */}
+              <div className="flex gap-3 mt-6">
+                {PROJECTS.map((_, i) => (
+                  <button key={i} className="w-2 h-2 rounded-full transition-all duration-500"
+                    style={{
+                      backgroundColor: i === activeProject ? "hsl(165 80% 48%)" : "rgba(255,255,255,0.15)",
+                      transform: i === activeProject ? "scale(1.4)" : "scale(1)",
+                    }}
+                    aria-label={`Proyecto ${i + 1}`}
+                  />
+                ))}
+              </div>
+
             </div>
+          </div>
+
+
+          {/* Mobile — info overlay at bottom */}
+          <div className="lg:hidden absolute bottom-0 left-0 right-0 z-20 px-6 pb-10 pt-8"
+            style={{ background: "linear-gradient(to top, rgba(4,6,10,0.97) 60%, transparent 100%)" }}>
+            {PROJECTS.map((p, i) => (
+              <div key={i} className={`transition-all duration-500 ${i === activeProject ? "opacity-100" : "opacity-0 absolute inset-0 pointer-events-none"}`}>
+                <h3 className="text-lg font-bold text-white mb-1">{p.title}
+                  <span className="ml-2 font-mono text-[10px] tracking-wider text-white/25 uppercase">{p.subtitle}</span>
+                </h3>
+                <p className="text-white/40 text-xs mb-3 line-clamp-2">{p.description}</p>
+                <div className="flex gap-2">
+                  <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 font-semibold text-xs rounded-full text-[hsl(220,15%,5%)]"
+                    style={{ backgroundColor: ac() }}>
+                    Demo <ExternalLink className="w-3 h-3" />
+                  </Link>
+                  {!p.isPrivate && p.repoUrl && (
+                    <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 border border-white/10 text-white/50 text-xs rounded-full">
+                      Código <Code className="w-3 h-3" />
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Scroll hint */}
+          <div className="absolute bottom-8 right-6 md:right-10 font-mono text-[10px] tracking-wider text-white/20 z-30 hidden lg:block">
+            SCROLL ↓
           </div>
         </section>
 
