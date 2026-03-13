@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ReactLenis, useLenis } from 'lenis/react'
 
 function LenisController({ stopped }: { stopped: boolean }) {
@@ -13,6 +13,14 @@ function LenisController({ stopped }: { stopped: boolean }) {
 }
 
 export function SmoothScroll({ children, stopped }: { children: React.ReactNode; stopped?: boolean }) {
+  const [isTouch, setIsTouch] = useState(false)
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(hover: none) and (pointer: coarse)").matches)
+  }, [])
+
+  if (isTouch) return <>{children}</>
+
   return (
     <ReactLenis
       root

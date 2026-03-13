@@ -190,9 +190,11 @@ export default function Home() {
   const [navVisible, setNavVisible] = useState(false)
   const [time, setTime] = useState("")
   const [loading, setLoading] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    setIsMobile(window.innerWidth < 1024)
     const tick = () => setTime(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }))
     tick(); const id = setInterval(tick, 60000); return () => clearInterval(id)
   }, [])
@@ -248,8 +250,8 @@ export default function Home() {
       gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } })
     })
 
-    // 3D Carousel projects
-    if (projectsRef.current) {
+    // 3D Carousel projects — desktop only
+    if (projectsRef.current && window.innerWidth >= 1024) {
       const count = PROJECTS.length
 
       // Shared function: set a card's 3D state based on its continuous offset from center
@@ -312,6 +314,7 @@ export default function Home() {
 
   return (
     <SmoothScroll stopped={loading}>
+      {loading && <div className="fixed inset-0 z-[9999] bg-[hsl(220_15%_4%)]" />}
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
 
       <div ref={containerRef} className="relative">
@@ -371,9 +374,9 @@ export default function Home() {
 
           {/* Bokeh atmosférico */}
           <div className="absolute inset-0 pointer-events-none z-0">
-            <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] rounded-full opacity-[0.07] blur-[120px]" style={{ backgroundColor: ac() }} />
-            <div className="absolute bottom-[15%] right-[15%] w-[350px] h-[350px] rounded-full opacity-[0.05] blur-[100px] bg-white" />
-            <div className="absolute top-[50%] left-[50%] w-[250px] h-[250px] rounded-full opacity-[0.04] blur-[80px]" style={{ backgroundColor: ac() }} />
+            <div className="absolute top-[20%] left-[10%] w-[200px] h-[200px] md:w-[500px] md:h-[500px] rounded-full opacity-[0.07] blur-[80px] md:blur-[120px]" style={{ backgroundColor: ac() }} />
+            <div className="absolute bottom-[15%] right-[15%] w-[150px] h-[150px] md:w-[350px] md:h-[350px] rounded-full opacity-[0.05] blur-[60px] md:blur-[100px] bg-white" />
+            <div className="absolute top-[50%] left-[50%] w-[100px] h-[100px] md:w-[250px] md:h-[250px] rounded-full opacity-[0.04] blur-[50px] md:blur-[80px]" style={{ backgroundColor: ac() }} />
           </div>
 
           <div className="hero-content relative z-10 w-full px-6 md:px-10 lg:px-20">
@@ -439,7 +442,7 @@ export default function Home() {
         </section>
 
         {/* ═══ ABOUT — editorial, sin cards ═══ */}
-        <section id="about" data-section="about" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+        <section id="about" data-section="about" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
           <div className="max-w-6xl mx-auto">
             <SectionHeader index="01" label="Sobre mí" />
 
@@ -484,7 +487,7 @@ export default function Home() {
         </section>
 
         {/* ═══ EXPERIENCE — timeline ═══ */}
-        <section id="experience" data-section="experience" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+        <section id="experience" data-section="experience" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
           <div className="max-w-5xl mx-auto">
             <SectionHeader index="02" label="Experiencia" />
             <div className="space-y-10">
@@ -520,217 +523,223 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ PROJECTS — horizontal carousel, info panel left ═══ */}
-        <section id="projects" data-section="projects" ref={projectsRef} className="relative z-10 h-screen overflow-hidden">
-
-          {/* Horizontal carousel — anchor at 65% from left, slides behind info panel */}
-          <div className="absolute top-1/2 -translate-y-1/2" style={{ left: "63%", perspective: "1400px" }}>
-            {PROJECTS.map((p, i) => {
-              const isActive = i === activeProject
-              return (
-                <div
-                  key={i}
-                  ref={(el) => { cardRefs.current[i] = el }}
-                  className="absolute top-1/2"
-                  style={{
-                    width: "min(52vw, 680px)",
-                    left: "50%",
-                  }}
-                >
-                  {/* ── MacBook Pro mockup ── */}
-                  <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                    className="magnetic block relative w-full group/proj select-none">
-
-                    {/*
-                      Layout: screen is 84% of card width (centered via 8% padding each side).
-                      Keyboard is 100% of card width → ratio 100/84 ≈ 1.19 (same as original).
-                      Nothing overflows the card div, so rotateY from GSAP applies uniformly
-                      to both screen and keyboard — no broken 3D effect.
-                    */}
-
-                    {/* Screen wrapper — 8% padding each side keeps screen at 84% width */}
-                    <div style={{ padding: "0 8%" }}>
-                      <div style={{
-                        position: "relative",
-                        width: "100%",
-                        aspectRatio: "63/39",
-                        borderRadius: "14px",
-                        background: "#0d0d0d",
-                        boxShadow: `inset 0 0 0 2px #c8cacb, inset 0 0 0 13px #0d0d0d, ${isActive ? "0 28px 65px rgba(0,0,0,0.85)" : "0 10px 30px rgba(0,0,0,0.5)"}`,
-                        padding: "2% 2% 4.2%",
-                        display: "flex",
-                        alignItems: "stretch",
-                      }}>
-                        {/* Notch */}
-                        <div style={{
-                          position: "absolute",
-                          top: "2%", left: "50%",
-                          transform: "translateX(-50%)",
-                          width: "16%", height: "3.2%",
-                          borderRadius: "0 0 6px 6px",
-                          background: "#0d0d0d",
-                          zIndex: 20,
-                        }} />
-
-                        {/* Screen content */}
-                        <div style={{ position: "relative", width: "100%", borderRadius: "4px", overflow: "hidden", background: "#000" }}>
-                          <video
-                            autoPlay={isActive} muted loop playsInline poster={p.screenshot}
-                            preload={isActive ? "auto" : "none"}
-                            className="w-full h-full object-cover"
-                            ref={(el) => { if (el) { isActive ? el.play().catch(() => {}) : el.pause() } }}
-                          >
-                            <source src={p.video} type="video/mp4" />
-                          </video>
-
-                          {/* Glass glare */}
-                          <div style={{
-                            position: "absolute", inset: 0, pointerEvents: "none",
-                            background: "linear-gradient(130deg, rgba(255,255,255,0.05) 0%, transparent 40%)",
-                          }} />
-
-                          {/* Hover overlay */}
-                          {isActive && (
-                            <div className="absolute inset-0 bg-black/0 group-hover/proj:bg-black/30 transition-colors duration-500 flex items-center justify-center" style={{ zIndex: 10 }}>
-                              <span className="opacity-0 group-hover/proj:opacity-100 transition-opacity duration-500 text-white text-xs font-mono tracking-widest uppercase flex items-center gap-2">
-                                Ver proyecto <ExternalLink className="w-3.5 h-3.5" />
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Keyboard base — 100% of card = ~119% of screen, no overflow */}
-                    <div style={{
-                      position: "relative",
-                      zIndex: 10,
-                      width: "100%",
-                      marginTop: "-1.2%",
-                      height: "26px",
-                      borderRadius: "0 0 10px 10px",
-                      border: "1px solid #a0a3a7",
-                      borderTop: "none",
-                      background: "radial-gradient(ellipse at center, #e8e8ea 60%, #b0b2b4 100%)",
-                    }} />
-                  </Link>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Left info panel — gradient, fades top/bottom, cards pass behind */}
-          <div className="absolute left-0 top-0 h-full w-[46%] z-20 hidden lg:flex flex-col justify-center pl-44 xl:pl-52 pr-12"
-            style={{
-              background: "linear-gradient(to right, rgba(4,6,10,0.96) 40%, rgba(4,6,10,0.65) 70%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
-              maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
-            }}>
-
-            {/* Section header — fixed at top of panel */}
-            <div className="absolute top-32 flex items-center gap-3">
-              <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>03</span>
-              <div className="h-[1px] w-12 bg-white/[0.18]" />
-              <span className="font-mono text-xl md:text-2xl tracking-[0.25em] text-white/50 uppercase">Proyectos</span>
-            </div>
-
-            {/* Project info */}
-            <div className="relative z-10 mt-14">
-              {/* Active project info — animated */}
-              <div className="relative">
+        {/* ═══ PROJECTS ═══ */}
+        {isMobile ? (
+          /* ─── Mobile: vertical cards ─── */
+          <section id="projects" data-section="projects" className="relative z-10 py-16 px-6">
+            <div className="max-w-lg mx-auto">
+              <SectionHeader index="03" label="Proyectos" />
+              <div className="space-y-16">
                 {PROJECTS.map((p, i) => (
-                  <div key={i} className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${i === activeProject ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 absolute inset-0 pointer-events-none"}`}>
-                    <div className="flex items-center gap-3 mb-5">
-                      <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
-                      <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
+                  <div key={i}>
+                    <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                      className="block relative rounded-2xl overflow-hidden border border-white/[0.08] mb-6"
+                      style={{ aspectRatio: "16/10" }}>
+                      <video autoPlay muted loop playsInline poster={p.screenshot} className="w-full h-full object-cover">
+                        <source src={p.video} type="video/mp4" />
+                      </video>
+                      <div className="absolute inset-0 pointer-events-none"
+                        style={{ background: "linear-gradient(130deg, rgba(255,255,255,0.04) 0%, transparent 40%)" }} />
+                    </Link>
+
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-mono text-[10px] tracking-[0.3em]" style={{ color: ac() }}>{String(i + 1).padStart(2, "0")}</span>
+                      <div className="h-px w-4" style={{ backgroundColor: ac(0.3) }} />
+                      <span className="font-mono text-[10px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
                     </div>
-                    <h3 className="text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
-                    <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm">{p.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <h3 className="text-2xl font-bold text-white mb-2">{p.title}</h3>
+                    <p className="text-white/55 text-sm leading-relaxed mb-4">{p.description}</p>
+                    <div className="flex flex-wrap gap-1.5 mb-5">
                       {p.technologies.map((t) => (
-                        <span key={t} className="font-mono px-3 py-1 text-[11px] tracking-wider border border-white/[0.15] rounded text-white/60" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>{t}</span>
+                        <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
                       ))}
                     </div>
-                    <div className="flex flex-row items-center gap-3 pt-8">
+                    <div className="flex gap-2">
                       <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                        className="magnetic inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm rounded-full hover:scale-105 transition-transform border border-white/20 text-white/70 bg-transparent hover:border-white/40 hover:text-white">
-                        Demo <ExternalLink className="w-3.5 h-3.5" />
+                        className="inline-flex items-center gap-2 px-5 py-2.5 font-semibold text-xs rounded-full text-white/70 border border-white/20 transition-all">
+                        Demo <ExternalLink className="w-3 h-3" />
                       </Link>
                       {!p.isPrivate && p.repoUrl ? (
                         <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
-                          className="magnetic inline-flex items-center gap-2 px-6 py-3 border border-[hsl(165_80%_48%)] text-[hsl(165_80%_48%)] font-medium text-sm rounded-full transition-all hover:scale-105">
-                          Código <Code className="w-3.5 h-3.5" />
+                          className="inline-flex items-center gap-2 px-5 py-2.5 border border-[hsl(165_80%_48%)] text-[hsl(165_80%_48%)] font-medium text-xs rounded-full transition-all">
+                          Código <Code className="w-3 h-3" />
                         </Link>
                       ) : p.isPrivate ? (
-                        <span className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/30 text-sm rounded-full">
-                          <Code className="w-3.5 h-3.5" /> Privado
+                        <span className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/10 text-white/30 text-xs rounded-full">
+                          <Code className="w-3 h-3" /> Privado
                         </span>
                       ) : null}
                     </div>
                   </div>
                 ))}
               </div>
-
-              {/* Counter */}
-              <div className="mt-12 font-mono text-sm tracking-widest">
-                <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
-                <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
-              </div>
-
-              {/* Dot indicators */}
-              <div className="flex gap-3 mt-6">
-                {PROJECTS.map((_, i) => (
-                  <button key={i} className="w-2 h-2 rounded-full transition-all duration-500"
-                    style={{
-                      backgroundColor: i === activeProject ? "hsl(165 80% 48%)" : "rgba(255,255,255,0.15)",
-                      transform: i === activeProject ? "scale(1.4)" : "scale(1)",
-                    }}
-                    aria-label={`Proyecto ${i + 1}`}
-                  />
-                ))}
-              </div>
-
             </div>
-          </div>
+          </section>
+        ) : (
+          /* ─── Desktop: horizontal 3D carousel ─── */
+          <section id="projects" data-section="projects" ref={projectsRef} className="relative z-10 h-screen overflow-hidden">
 
+            {/* Horizontal carousel — anchor at 65% from left, slides behind info panel */}
+            <div className="absolute top-1/2 -translate-y-1/2" style={{ left: "63%", perspective: "1400px" }}>
+              {PROJECTS.map((p, i) => {
+                const isActive = i === activeProject
+                return (
+                  <div
+                    key={i}
+                    ref={(el) => { cardRefs.current[i] = el }}
+                    className="absolute top-1/2"
+                    style={{
+                      width: "min(52vw, 680px)",
+                      left: "50%",
+                    }}
+                  >
+                    <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                      className="magnetic block relative w-full group/proj select-none">
 
-          {/* Mobile — info overlay at bottom */}
-          <div className="lg:hidden absolute bottom-0 left-0 right-0 z-20 px-6 pb-10 pt-8"
-            style={{ background: "linear-gradient(to top, rgba(4,6,10,0.97) 60%, transparent 100%)" }}>
-            {PROJECTS.map((p, i) => (
-              <div key={i} className={`transition-all duration-500 ${i === activeProject ? "opacity-100" : "opacity-0 absolute inset-0 pointer-events-none"}`}>
-                <h3 className="text-lg font-bold text-white mb-1">{p.title}
-                  <span className="ml-2 font-mono text-[10px] tracking-wider text-white/25 uppercase">{p.subtitle}</span>
-                </h3>
-                <p className="text-white/40 text-xs mb-3 line-clamp-2">{p.description}</p>
-                <div className="flex gap-2">
-                  <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 font-semibold text-xs rounded-full text-[hsl(220,15%,5%)]"
-                    style={{ backgroundColor: ac() }}>
-                    Demo <ExternalLink className="w-3 h-3" />
-                  </Link>
-                  {!p.isPrivate && p.repoUrl && (
-                    <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 border border-white/10 text-white/50 text-xs rounded-full">
-                      Código <Code className="w-3 h-3" />
+                      <div style={{ padding: "0 8%" }}>
+                        <div style={{
+                          position: "relative",
+                          width: "100%",
+                          aspectRatio: "63/39",
+                          borderRadius: "14px",
+                          background: "#0d0d0d",
+                          boxShadow: `inset 0 0 0 2px #c8cacb, inset 0 0 0 13px #0d0d0d, ${isActive ? "0 28px 65px rgba(0,0,0,0.85)" : "0 10px 30px rgba(0,0,0,0.5)"}`,
+                          padding: "2% 2% 4.2%",
+                          display: "flex",
+                          alignItems: "stretch",
+                        }}>
+                          <div style={{
+                            position: "absolute",
+                            top: "2%", left: "50%",
+                            transform: "translateX(-50%)",
+                            width: "16%", height: "3.2%",
+                            borderRadius: "0 0 6px 6px",
+                            background: "#0d0d0d",
+                            zIndex: 20,
+                          }} />
+
+                          <div style={{ position: "relative", width: "100%", borderRadius: "4px", overflow: "hidden", background: "#000" }}>
+                            <video
+                              autoPlay={isActive} muted loop playsInline poster={p.screenshot}
+                              preload={isActive ? "auto" : "none"}
+                              className="w-full h-full object-cover"
+                              ref={(el) => { if (el) { isActive ? el.play().catch(() => {}) : el.pause() } }}
+                            >
+                              <source src={p.video} type="video/mp4" />
+                            </video>
+
+                            <div style={{
+                              position: "absolute", inset: 0, pointerEvents: "none",
+                              background: "linear-gradient(130deg, rgba(255,255,255,0.05) 0%, transparent 40%)",
+                            }} />
+
+                            {isActive && (
+                              <div className="absolute inset-0 bg-black/0 group-hover/proj:bg-black/30 transition-colors duration-500 flex items-center justify-center" style={{ zIndex: 10 }}>
+                                <span className="opacity-0 group-hover/proj:opacity-100 transition-opacity duration-500 text-white text-xs font-mono tracking-widest uppercase flex items-center gap-2">
+                                  Ver proyecto <ExternalLink className="w-3.5 h-3.5" />
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{
+                        position: "relative",
+                        zIndex: 10,
+                        width: "100%",
+                        marginTop: "-1.2%",
+                        height: "26px",
+                        borderRadius: "0 0 10px 10px",
+                        border: "1px solid #a0a3a7",
+                        borderTop: "none",
+                        background: "radial-gradient(ellipse at center, #e8e8ea 60%, #b0b2b4 100%)",
+                      }} />
                     </Link>
-                  )}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Left info panel */}
+            <div className="absolute left-0 top-0 h-full w-[46%] z-20 hidden lg:flex flex-col justify-center pl-44 xl:pl-52 pr-12"
+              style={{
+                background: "linear-gradient(to right, rgba(4,6,10,0.96) 40%, rgba(4,6,10,0.65) 70%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+                maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+              }}>
+
+              <div className="absolute top-32 flex items-center gap-3">
+                <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>03</span>
+                <div className="h-[1px] w-12 bg-white/[0.18]" />
+                <span className="font-mono text-xl md:text-2xl tracking-[0.25em] text-white/50 uppercase">Proyectos</span>
+              </div>
+
+              <div className="relative z-10 mt-14">
+                <div className="relative">
+                  {PROJECTS.map((p, i) => (
+                    <div key={i} className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${i === activeProject ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 absolute inset-0 pointer-events-none"}`}>
+                      <div className="flex items-center gap-3 mb-5">
+                        <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
+                        <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
+                      </div>
+                      <h3 className="text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
+                      <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm">{p.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {p.technologies.map((t) => (
+                          <span key={t} className="font-mono px-3 py-1 text-[11px] tracking-wider border border-white/[0.15] rounded text-white/60" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>{t}</span>
+                        ))}
+                      </div>
+                      <div className="flex flex-row items-center gap-3 pt-8">
+                        <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
+                          className="magnetic inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm rounded-full hover:scale-105 transition-transform border border-white/20 text-white/70 bg-transparent hover:border-white/40 hover:text-white">
+                          Demo <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                        {!p.isPrivate && p.repoUrl ? (
+                          <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
+                            className="magnetic inline-flex items-center gap-2 px-6 py-3 border border-[hsl(165_80%_48%)] text-[hsl(165_80%_48%)] font-medium text-sm rounded-full transition-all hover:scale-105">
+                            Código <Code className="w-3.5 h-3.5" />
+                          </Link>
+                        ) : p.isPrivate ? (
+                          <span className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/30 text-sm rounded-full">
+                            <Code className="w-3.5 h-3.5" /> Privado
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-12 font-mono text-sm tracking-widest">
+                  <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
+                  <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  {PROJECTS.map((_, i) => (
+                    <button key={i} className="w-2 h-2 rounded-full transition-all duration-500"
+                      style={{
+                        backgroundColor: i === activeProject ? "hsl(165 80% 48%)" : "rgba(255,255,255,0.15)",
+                        transform: i === activeProject ? "scale(1.4)" : "scale(1)",
+                      }}
+                      aria-label={`Proyecto ${i + 1}`}
+                    />
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
 
-          {/* Scroll hint */}
-          <div className="absolute bottom-8 right-6 md:right-10 font-mono text-[10px] tracking-wider text-white/20 z-30 hidden lg:block">
-            SCROLL ↓
-          </div>
-        </section>
+            <div className="absolute bottom-8 right-6 md:right-10 font-mono text-[10px] tracking-wider text-white/20 z-30 hidden lg:block">
+              SCROLL ↓
+            </div>
+          </section>
+        )}
 
         {/* ═══ CERTIFICATIONS ═══ */}
-        <section id="certifications" data-section="certifications" className="relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20">
+        <section id="certifications" data-section="certifications" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
           <div className="max-w-5xl mx-auto">
             <SectionHeader index="04" label="Certificaciones" />
             <div>
@@ -753,7 +762,7 @@ export default function Home() {
         </section>
 
         {/* ═══ CONTACT ═══ */}
-        <section id="contact" data-section="contact" className="contact-section relative z-10 py-32 md:py-44 px-6 md:px-10 lg:px-20 overflow-hidden">
+        <section id="contact" data-section="contact" className="contact-section relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20 overflow-hidden">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vh] rounded-full opacity-[0.05] blur-[160px] pointer-events-none" style={{ backgroundColor: ac() }} />
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="contact-big mb-16 md:mb-20">
