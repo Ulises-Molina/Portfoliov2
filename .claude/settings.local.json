@@ -31,7 +31,9 @@
       "WebFetch(domain:devicescss.xyz)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:marvelapp.github.io)",
-      "WebFetch(domain:ulisesmolina.vercel.app)"
+      "WebFetch(domain:ulisesmolina.vercel.app)",
+      "Bash(ls -la E:/users/ulises/desktop/portfoliov2/app/ | grep -E \"\\\\.\\(ts|tsx|js|jsx|json|xml|txt\\)$\")",
+      "Bash(wc -c E:/users/ulises/desktop/portfoliov2/public/*.mp4 E:/users/ulises/desktop/portfoliov2/public/*.jpeg E:/users/ulises/desktop/portfoliov2/public/*.jpg 2>/dev/null | tail -1)"
     ],
     "additionalDirectories": [
       "\\tmp"

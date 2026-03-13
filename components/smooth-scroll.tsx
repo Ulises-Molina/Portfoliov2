@@ -1,8 +1,18 @@
 'use client'
 
-import { ReactLenis } from 'lenis/react'
+import { useEffect } from 'react'
+import { ReactLenis, useLenis } from 'lenis/react'
 
-export function SmoothScroll({ children }: { children: React.ReactNode }) {
+function LenisController({ stopped }: { stopped: boolean }) {
+  const lenis = useLenis()
+  useEffect(() => {
+    if (!lenis) return
+    stopped ? lenis.stop() : lenis.start()
+  }, [stopped, lenis])
+  return null
+}
+
+export function SmoothScroll({ children, stopped }: { children: React.ReactNode; stopped?: boolean }) {
   return (
     <ReactLenis
       root
@@ -12,6 +22,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
         smoothWheel: true,
       }}
     >
+      <LenisController stopped={!!stopped} />
       {children}
     </ReactLenis>
   )

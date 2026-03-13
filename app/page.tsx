@@ -7,9 +7,11 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap"
 import { ArrowUpRight, Github, Linkedin, Mail, ExternalLink, Code, FileText } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { WarpedGrid } from "@/components/warped-grid"
-import { LoadingScreen } from "@/components/loading-screen"
+
+const WarpedGrid = dynamic(() => import("@/components/warped-grid").then((m) => m.WarpedGrid), { ssr: false })
+const LoadingScreen = dynamic(() => import("@/components/loading-screen").then((m) => m.LoadingScreen), { ssr: false })
 
 const ACCENT = "165, 80%, 48%"
 const ac = (a = 1) => `hsl(${ACCENT} / ${a})`
@@ -41,9 +43,9 @@ const TECH = [
 
 const EXPERIENCE = [
   {
-    role: "Frontend Developer", company: "Qualita Studio", period: "MAR 2025 — PRESENTE", current: true,
-    description: "Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce. Diseño y optimización UX/UI, Responsive Design, automatización de procesos y colaboración con equipo de diseño gráfico.",
-    technologies: ["Wordpress", "Elementor", "Shopify", "ClickUp", "Zapier", "HTML5", "CSS3", "JavaScript"],
+    role: "Web Developer", company: "Qualita Studio", period: "MAR 2025 — PRESENTE", current: true,
+    description: "Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce.\nImplementación front-end con HTML, CSS y JavaScript. Gestión de WordPress y Shopify, personalización de themes y plugins.\nDiseño y optimización UX/UI, responsive design, automatización de procesos con n8n y Zapier, integración de APIs, SEO técnico, administración de hosting y dominios, soporte en Email Marketing.\nColaboración con equipos de diseño y marketing bajo metodologías ágiles.",
+    technologies: ["Wordpress", "Elementor", "Shopify", "Notion", "Zapier", "HTML5", "CSS3", "JavaScript"],
   },
   {
     role: "Pasante Web Developer", company: "Qualita Studio", period: "FEB — MAR 2025", current: false,
@@ -59,29 +61,36 @@ const EXPERIENCE = [
 
 const PROJECTS = [
   {
+    title: "Stockear", subtitle: "Gestión de stock y ventas",
+    description: "Sistema integral para pequeños comercios: inventario en tiempo real, venta rápida, reportes y cierre de caja desde un único panel.",
+    technologies: ["Next.js", "Supabase", "TailwindCSS", "Claude Code", "Shadcn/ui", "Vercel"],
+    demoUrl: "https://stockear.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/Stockear",
+    video: "/stockear.mp4", screenshot: "/stockear.jpeg", isPrivate: false,
+  },
+  {
     title: "Fintrack", subtitle: "Finanzas personales",
-    description: "Dashboard interactivo con análisis financiero IA, autenticación y gestión de cuentas.",
+    description: "Dashboard de finanzas personales con seguimiento de gastos, categorización automática, análisis con IA y visualización de tendencias. Incluye autenticación y gestión multi-cuenta.",
     technologies: ["React", "Supabase", "0Auth", "Vite", "TailwindCSS"],
     demoUrl: "https://fintrackgastos.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/Fintrack",
     video: "/Fintrack.mp4", screenshot: "/fintrack-sh-mobile.jpeg", isPrivate: false,
   },
   {
     title: "Great Burgers", subtitle: "App de pedidos",
-    description: "Menú interactivo, carrito de compras y panel de administración.",
+    description: "App de pedidos para restaurante con menú interactivo por categorías, carrito en tiempo real y panel de administración para gestionar productos, precios y disponibilidad.",
     technologies: ["NextJS", "TypeScript", "TailwindCSS", "Supabase"],
     demoUrl: "https://great-burgers.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/Market-Crypto",
     video: "/great.mp4", screenshot: "/great-sh-mobile.jpeg", isPrivate: true,
   },
   {
     title: "Crypto Market", subtitle: "Precios real-time",
-    description: "Precios de criptomonedas en tiempo real con gráfico interactivo y noticias.",
+    description: "Plataforma de seguimiento cripto con precios en tiempo real vía API, gráficos históricos interactivos con Chart.js y feed de noticias del mercado integrado.",
     technologies: ["React", "TypeScript", "TailwindCSS", "Chart.js", "NewsAPI"],
     demoUrl: "https://marketcrypto-psi.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/Market-Crypto",
     video: "/marketcrypto.mp4", screenshot: "/crypto-sh-mobile.jpeg", isPrivate: false,
   },
   {
     title: "NextJS E-Commerce", subtitle: "Tienda full-stack",
-    description: "E-commerce con exploración de productos, carrito y autenticación.",
+    description: "Tienda online full-stack con catálogo de productos, filtros por categoría, carrito persistente, checkout y autenticación de usuarios con NextAuth y base de datos PostgreSQL.",
     technologies: ["NextJS", "TypeScript", "TailwindCSS", "PostgreSQL", "NextAuth"],
     demoUrl: "https://next-js-eccomerce-nine.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/NextJS-Eccomerce",
     video: "/nextjs.mp4", screenshot: "/next-sh-mobile.jpeg", isPrivate: false,
@@ -181,17 +190,6 @@ export default function Home() {
   const [navVisible, setNavVisible] = useState(false)
   const [time, setTime] = useState("")
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!loading) return
-    const prevent = (e: Event) => e.preventDefault()
-    window.addEventListener("wheel", prevent, { passive: false })
-    window.addEventListener("touchmove", prevent, { passive: false })
-    return () => {
-      window.removeEventListener("wheel", prevent)
-      window.removeEventListener("touchmove", prevent)
-    }
-  }, [loading])
 
   useEffect(() => {
     setMounted(true)
@@ -313,8 +311,9 @@ export default function Home() {
   if (!mounted) return null
 
   return (
-    <SmoothScroll>
+    <SmoothScroll stopped={loading}>
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
+
       <div ref={containerRef} className="relative">
         <WarpedGrid />
         <MagneticCursor />
@@ -342,7 +341,7 @@ export default function Home() {
           <button onClick={() => scrollTo("hero")} className="magnetic font-sans font-bold text-base tracking-tight text-white" aria-label="Inicio">
             ULISES<span style={{ color: ac() }}>.</span>M
           </button>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {[
               { id: "about", label: "Sobre mí" },
               { id: "experience", label: "Experiencia" },
@@ -368,27 +367,56 @@ export default function Home() {
         </header>
 
         {/* ═══ HERO ═══ */}
-        <section data-section="hero" className="hero-section relative min-h-screen flex items-center">
+        <section data-section="hero" className="hero-section relative min-h-screen flex items-center overflow-hidden">
+
+          {/* Bokeh atmosférico */}
+          <div className="absolute inset-0 pointer-events-none z-0">
+            <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] rounded-full opacity-[0.07] blur-[120px]" style={{ backgroundColor: ac() }} />
+            <div className="absolute bottom-[15%] right-[15%] w-[350px] h-[350px] rounded-full opacity-[0.05] blur-[100px] bg-white" />
+            <div className="absolute top-[50%] left-[50%] w-[250px] h-[250px] rounded-full opacity-[0.04] blur-[80px]" style={{ backgroundColor: ac() }} />
+          </div>
+
           <div className="hero-content relative z-10 w-full px-6 md:px-10 lg:px-20">
             <div className="max-w-7xl mx-auto">
+
+              {/* Label */}
               <div className="hero-meta font-mono text-[11px] tracking-[0.4em] text-white/40 uppercase mb-8 flex items-center gap-4">
-                <div className="w-8 h-[1px]" style={{ backgroundColor: ac() }} />
+                <div className="w-8 h-[1px]" style={{ backgroundColor: "hsl(165 80% 48%)" }} />
                 Software Developer
               </div>
-              <h1 className="text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.92] tracking-tighter mb-10">
-                <span className="block overflow-hidden"><span className="hero-line block text-white">Creando</span></span>
-                <span className="block overflow-hidden"><span className="hero-line block" style={{ color: ac() }}>experiencias</span></span>
+
+              {/* Title */}
+              <h1 className="leading-[0.88] mb-12">
+
+                {/* "CONSTRUYO" — Bebas Neue, outline/stroke, XXL */}
                 <span className="block overflow-hidden">
-                  <span className="hero-line block text-white">
-                    digitales<span className="inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ml-2 mb-2 md:mb-4" style={{ backgroundColor: ac() }} />
+                  <span className="hero-line block text-[clamp(5rem,15vw,13rem)]"
+                    style={{
+                      fontFamily: "var(--font-bebas)",
+                      WebkitTextStroke: "2px rgba(255,255,255,0.65)",
+                      color: "transparent",
+                      letterSpacing: "0.02em",
+                    }}>
+                    creando
                   </span>
                 </span>
+
+                {/* "experiencias digitales." — Poppins light, limpio */}
+                <span className="block overflow-hidden pb-1">
+                  <span className="hero-line block text-[clamp(1.4rem,3.5vw,3.2rem)] text-white/70 leading-normal"
+                    style={{ fontWeight: 500, letterSpacing: "0.05em" }}>
+                    experiencias digitales<span style={{ color: ac() }}>.</span>
+                  </span>
+                </span>
+
               </h1>
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-                <p className="hero-meta max-w-md text-white/50 text-sm leading-relaxed">
+
+              {/* Subtitle izq + botones der */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                <p className="hero-meta text-white/45 text-m leading-relaxed max-w-lg">
                   Desarrollador de Software especializado en interfaces modernas y funcionales. Foco en performance, diseño y experiencia de usuario.
                 </p>
-                <div className="flex gap-3 hero-meta">
+                <div className="flex gap-3 hero-meta shrink-0">
                   <button onClick={() => scrollTo("projects")}
                     className="hero-cta-btn magnetic group px-6 py-3 text-white font-semibold text-sm rounded-full hover:scale-105 transition-transform flex items-center gap-2 border border-white/20"
                     style={{ backgroundColor: "rgba(255,255,255,0.08)", boxShadow: `0 0 20px ${ac(0.15)}` }}>
@@ -400,8 +428,10 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+
             </div>
           </div>
+
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hero-meta">
             <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               className="w-[1px] h-12 mx-auto" style={{ background: `linear-gradient(to bottom, transparent, ${ac(0.5)}, transparent)` }} />
@@ -475,7 +505,7 @@ export default function Home() {
                       )}
                     </div>
                     <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
-                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl">{exp.description}</p>
+                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl whitespace-pre-line">{exp.description}</p>
                     {exp.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {exp.technologies.map((t) => (
@@ -546,6 +576,7 @@ export default function Home() {
                         <div style={{ position: "relative", width: "100%", borderRadius: "4px", overflow: "hidden", background: "#000" }}>
                           <video
                             autoPlay={isActive} muted loop playsInline poster={p.screenshot}
+                            preload={isActive ? "auto" : "none"}
                             className="w-full h-full object-cover"
                             ref={(el) => { if (el) { isActive ? el.play().catch(() => {}) : el.pause() } }}
                           >
@@ -599,8 +630,8 @@ export default function Home() {
             {/* Section header — fixed at top of panel */}
             <div className="absolute top-32 flex items-center gap-3">
               <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>03</span>
-              <div className="h-[1px] w-12 bg-white/[0.06]" />
-              <span className="font-mono text-base tracking-[0.25em] text-white/50 uppercase text-4xl">Proyectos</span>
+              <div className="h-[1px] w-12 bg-white/[0.18]" />
+              <span className="font-mono text-xl md:text-2xl tracking-[0.25em] text-white/50 uppercase">Proyectos</span>
             </div>
 
             {/* Project info */}
@@ -709,8 +740,8 @@ export default function Home() {
                   <div className="py-5 md:py-7 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-6">
                     <h3 className="text-base md:text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300 flex-1">{c.title}</h3>
                     <div className="flex items-center gap-4 md:gap-6 shrink-0">
-                      <span className="font-mono text-[10px] tracking-wider text-white/20">{c.org}</span>
-                      <span className="font-mono text-[10px] tracking-wider text-white/20">{c.date}</span>
+                      <span className="font-mono text-[10px] tracking-wider text-white/45">{c.org}</span>
+                      <span className="font-mono text-[10px] tracking-wider text-white/45">{c.date}</span>
                       <ArrowUpRight className="w-3.5 h-3.5 text-white/10 group-hover:text-white/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
                     </div>
                   </div>
@@ -726,8 +757,8 @@ export default function Home() {
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vh] rounded-full opacity-[0.05] blur-[160px] pointer-events-none" style={{ backgroundColor: ac() }} />
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="contact-big mb-16 md:mb-20">
-              <div className="font-mono text-[11px] tracking-[0.3em] uppercase mb-8" style={{ color: ac() }}>05 — Contacto</div>
-              <h2 className="text-[clamp(2.2rem,6vw,5rem)] font-bold leading-[1] tracking-tight text-white">
+              <SectionHeader index="05" label="Contacto" />
+              <h2 className="text-[clamp(2.2rem,6vw,3.3rem)] font-bold leading-[1] tracking-tight text-white">
                 ¿Trabajamos<br /><span style={{ color: ac() }}>juntos</span>?
               </h2>
               <p className="text-white/35 mt-6 max-w-md text-sm leading-relaxed">
@@ -742,10 +773,10 @@ export default function Home() {
                 { icon: <FileText className="w-5 h-5" />, label: "CV", value: "Descargar CV", href: "/Cv.Ulises.pdf" },
               ].map((item, i) => (
                 <Link key={i} href={item.href} target="_blank" rel="noopener noreferrer"
-                  className="contact-row magnetic group flex items-center gap-5 py-5 px-6 rounded-xl border border-white/[0.04] hover:border-white/[0.12] hover:bg-white/[0.02] transition-all duration-500">
+                  className="contact-row magnetic group flex items-center gap-5 py-5 px-6 rounded-xl border border-white/[0.12] hover:border-white/[0.28] hover:bg-white/[0.02] transition-all duration-500">
                   <div className="text-white/20 group-hover:text-white/60 transition-colors duration-300">{item.icon}</div>
                   <div className="flex-1">
-                    <div className="font-mono text-[9px] tracking-[0.25em] text-white/15 uppercase">{item.label}</div>
+                    <div className="font-mono text-[9px] tracking-[0.25em] text-white/40 uppercase">{item.label}</div>
                     <div className="text-white/60 group-hover:text-white text-sm transition-colors duration-300">{item.value}</div>
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-white/[0.08] group-hover:text-white/50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
@@ -756,13 +787,13 @@ export default function Home() {
         </section>
 
         {/* ─── FOOTER ─── */}
-        <footer className="relative z-10 px-6 md:px-10 lg:px-20 py-8 border-t border-white/[0.04]">
+        <footer className="relative z-10 px-6 md:px-10 lg:px-20 py-8 border-t border-white/[0.12]">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="font-mono text-[10px] text-white/15 tracking-wider">&copy; {new Date().getFullYear()} ULISES MOLINA</p>
+            <p className="font-mono text-[10px] text-white/40 tracking-wider">&copy; {new Date().getFullYear()} ULISES MOLINA</p>
             <div className="flex gap-6">
               {SOCIAL.map((s) => (
                 <Link key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                  className="font-mono text-[10px] tracking-wider text-white/15 hover:text-white/60 transition-colors duration-300" aria-label={s.label}>{s.label}</Link>
+                  className="font-mono text-[10px] tracking-wider text-white/40 hover:text-white/80 transition-colors duration-300" aria-label={s.label}>{s.label}</Link>
               ))}
             </div>
           </div>
@@ -776,8 +807,8 @@ function SectionHeader({ index, label }: { index: string; label: string }) {
   return (
     <div className="flex items-center gap-4 mb-16 md:mb-20">
       <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>{index}</span>
-      <div className="h-[1px] flex-1 bg-white/[0.06]" />
-      <span className="font-mono text-base md:text-lg tracking-[0.25em] text-white/50 uppercase">{label}</span>
+      <div className="h-[1px] flex-1 bg-white/[0.18]" />
+      <span className="font-mono text-xl md:text-2xl tracking-[0.25em] text-white/50 uppercase">{label}</span>
     </div>
   )
 }

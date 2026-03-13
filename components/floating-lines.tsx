@@ -13,6 +13,12 @@ export function FloatingLines() {
         const ctx = canvas.getContext("2d")
         if (!ctx) return
 
+        // Respect user's motion preference
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            canvas.style.opacity = "0"
+            return
+        }
+
         // GSAP fade-in animation for canvas
         gsap.fromTo(
             canvas,
