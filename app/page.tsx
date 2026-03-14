@@ -238,7 +238,9 @@ export default function Home() {
     tl.fromTo(".hero-meta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: "power3.out" }, "-=0.5")
     tl.fromTo(".hero-cta-btn", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.4)" }, "-=0.3")
 
-    gsap.to(".hero-content", { yPercent: 20, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: true } })
+    if (!isMobile) {
+      gsap.to(".hero-content", { yPercent: 20, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: true } })
+    }
 
     // About reveals
     gsap.utils.toArray<HTMLElement>(".about-reveal").forEach((el, i) => {
@@ -306,7 +308,7 @@ export default function Home() {
     gsap.utils.toArray<HTMLElement>(".contact-row").forEach((el, i) => {
       gsap.fromTo(el, { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.2 + i * 0.07, ease: "power2.out", scrollTrigger: { trigger: ".contact-section", start: "top 60%" } })
     })
-  }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted, loading] })
+  }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted, loading, isMobile] })
 
   const scrollTo = useCallback((id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }) }, [])
 

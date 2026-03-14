@@ -239,6 +239,7 @@ export function WarpedGrid() {
     const canvas = canvasRef.current
     if (!canvas) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return
 
     const ctx = setup(canvas)
     if (!ctx) return

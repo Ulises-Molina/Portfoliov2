@@ -46,10 +46,9 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
     tl.to(lineRef.current, { scaleX: 0, opacity: 0, duration: 0.4, ease: "power2.in" }, "<")
     tl.to(botRef.current, { x: "-60vw", opacity: 0, duration: 0.6, ease: "power3.in" }, "<")
 
-    // 6 — Iris close: circle shrinks to center with blur — slow, modern, camera-like
+    // 6 — Iris close: circle shrinks to center — slow, modern, camera-like
     tl.to(overlayRef.current, {
       clipPath: "circle(0% at 50% 50%)",
-      filter: "blur(10px)",
       duration: 1.25,
       ease: "expo.inOut",
       onComplete: () => {
