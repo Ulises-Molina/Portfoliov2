@@ -39,11 +39,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ulisesmolina.verce
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Ulises Molina — Frontend Developer",
+    default: "Ulises Molina — Software Dev",
     template: "%s | Ulises Molina",
   },
   description:
-    "Frontend Developer especializado en React, Next.js y TypeScript. Creando experiencias digitales excepcionales. Basado en Buenos Aires, Argentina.",
+    "Desarrollador especializado en React, Next.js y TypeScript. Creando experiencias digitales excepcionales. Basado en Buenos Aires, Argentina.",
   keywords: [
     "frontend developer",
     "react",
