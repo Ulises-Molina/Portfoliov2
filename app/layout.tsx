@@ -69,7 +69,7 @@ export const metadata: Metadata = {
       "Frontend Developer especializado en React, Next.js y TypeScript. Creando experiencias digitales excepcionales.",
     images: [
       {
-        url: "/Perfil.jpg",
+        url: "/origin.jpeg",
         width: 1200,
         height: 630,
         alt: "Ulises Molina — Frontend Developer",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     title: "Ulises Molina — Frontend Developer",
     description:
       "Frontend Developer especializado en React, Next.js y TypeScript. Creando experiencias digitales excepcionales.",
-    images: ["/Perfil.jpg"],
+    images: ["/origin.jpeg"],
   },
   robots: {
     index: true,

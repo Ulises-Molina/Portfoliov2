@@ -15,6 +15,7 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     document.body.style.overflow = "hidden"
 
+    const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches
     const tl = gsap.timeline()
 
     // 1 — Line draws from center outward
@@ -46,16 +47,29 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
     tl.to(lineRef.current, { scaleX: 0, opacity: 0, duration: 0.4, ease: "power2.in" }, "<")
     tl.to(botRef.current, { x: "-60vw", opacity: 0, duration: 0.6, ease: "power3.in" }, "<")
 
-    // 6 — Iris close: circle shrinks to center — slow, modern, camera-like
-    tl.to(overlayRef.current, {
-      clipPath: "circle(0% at 50% 50%)",
-      duration: 1.25,
-      ease: "expo.inOut",
-      onComplete: () => {
-        document.body.style.overflow = ""
-        onComplete()
-      },
-    }, "-=0.1")
+    // 6 — Exit overlay: iris on desktop (clipPath), fade+scale on mobile (GPU-composited)
+    if (isMobile) {
+      tl.to(overlayRef.current, {
+        opacity: 0,
+        scale: 1.05,
+        duration: 0.55,
+        ease: "power2.inOut",
+        onComplete: () => {
+          document.body.style.overflow = ""
+          onComplete()
+        },
+      }, "-=0.05")
+    } else {
+      tl.to(overlayRef.current, {
+        clipPath: "circle(0% at 50% 50%)",
+        duration: 1.25,
+        ease: "expo.inOut",
+        onComplete: () => {
+          document.body.style.overflow = ""
+          onComplete()
+        },
+      }, "-=0.1")
+    }
 
     return () => { document.body.style.overflow = "" }
   }, [onComplete])
@@ -67,6 +81,8 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
       style={{
         background: BG,
         clipPath: "circle(150% at 50% 50%)",
+        willChange: "clip-path, opacity, transform",
+        transform: "translateZ(0)",
       }}
     >
       {/* "Software Developer" — sits just above the center line */}
@@ -91,6 +107,7 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
             textTransform: "uppercase",
             color: "rgba(255,255,255,0.82)",
             opacity: 0,
+            willChange: "transform, opacity",
           }}
         >
           Software Developer
@@ -134,6 +151,7 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
             textTransform: "uppercase",
             color: ac(0.55),
             opacity: 0,
+            willChange: "transform, opacity",
           }}
         >
           Buenos Aires
