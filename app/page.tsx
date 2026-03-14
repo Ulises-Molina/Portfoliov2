@@ -189,12 +189,14 @@ export default function Home() {
   const [activeNav, setActiveNav] = useState("hero")
   const [navVisible, setNavVisible] = useState(false)
   const [time, setTime] = useState("")
-  const [loading, setLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const mobile = window.innerWidth < 1024
     setMounted(true)
-    setIsMobile(window.innerWidth < 1024)
+    setIsMobile(mobile)
+    if (mobile) setLoading(false)
     const tick = () => setTime(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }))
     tick(); const id = setInterval(tick, 60000); return () => clearInterval(id)
   }, [])
@@ -214,6 +216,10 @@ export default function Home() {
 
   useGSAP(() => {
     if (!mounted) return
+
+    // Prevent ScrollTrigger from recalculating on mobile viewport resize
+    // (caused by URL bar appearing/disappearing on scroll, which shifts elements)
+    ScrollTrigger.config({ ignoreMobileResize: true })
 
     // Pre-set hero elements to their initial (hidden) state immediately on mount.
     // This ensures they're invisible while the loader iris is closing, preventing
@@ -242,14 +248,22 @@ export default function Home() {
       gsap.to(".hero-content", { yPercent: 20, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: true } })
     }
 
-    // About reveals
+    // About reveals — on mobile use opacity-only fade (no y offset) to avoid layout shifts
     gsap.utils.toArray<HTMLElement>(".about-reveal").forEach((el, i) => {
-      gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: i * 0.08, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" } })
+      if (isMobile) {
+        gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: i * 0.06, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 95%", toggleActions: "play none none none" } })
+      } else {
+        gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: i * 0.08, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" } })
+      }
     })
 
-    // Experience
+    // Experience — on mobile use opacity-only fade
     gsap.utils.toArray<HTMLElement>(".exp-entry").forEach((el) => {
-      gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } })
+      if (isMobile) {
+        gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 95%", toggleActions: "play none none none" } })
+      } else {
+        gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } })
+      }
     })
 
     // 3D Carousel projects — desktop only
@@ -298,16 +312,27 @@ export default function Home() {
       })
     }
 
-    // Certs
+    // Certs — on mobile use opacity-only fade (no x offset) to avoid layout shifts
     gsap.utils.toArray<HTMLElement>(".cert-row").forEach((el, i) => {
-      gsap.fromTo(el, { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, delay: i * 0.05, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "play none none none" } })
+      if (isMobile) {
+        gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.5, delay: i * 0.04, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 95%", toggleActions: "play none none none" } })
+      } else {
+        gsap.fromTo(el, { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, delay: i * 0.05, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "play none none none" } })
+      }
     })
 
-    // Contact
-    gsap.fromTo(".contact-big", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: ".contact-section", start: "top 70%" } })
-    gsap.utils.toArray<HTMLElement>(".contact-row").forEach((el, i) => {
-      gsap.fromTo(el, { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.2 + i * 0.07, ease: "power2.out", scrollTrigger: { trigger: ".contact-section", start: "top 60%" } })
-    })
+    // Contact — on mobile use opacity-only fades
+    if (isMobile) {
+      gsap.fromTo(".contact-big", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".contact-section", start: "top 80%" } })
+      gsap.utils.toArray<HTMLElement>(".contact-row").forEach((el, i) => {
+        gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.4, delay: 0.1 + i * 0.06, ease: "power2.out", scrollTrigger: { trigger: ".contact-section", start: "top 70%" } })
+      })
+    } else {
+      gsap.fromTo(".contact-big", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: ".contact-section", start: "top 70%" } })
+      gsap.utils.toArray<HTMLElement>(".contact-row").forEach((el, i) => {
+        gsap.fromTo(el, { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.2 + i * 0.07, ease: "power2.out", scrollTrigger: { trigger: ".contact-section", start: "top 60%" } })
+      })
+    }
   }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted, loading, isMobile] })
 
   const scrollTo = useCallback((id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }) }, [])
