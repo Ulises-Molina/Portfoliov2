@@ -713,7 +713,7 @@ export default function Home() {
                         <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
                         <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
                       </div>
-                      <h3 className="text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
+                      <h3 className="text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
                       <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm">{p.description}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {p.technologies.map((t) => (
