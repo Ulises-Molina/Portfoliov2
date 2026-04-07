@@ -61,6 +61,13 @@ const EXPERIENCE = [
 
 const PROJECTS = [
   {
+    title: "Web Audity", subtitle: "Auditoría web",
+    description: "Herramienta para auditar el rendimiento y SEO de sitios web. Analiza métricas clave, detecta problemas y ofrece recomendaciones para optimizar la velocidad y el posicionamiento de cualquier página.",
+    technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"],
+    demoUrl: "https://web-audity.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/web-audity",
+    video: "/web-audity.mp4", screenshot: "/web-audity.mp4", isPrivate: false,
+  },
+  {
     title: "Stockear", subtitle: "Gestión de stock y ventas",
     description: "Sistema integral para pequeños comercios: inventario en tiempo real, venta rápida, reportes y cierre de caja desde un único panel.",
     technologies: ["Next.js", "Supabase", "TailwindCSS", "Claude Code", "Shadcn/ui", "Vercel"],
