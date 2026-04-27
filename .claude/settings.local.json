@@ -33,7 +33,14 @@
       "WebFetch(domain:marvelapp.github.io)",
       "WebFetch(domain:ulisesmolina.vercel.app)",
       "Bash(ls -la E:/users/ulises/desktop/portfoliov2/app/ | grep -E \"\\\\.\\(ts|tsx|js|jsx|json|xml|txt\\)$\")",
-      "Bash(wc -c E:/users/ulises/desktop/portfoliov2/public/*.mp4 E:/users/ulises/desktop/portfoliov2/public/*.jpeg E:/users/ulises/desktop/portfoliov2/public/*.jpg 2>/dev/null | tail -1)"
+      "Bash(wc -c E:/users/ulises/desktop/portfoliov2/public/*.mp4 E:/users/ulises/desktop/portfoliov2/public/*.jpeg E:/users/ulises/desktop/portfoliov2/public/*.jpg 2>/dev/null | tail -1)",
+      "PowerShell(Get-Content *)",
+      "Bash(git -C E:/Users/Ulises/Desktop/portfoliov2 checkout -- app/page.tsx)",
+      "Bash(git -C E:/Users/Ulises/Desktop/portfoliov2 stash list)",
+      "Bash(git -C E:/Users/Ulises/Desktop/portfoliov2 reflog -20)",
+      "Bash(git -C E:/Users/Ulises/Desktop/portfoliov2 fsck --lost-found)",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code} \\(%{size_download} bytes in %{time_total}s\\)\\\\n\" http://localhost:3001)",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3001)"
     ],
     "additionalDirectories": [
       "\\tmp"

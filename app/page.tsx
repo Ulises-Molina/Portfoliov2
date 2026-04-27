@@ -4,7 +4,7 @@ import type React from "react"
 import { useRef, useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap"
-import { ArrowUpRight, Github, Linkedin, Mail, ExternalLink, Code, FileText } from "lucide-react"
+import { ArrowUpRight, Github, Linkedin, Mail, ExternalLink, Code, FileText, Globe, Workflow, AppWindow, Zap, Filter, MessageSquare, Database } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import dynamic from "next/dynamic"
@@ -39,6 +39,36 @@ const TECH = [
   { label: "Shopify", icon: "/iconos/shopify.svg" },
   { label: "Elementor", icon: "/iconos/elementor.svg" },
   { label: "n8n", icon: "/iconos/n8n.svg" },
+]
+
+const SERVICES = [
+  {
+    n: "01",
+    title: "Desarrollo Web",
+    subtitle: "Sitios & E-Commerce",
+    description: "Sitios institucionales, landings de alto impacto y tiendas online optimizadas para conversión, velocidad y SEO.",
+    bullets: ["Landings & corporativos", "E-Commerce (Shopify / WP)", "SEO técnico & performance", "Responsive design"],
+    stack: ["Next.js", "Wordpress", "Shopify", "Tailwind"],
+    icon: Globe,
+  },
+  {
+    n: "02",
+    title: "Automatizaciones",
+    subtitle: "Flujos & Procesos",
+    description: "Integraciones a medida que conectan tus herramientas, eliminan tareas manuales y escalan tu operación sin esfuerzo.",
+    bullets: ["Workflows con n8n / Zapier", "Integraciones de APIs", "Email marketing & CRM", "Sincronización de datos"],
+    stack: ["n8n", "Zapier", "REST APIs", "Webhooks"],
+    icon: Workflow,
+  },
+  {
+    n: "03",
+    title: "Desarrollo de Apps",
+    subtitle: "Producto & SaaS",
+    description: "Web apps, dashboards y herramientas internas con interfaz moderna, autenticación robusta y backend escalable.",
+    bullets: ["Web Apps & SaaS", "Dashboards a medida", "Auth & base de datos", "Deploy & mantenimiento"],
+    stack: ["React", "Next.js", "Supabase", "TypeScript"],
+    icon: AppWindow,
+  },
 ]
 
 const EXPERIENCE = [
@@ -184,6 +214,536 @@ function TechMarquee() {
   )
 }
 
+/* ═══ SERVICES — sticky-stacked deck of dramatic cards ═══ */
+
+/* Inline mockups — one visual identity per service (Web / Flow / App) */
+
+function WebMockup() {
+  return (
+    <div className="relative w-full max-w-[580px] aspect-[4/3] rounded-2xl overflow-hidden border border-white/[0.12]"
+      style={{
+        background: "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%)",
+        boxShadow: `0 40px 80px -10px rgba(0,0,0,0.7), 0 0 80px ${ac(0.2)}, 0 0 0 1px rgba(255,255,255,0.04) inset`,
+      }}>
+      {/* Browser chrome */}
+      <div className="h-9 border-b border-white/[0.08] px-4 flex items-center gap-2 bg-white/[0.02]">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
+        </div>
+        <div className="ml-3 h-5 flex-1 max-w-[60%] rounded-md bg-white/[0.06] px-2.5 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: ac(), boxShadow: `0 0 6px ${ac(0.7)}` }} />
+          <div className="font-mono text-[8px] tracking-wider text-white/50">tu-marca.com</div>
+        </div>
+      </div>
+
+      {/* Page content */}
+      <div className="p-5 space-y-3.5">
+        {/* Hero block */}
+        <div className="space-y-1.5">
+          <div className="h-3.5 w-[78%] rounded" style={{ background: `linear-gradient(90deg, ${ac()} 0%, ${ac(0.4)} 100%)` }} />
+          <div className="h-2 w-[55%] rounded bg-white/15" />
+          <div className="h-2 w-[42%] rounded bg-white/10" />
+        </div>
+
+        {/* CTAs */}
+        <div className="flex gap-2 pt-0.5">
+          <div className="h-7 w-24 rounded-full flex items-center justify-center px-3"
+            style={{ background: ac(0.9), boxShadow: `0 0 18px ${ac(0.55)}` }}>
+            <div className="h-1.5 w-12 rounded bg-black/40" />
+          </div>
+          <div className="h-7 w-20 rounded-full border border-white/20 flex items-center justify-center">
+            <div className="h-1.5 w-10 rounded bg-white/40" />
+          </div>
+        </div>
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-3 gap-2 pt-1">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="aspect-[1/1] rounded-lg border border-white/[0.06] p-2"
+              style={{ background: i === 1 ? `linear-gradient(135deg, ${ac(0.18)} 0%, transparent 80%)` : "rgba(255,255,255,0.03)" }}>
+              <div className="w-3.5 h-3.5 rounded mb-1.5" style={{ background: i === 1 ? ac(0.75) : "rgba(255,255,255,0.18)" }} />
+              <div className="h-1 w-3/4 rounded bg-white/15 mb-1" />
+              <div className="h-1 w-1/2 rounded bg-white/10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FlowNode({
+  Icon, sub, label, accent, style,
+}: {
+  Icon: typeof Zap; sub: string; label: string; accent?: boolean; style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className="absolute -translate-x-1/2 -translate-y-1/2 rounded-xl backdrop-blur-md flex items-center gap-2 px-2.5 py-2 min-w-[124px] z-10"
+      style={{
+        ...style,
+        border: `1px solid ${accent ? ac(0.55) : "rgba(255,255,255,0.12)"}`,
+        background: accent
+          ? `linear-gradient(135deg, ${ac(0.18)} 0%, rgba(255,255,255,0.04) 100%)`
+          : "rgba(255,255,255,0.04)",
+        boxShadow: accent ? `0 0 24px ${ac(0.35)}` : "0 8px 24px -8px rgba(0,0,0,0.5)",
+      }}
+    >
+      <div
+        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+        style={{
+          background: accent ? ac(0.22) : "rgba(255,255,255,0.06)",
+          border: `1px solid ${accent ? ac(0.4) : "rgba(255,255,255,0.08)"}`,
+        }}
+      >
+        <Icon className="w-3.5 h-3.5" style={{ color: accent ? ac() : "rgba(255,255,255,0.7)" }} />
+      </div>
+      <div className="min-w-0 leading-none">
+        <div className="font-mono text-[7.5px] tracking-[0.18em] uppercase mb-1"
+          style={{ color: accent ? ac(0.85) : "rgba(255,255,255,0.4)" }}>
+          {sub}
+        </div>
+        <div className="text-[10.5px] font-semibold" style={{ color: accent ? "white" : "rgba(255,255,255,0.85)" }}>
+          {label}
+        </div>
+      </div>
+      {accent && (
+        <div className="w-1.5 h-1.5 rounded-full ml-auto shrink-0"
+          style={{ background: "rgb(74, 222, 128)", boxShadow: "0 0 8px rgb(74, 222, 128)" }} />
+      )}
+    </div>
+  )
+}
+
+function FlowMockup() {
+  // n8n / Zapier-style canvas: trigger → process → branches into 2 actions
+  return (
+    <div className="relative w-full max-w-[580px] aspect-[4/3] rounded-2xl overflow-hidden border border-white/[0.12]"
+      style={{
+        background: "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%)",
+        boxShadow: `0 40px 80px -10px rgba(0,0,0,0.7), 0 0 80px ${ac(0.2)}, 0 0 0 1px rgba(255,255,255,0.04) inset`,
+      }}>
+
+      {/* Toolbar */}
+      <div className="relative z-20 h-9 border-b border-white/[0.08] px-4 flex items-center justify-between bg-white/[0.02]">
+        <div className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "rgb(74, 222, 128)", boxShadow: "0 0 8px rgb(74, 222, 128)" }} />
+          <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-white/65">Workflow · Active</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[9px] tracking-wider text-white/40">1,284 runs</span>
+          <span className="font-mono text-[9px] tracking-wider" style={{ color: ac() }}>99.8%</span>
+        </div>
+      </div>
+
+      {/* Canvas */}
+      <div className="relative" style={{ height: "calc(100% - 36px)" }}>
+        {/* Dot grid */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+            backgroundSize: "18px 18px",
+          }} />
+
+        {/* SVG connectors — viewBox matches the 4/3 container so geometry is undistorted */}
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 600 450" fill="none" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="connGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={ac(0.75)} />
+              <stop offset="100%" stopColor={ac(0.45)} />
+            </linearGradient>
+            <marker
+              id="arrowEnd"
+              viewBox="0 0 12 12"
+              refX="10"
+              refY="6"
+              markerUnits="userSpaceOnUse"
+              markerWidth="11"
+              markerHeight="11"
+              orient="auto"
+            >
+              <path d="M 1 1 L 11 6 L 1 11 L 3.5 6 z" fill={ac(0.95)} />
+            </marker>
+          </defs>
+
+          {/* Trigger → Filter (clean vertical) */}
+          <path
+            id="connA"
+            d="M 300 107 L 300 196"
+            stroke="url(#connGrad)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            markerEnd="url(#arrowEnd)"
+          />
+          {/* Filter → Slack (smooth S-curve, left branch) */}
+          <path
+            id="connB"
+            d="M 300 254 C 300 308, 186 296, 186 340"
+            stroke="url(#connGrad)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            markerEnd="url(#arrowEnd)"
+          />
+          {/* Filter → Database (smooth S-curve, right branch) */}
+          <path
+            id="connC"
+            d="M 300 254 C 300 308, 414 296, 414 340"
+            stroke="url(#connGrad)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            markerEnd="url(#arrowEnd)"
+          />
+
+          {/* Animated traveling dots — staggered to suggest continuous flow */}
+          <circle r="4" fill={ac()} style={{ filter: `drop-shadow(0 0 8px ${ac()})` }}>
+            <animateMotion dur="2.2s" repeatCount="indefinite" begin="0s">
+              <mpath href="#connA" />
+            </animateMotion>
+          </circle>
+          <circle r="3.5" fill={ac()} style={{ filter: `drop-shadow(0 0 7px ${ac()})` }}>
+            <animateMotion dur="2.6s" repeatCount="indefinite" begin="0.9s">
+              <mpath href="#connB" />
+            </animateMotion>
+          </circle>
+          <circle r="3.5" fill={ac()} style={{ filter: `drop-shadow(0 0 7px ${ac()})` }}>
+            <animateMotion dur="2.6s" repeatCount="indefinite" begin="1.4s">
+              <mpath href="#connC" />
+            </animateMotion>
+          </circle>
+        </svg>
+
+        {/* Nodes (positioned with %, mirrors SVG viewBox geometry) */}
+        <FlowNode Icon={Zap} sub="Trigger" label="Webhook" accent style={{ left: "50%", top: "18%" }} />
+        <FlowNode Icon={Filter} sub="Process" label="Filter" style={{ left: "50%", top: "50%" }} />
+        <FlowNode Icon={MessageSquare} sub="Action" label="Slack" style={{ left: "30%", top: "82%" }} />
+        <FlowNode Icon={Database} sub="Action" label="Database" style={{ left: "70%", top: "82%" }} />
+      </div>
+    </div>
+  )
+}
+
+function AppMockup() {
+  return (
+    <div className="relative w-full max-w-[460px] aspect-[5/4] rounded-2xl overflow-hidden border border-white/[0.08] flex"
+      style={{
+        background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+        boxShadow: `0 30px 60px -10px rgba(0,0,0,0.55), 0 0 50px ${ac(0.12)}`,
+      }}>
+      {/* Sidebar */}
+      <div className="w-14 border-r border-white/[0.08] bg-white/[0.02] py-3 px-2 flex flex-col gap-2">
+        <div className="w-7 h-7 rounded-md mb-2 flex items-center justify-center" style={{ background: ac(0.15) }}>
+          <div className="w-3 h-3 rounded-sm" style={{ background: ac() }} />
+        </div>
+        {[true, false, false, false].map((active, i) => (
+          <div key={i} className="w-full h-7 rounded-md flex items-center px-1.5"
+            style={{ background: active ? ac(0.12) : "transparent" }}>
+            <div className="w-3 h-3 rounded" style={{ background: active ? ac() : "rgba(255,255,255,0.18)" }} />
+            <div className="ml-1 h-1 flex-1 rounded" style={{ background: active ? ac(0.7) : "rgba(255,255,255,0.12)" }} />
+          </div>
+        ))}
+      </div>
+
+      {/* Main */}
+      <div className="flex-1 p-3 space-y-2.5">
+        {/* Top bar */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="space-y-1">
+            <div className="h-2.5 w-20 rounded bg-white/20" />
+            <div className="h-1.5 w-12 rounded bg-white/10" />
+          </div>
+          <div className="flex gap-1.5 items-center">
+            <div className="w-5 h-5 rounded-full bg-white/[0.05] border border-white/[0.08]" />
+            <div className="w-5 h-5 rounded-full" style={{ background: ac(0.5), boxShadow: `0 0 8px ${ac(0.5)}` }} />
+          </div>
+        </div>
+
+        {/* KPI cards */}
+        <div className="grid grid-cols-3 gap-1.5">
+          {[
+            { label: "Ventas", value: "12.4K", accent: true },
+            { label: "Usuarios", value: "+248", accent: false },
+            { label: "Conv.", value: "+8%", accent: false },
+          ].map((kpi, i) => (
+            <div key={i} className="rounded-md border border-white/[0.06] p-2"
+              style={{ background: kpi.accent ? `linear-gradient(135deg, ${ac(0.15)} 0%, transparent 80%)` : "rgba(255,255,255,0.03)" }}>
+              <div className="font-mono text-[7px] tracking-wider uppercase mb-0.5"
+                style={{ color: kpi.accent ? ac() : "rgba(255,255,255,0.4)" }}>{kpi.label}</div>
+              <div className="font-bold text-[11px]"
+                style={{ color: kpi.accent ? ac() : "rgba(255,255,255,0.85)" }}>{kpi.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Chart */}
+        <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-2">
+          <div className="flex items-end gap-[3px] h-12">
+            {[35, 55, 42, 68, 48, 72, 58, 85, 62, 78].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t-sm transition-all"
+                style={{
+                  height: `${h}%`,
+                  background: i === 7 ? ac() : i === 9 ? ac(0.6) : "rgba(255,255,255,0.18)",
+                  boxShadow: i === 7 ? `0 0 10px ${ac(0.6)}` : "none",
+                }} />
+            ))}
+          </div>
+        </div>
+
+        {/* List rows */}
+        <div className="space-y-1.5">
+          {[true, false].map((active, i) => (
+            <div key={i} className="flex items-center gap-2 py-1 px-1.5 rounded"
+              style={{ background: active ? "rgba(255,255,255,0.03)" : "transparent" }}>
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: active ? ac() : "rgba(255,255,255,0.25)" }} />
+              <div className="h-1.5 flex-1 rounded bg-white/12" />
+              <div className="h-1.5 w-8 rounded bg-white/10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ServiceMockup({ index }: { index: number }) {
+  if (index === 0) return <WebMockup />
+  if (index === 1) return <FlowMockup />
+  return <AppMockup />
+}
+
+function ServiceCard({ service, index, total }: { service: typeof SERVICES[number]; index: number; total: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const Icon = service.icon
+
+  useGSAP(() => {
+    if (!ref.current) return
+    const root = ref.current
+    const inner = root.querySelector<HTMLElement>(".card-inner")
+    if (!inner) return
+
+    // Card peel-away: as the next card scrolls up, this one scales/fades
+    if (index < total - 1) {
+      gsap.to(inner, {
+        scale: 0.92,
+        opacity: 0.35,
+        filter: "blur(4px)",
+        ease: "none",
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.6,
+        },
+      })
+    }
+
+    // Reveal animations (play once on enter)
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: root, start: "top 70%", toggleActions: "play none none none" },
+    })
+    tl.fromTo(inner.querySelector(".card-mockup"), { opacity: 0, x: -80, scale: 0.85 }, { opacity: 1, x: 0, scale: 1, duration: 1, ease: "power3.out" })
+    tl.fromTo(inner.querySelectorAll(".card-meta"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: "power2.out" }, "-=0.8")
+    tl.fromTo(inner.querySelector(".card-title"), { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.85, ease: "power3.out" }, "-=0.6")
+    tl.fromTo(inner.querySelector(".card-desc"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.55")
+    tl.fromTo(inner.querySelectorAll(".card-bullet"), { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.06, ease: "power2.out" }, "-=0.45")
+    tl.fromTo(inner.querySelectorAll(".card-chip"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: "power2.out" }, "-=0.3")
+    tl.fromTo(inner.querySelector(".card-icon"), { opacity: 0, scale: 0.5, rotate: -25 }, { opacity: 1, scale: 1, rotate: 0, duration: 0.6, ease: "back.out(1.6)" }, "-=0.5")
+  }, { scope: ref })
+
+  return (
+    <div
+      ref={ref}
+      className="sticky top-0 h-screen flex items-center justify-center px-4 md:px-8 lg:px-14"
+      style={{ zIndex: index + 1 }}
+    >
+      <div
+        className="card-inner relative w-full max-w-[1300px] h-[88vh] md:h-[82vh] rounded-[28px] md:rounded-[36px] border border-white/[0.1] overflow-hidden"
+        style={{
+          background: `radial-gradient(120% 80% at 100% 0%, ${ac(0.18)} 0%, transparent 55%), radial-gradient(80% 60% at 0% 100%, rgba(255,255,255,0.04) 0%, transparent 60%), hsla(220, 15%, 4%, 0.35)`,
+          backdropFilter: "blur(48px) saturate(160%)",
+          WebkitBackdropFilter: "blur(48px) saturate(160%)",
+          boxShadow: `0 40px 100px -20px rgba(0,0,0,0.6), 0 0 0 1px ${ac(0.06)} inset`,
+        }}
+      >
+        {/* Subtle accent border on top */}
+        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent 0%, ${ac(0.5)} 30%, ${ac(0.5)} 70%, transparent 100%)` }} />
+
+        {/* Decorative grid texture */}
+        <div className="absolute inset-0 opacity-[0.07] pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(${ac()} 1px, transparent 1px), linear-gradient(90deg, ${ac()} 1px, transparent 1px)`,
+            backgroundSize: "48px 48px",
+            maskImage: "radial-gradient(ellipse at 50% 50%, black 30%, transparent 80%)",
+          }} />
+
+        {/* Top bar: index + subtitle + icon */}
+        <div className="absolute top-6 md:top-9 left-7 md:left-12 right-7 md:right-12 flex items-center justify-between z-20">
+          <div className="card-meta flex items-center gap-3">
+            <span className="font-mono text-[10px] md:text-[11px] tracking-[0.35em] text-white/35 tabular-nums">
+              {String(index + 1).padStart(2, "0")}<span className="text-white/15"> / {String(total).padStart(2, "0")}</span>
+            </span>
+            <div className="w-10 h-px" style={{ backgroundColor: ac(0.6) }} />
+            <span className="font-mono text-[10px] md:text-[11px] tracking-[0.3em] uppercase" style={{ color: ac() }}>
+              {service.subtitle}
+            </span>
+          </div>
+
+          <div className="card-icon w-12 h-12 md:w-14 md:h-14 rounded-2xl border-2 flex items-center justify-center backdrop-blur-sm"
+            style={{ borderColor: ac(0.5), backgroundColor: ac(0.1), boxShadow: `0 0 30px ${ac(0.25)}` }}>
+            <Icon className="w-5 h-5 md:w-6 md:h-6" style={{ color: ac() }} />
+          </div>
+        </div>
+
+        {/* Main content grid */}
+        <div className="absolute inset-0 grid grid-cols-12 gap-4 md:gap-8 px-7 md:px-12 lg:px-16 pt-24 md:pt-28 pb-10 md:pb-14">
+
+          {/* Mockup — fills left half, centered with equal padding */}
+          <div className="card-mockup col-span-12 md:col-span-6 flex items-center justify-center">
+            <ServiceMockup index={index} />
+          </div>
+
+          {/* Right content — centered in its column, mirrors mockup's framing */}
+          <div className="col-span-12 md:col-span-6 flex items-center justify-center">
+            <div className="w-full max-w-[480px]">
+              <h3 className="card-title leading-[0.85] tracking-tight text-white mb-5 md:mb-7"
+                style={{
+                  fontFamily: "var(--font-bebas)",
+                  fontSize: "clamp(2.6rem, 6.5vw, 5.5rem)",
+                  letterSpacing: "0.005em",
+                }}>
+                {service.title.toUpperCase()}
+              </h3>
+
+              <p className="card-desc text-white/70 text-sm md:text-base lg:text-[1.05rem] leading-relaxed mb-6 md:mb-8">
+                {service.description}
+              </p>
+
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 md:gap-y-3 mb-6 md:mb-8">
+                {service.bullets.map((b, j) => (
+                  <li key={j} className="card-bullet flex items-center gap-3 text-white/70 text-xs md:text-sm">
+                    <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: ac(), boxShadow: `0 0 8px ${ac(0.6)}` }} />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-wrap gap-1.5">
+                {service.stack.map((t) => (
+                  <span key={t} className="card-chip font-mono px-3 py-1.5 text-[10px] tracking-wider border rounded-full text-white/70 backdrop-blur-sm transition-colors duration-300 hover:text-white"
+                    style={{ borderColor: "rgba(255,255,255,0.12)", backgroundColor: "rgba(255,255,255,0.03)" }}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom-right corner mark */}
+        <div className="absolute bottom-6 md:bottom-9 right-7 md:right-12 flex items-center gap-2 z-20 card-meta">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ac(), boxShadow: `0 0 10px ${ac()}` }} />
+          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">{service.title}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ServiceCardMobile({ service, index }: { service: typeof SERVICES[number]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const Icon = service.icon
+
+  useGSAP(() => {
+    if (!ref.current) return
+    gsap.fromTo(ref.current, { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.75, ease: "power3.out",
+      scrollTrigger: { trigger: ref.current, start: "top 88%", toggleActions: "play none none none" },
+    })
+  }, { scope: ref })
+
+  return (
+    <div ref={ref}
+      className="relative rounded-2xl border border-white/[0.1] overflow-hidden p-7"
+      style={{
+        background: `radial-gradient(120% 80% at 100% 0%, ${ac(0.16)} 0%, transparent 60%), hsla(220, 15%, 4%, 0.4)`,
+        backdropFilter: "blur(36px) saturate(160%)",
+        WebkitBackdropFilter: "blur(36px) saturate(160%)",
+      }}
+    >
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${ac(0.6)} 50%, transparent)` }} />
+
+      <div className="relative flex items-start justify-between mb-3">
+        <span className="font-mono text-[10px] tracking-[0.35em] text-white/35 tabular-nums">
+          {String(index + 1).padStart(2, "0")} <span className="text-white/15">/ {String(SERVICES.length).padStart(2, "0")}</span>
+        </span>
+        <div className="w-11 h-11 rounded-xl border-2 flex items-center justify-center"
+          style={{ borderColor: ac(0.5), backgroundColor: ac(0.1), boxShadow: `0 0 20px ${ac(0.2)}` }}>
+          <Icon className="w-5 h-5" style={{ color: ac() }} />
+        </div>
+      </div>
+
+      <div className="relative">
+        {/* Mockup */}
+        <div className="mb-5 flex justify-center">
+          <ServiceMockup index={index} />
+        </div>
+
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-px" style={{ backgroundColor: ac() }} />
+          <span className="font-mono text-[10px] tracking-[0.3em] uppercase" style={{ color: ac() }}>
+            {service.subtitle}
+          </span>
+        </div>
+
+        <h3 className="leading-[0.9] tracking-tight text-white mb-4"
+          style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(2.4rem, 9vw, 3.5rem)", letterSpacing: "0.015em" }}>
+          {service.title.toUpperCase()}
+        </h3>
+
+        <p className="text-white/70 text-sm leading-relaxed mb-5">{service.description}</p>
+
+        <ul className="space-y-2.5 mb-5">
+          {service.bullets.map((b, j) => (
+            <li key={j} className="flex items-center gap-3 text-white/70 text-sm">
+              <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: ac(), boxShadow: `0 0 8px ${ac(0.6)}` }} />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex flex-wrap gap-1.5">
+          {service.stack.map((t) => (
+            <span key={t} className="font-mono px-3 py-1.5 text-[10px] tracking-wider border border-white/[0.12] rounded-full text-white/70 bg-white/[0.03]">
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ServicesPanel({ isMobile }: { isMobile: boolean }) {
+  if (isMobile) {
+    return (
+      <div className="relative space-y-5">
+        {SERVICES.map((service, i) => (
+          <ServiceCardMobile key={i} service={service} index={i} />
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative">
+      {SERVICES.map((service, i) => (
+        <ServiceCard key={i} service={service} index={i} total={SERVICES.length} />
+      ))}
+    </div>
+  )
+}
+
 /* ═══ MAIN ═══ */
 
 export default function Home() {
@@ -257,6 +817,15 @@ export default function Home() {
 
     // About reveals — on mobile use opacity-only fade (no y offset) to avoid layout shifts
     gsap.utils.toArray<HTMLElement>(".about-reveal").forEach((el, i) => {
+      if (isMobile) {
+        gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: i * 0.06, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 95%", toggleActions: "play none none none" } })
+      } else {
+        gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: i * 0.08, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" } })
+      }
+    })
+
+    // Services intro reveals (header / statement)
+    gsap.utils.toArray<HTMLElement>(".services-reveal").forEach((el, i) => {
       if (isMobile) {
         gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: i * 0.06, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 95%", toggleActions: "play none none none" } })
       } else {
@@ -361,7 +930,7 @@ export default function Home() {
             <motion.nav initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
               className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-3">
-              {[{ id: "about", n: "01" }, { id: "experience", n: "02" }, { id: "projects", n: "03" }, { id: "certifications", n: "04" }, { id: "contact", n: "05" }].map((item) => (
+              {[{ id: "about", n: "01" }, { id: "services", n: "02" }, { id: "experience", n: "03" }, { id: "projects", n: "04" }, { id: "certifications", n: "05" }, { id: "contact", n: "06" }].map((item) => (
                 <button key={item.id} onClick={() => scrollTo(item.id)}
                   className={`group flex items-center gap-2 transition-all duration-300 ${activeNav === item.id ? "opacity-100" : "opacity-25 hover:opacity-60"}`} aria-label={item.id}>
                   <div className={`h-[1px] transition-all duration-500 ${activeNav === item.id ? "w-8" : "w-4"}`}
@@ -381,6 +950,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {[
               { id: "about", label: "Sobre mí" },
+              { id: "services", label: "Servicios" },
               { id: "experience", label: "Experiencia" },
               { id: "projects", label: "Proyectos" },
               { id: "certifications", label: "Certificaciones" },
@@ -520,10 +1090,33 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ═══ SERVICES — 02 (sticky-stacked deck of cards) ═══ */}
+        <section id="services" data-section="services" className="relative z-10">
+          {/* Intro: header + statement */}
+          <div className="px-6 md:px-10 lg:px-20 pt-20 md:pt-44 pb-12 md:pb-20">
+            <div className="max-w-6xl mx-auto">
+              <div className="services-reveal">
+                <SectionHeader index="02" label="Servicios" />
+              </div>
+
+              <h2 className="services-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl mb-6">
+                Lo que <span style={{ WebkitTextStroke: `1.5px ${ac()}`, color: "transparent" }}>construyo</span> para vos.
+              </h2>
+              <p className="services-reveal text-white/45 leading-relaxed max-w-2xl">
+                Tres formas de aportar valor a tu proyecto: desde el sitio que es tu carta de presentación,
+                hasta los flujos invisibles que hacen que todo funcione solo.
+              </p>
+            </div>
+          </div>
+
+          {/* Sticky-stacked cards: each pins to the top of the viewport and is covered by the next */}
+          <ServicesPanel isMobile={isMobile} />
+        </section>
+
         {/* ═══ EXPERIENCE — timeline ═══ */}
         <section id="experience" data-section="experience" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
           <div className="max-w-5xl mx-auto">
-            <SectionHeader index="02" label="Experiencia" />
+            <SectionHeader index="03" label="Experiencia" />
             <div className="space-y-10">
               {EXPERIENCE.map((exp, i) => (
                 <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
@@ -562,7 +1155,7 @@ export default function Home() {
           /* ─── Mobile: vertical cards ─── */
           <section id="projects" data-section="projects" className="relative z-10 py-16 px-6">
             <div className="max-w-lg mx-auto">
-              <SectionHeader index="03" label="Proyectos" />
+              <SectionHeader index="04" label="Proyectos" />
               <div className="space-y-16">
                 {PROJECTS.map((p, i) => (
                   <div key={i}>
@@ -704,7 +1297,7 @@ export default function Home() {
               }}>
 
               <div className="absolute top-32 flex items-center gap-3">
-                <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>03</span>
+                <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>04</span>
                 <div className="h-[1px] w-12 bg-white/[0.18]" />
                 <span className="font-mono text-xl md:text-2xl tracking-[0.25em] text-white/50 uppercase">Proyectos</span>
               </div>
@@ -775,7 +1368,7 @@ export default function Home() {
         {/* ═══ CERTIFICATIONS ═══ */}
         <section id="certifications" data-section="certifications" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
           <div className="max-w-5xl mx-auto">
-            <SectionHeader index="04" label="Certificaciones" />
+            <SectionHeader index="05" label="Certificaciones" />
             <div>
               {CERTS.map((c, i) => (
                 <Link key={i} href={c.url} target="_blank" rel="noopener noreferrer" className="cert-row magnetic group block">
@@ -800,7 +1393,7 @@ export default function Home() {
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vh] rounded-full opacity-[0.05] blur-[160px] pointer-events-none" style={{ backgroundColor: ac() }} />
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="contact-big mb-16 md:mb-20">
-              <SectionHeader index="05" label="Contacto" />
+              <SectionHeader index="06" label="Contacto" />
               <h2 className="text-[clamp(2.2rem,6vw,3.3rem)] font-bold leading-[1] tracking-tight text-white">
                 ¿Trabajamos<br /><span style={{ color: ac() }}>juntos</span>?
               </h2>
