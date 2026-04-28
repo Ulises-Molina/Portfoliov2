@@ -46,8 +46,14 @@ const SERVICES = [
     n: "01",
     title: "Desarrollo Web",
     subtitle: "Sitios & E-Commerce",
-    description: "Sitios institucionales, landings de alto impacto y tiendas online optimizadas para conversión, velocidad y SEO.",
-    bullets: ["Landings & corporativos", "E-Commerce (Shopify / WP)", "SEO técnico & performance", "Responsive design"],
+    bullets: [
+      "Landings & corporativos",
+      "E-Commerce (Shopify / WP)",
+      "SEO técnico & performance",
+      "Responsive design",
+      "Animaciones & microinteracciones",
+      "Optimización de conversión",
+    ],
     stack: ["Next.js", "Wordpress", "Shopify", "Tailwind"],
     icon: Globe,
   },
@@ -55,8 +61,13 @@ const SERVICES = [
     n: "02",
     title: "Automatizaciones",
     subtitle: "Flujos & Procesos",
-    description: "Integraciones a medida que conectan tus herramientas, eliminan tareas manuales y escalan tu operación sin esfuerzo.",
-    bullets: ["Workflows con n8n / Zapier", "Integraciones de APIs", "Email marketing & CRM", "Sincronización de datos"],
+    description: "Integraciones a medida que conectan herramientas, eliminan tareas manuales y escalan la operatividad sin esfuerzo.",
+    bullets: [
+      "Workflows con n8n / Zapier",
+      "Integraciones de APIs",
+      "Email marketing & CRM",
+      "Sincronización de datos",
+    ],
     stack: ["n8n", "Zapier", "REST APIs", "Webhooks"],
     icon: Workflow,
   },
@@ -65,7 +76,12 @@ const SERVICES = [
     title: "Desarrollo de Apps",
     subtitle: "Producto & SaaS",
     description: "Web apps, dashboards y herramientas internas con interfaz moderna, autenticación robusta y backend escalable.",
-    bullets: ["Web Apps & SaaS", "Dashboards a medida", "Auth & base de datos", "Deploy & mantenimiento"],
+    bullets: [
+      "Web Apps & SaaS",
+      "Dashboards a medida",
+      "Auth & base de datos",
+      "Deploy & mantenimiento",
+    ],
     stack: ["React", "Next.js", "Supabase", "TypeScript"],
     icon: AppWindow,
   },
@@ -350,10 +366,6 @@ function FlowMockup() {
         {/* SVG connectors — viewBox matches the 4/3 container so geometry is undistorted */}
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 600 450" fill="none" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <linearGradient id="connGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={ac(0.75)} />
-              <stop offset="100%" stopColor={ac(0.45)} />
-            </linearGradient>
             <marker
               id="arrowEnd"
               viewBox="0 0 12 12"
@@ -364,35 +376,38 @@ function FlowMockup() {
               markerHeight="11"
               orient="auto"
             >
-              <path d="M 1 1 L 11 6 L 1 11 L 3.5 6 z" fill={ac(0.95)} />
+              <path d="M 1 1 L 11 6 L 1 11 L 3.5 6 z" fill="rgba(255,255,255,0.6)" />
             </marker>
           </defs>
 
-          {/* Trigger → Filter (clean vertical) */}
+          {/* Trigger → Filter */}
           <path
             id="connA"
             d="M 300 107 L 300 196"
-            stroke="url(#connGrad)"
-            strokeWidth="1.6"
+            stroke="rgba(255,255,255,0.45)"
+            strokeWidth="1.4"
             strokeLinecap="round"
+            strokeDasharray="4 4"
             markerEnd="url(#arrowEnd)"
           />
-          {/* Filter → Slack (smooth S-curve, left branch) */}
+          {/* Filter → Slack (left branch) */}
           <path
             id="connB"
-            d="M 300 254 C 300 308, 186 296, 186 340"
-            stroke="url(#connGrad)"
-            strokeWidth="1.6"
+            d="M 300 254 L 186 340"
+            stroke="rgba(255,255,255,0.45)"
+            strokeWidth="1.4"
             strokeLinecap="round"
+            strokeDasharray="4 4"
             markerEnd="url(#arrowEnd)"
           />
-          {/* Filter → Database (smooth S-curve, right branch) */}
+          {/* Filter → Database (right branch) */}
           <path
             id="connC"
-            d="M 300 254 C 300 308, 414 296, 414 340"
-            stroke="url(#connGrad)"
-            strokeWidth="1.6"
+            d="M 300 254 L 414 340"
+            stroke="rgba(255,255,255,0.45)"
+            strokeWidth="1.4"
             strokeLinecap="round"
+            strokeDasharray="4 4"
             markerEnd="url(#arrowEnd)"
           />
 
@@ -545,7 +560,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
     tl.fromTo(inner.querySelector(".card-mockup"), { opacity: 0, x: -80, scale: 0.85 }, { opacity: 1, x: 0, scale: 1, duration: 1, ease: "power3.out" })
     tl.fromTo(inner.querySelectorAll(".card-meta"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: "power2.out" }, "-=0.8")
     tl.fromTo(inner.querySelector(".card-title"), { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.85, ease: "power3.out" }, "-=0.6")
-    tl.fromTo(inner.querySelector(".card-desc"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.55")
+    tl.fromTo(inner.querySelectorAll(".card-desc"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.55")
     tl.fromTo(inner.querySelectorAll(".card-bullet"), { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.06, ease: "power2.out" }, "-=0.45")
     tl.fromTo(inner.querySelectorAll(".card-chip"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: "power2.out" }, "-=0.3")
     tl.fromTo(inner.querySelector(".card-icon"), { opacity: 0, scale: 0.5, rotate: -25 }, { opacity: 1, scale: 1, rotate: 0, duration: 0.6, ease: "back.out(1.6)" }, "-=0.5")
@@ -615,18 +630,31 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
                 {service.title.toUpperCase()}
               </h3>
 
-              <p className="card-desc text-white/70 text-sm md:text-base lg:text-[1.05rem] leading-relaxed mb-6 md:mb-8">
-                {service.description}
-              </p>
+              {service.description && (
+                <p className="card-desc text-white/70 text-sm md:text-base lg:text-[1.05rem] leading-relaxed mb-7 md:mb-9">
+                  {service.description}
+                </p>
+              )}
 
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 md:gap-y-3 mb-6 md:mb-8">
-                {service.bullets.map((b, j) => (
-                  <li key={j} className="card-bullet flex items-center gap-3 text-white/70 text-xs md:text-sm">
-                    <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: ac(), boxShadow: `0 0 8px ${ac(0.6)}` }} />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="mb-7 md:mb-9">
+                <div className="card-meta flex items-center gap-3 mb-3 md:mb-4">
+                  <div className="w-6 h-px" style={{ backgroundColor: ac(0.6) }} />
+                  <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/40">
+                    Capacidades
+                  </span>
+                </div>
+
+                <ul className="border-t border-white/[0.08]">
+                  {service.bullets.map((b, j) => (
+                    <li key={j} className="card-bullet group flex items-baseline gap-4 py-2.5 md:py-3 border-b border-white/[0.08]">
+                      <span className="font-mono text-[10px] tracking-wider tabular-nums w-5 shrink-0 transition-colors text-white/30 group-hover:text-white/70">
+                        {String(j + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-white/75 group-hover:text-white text-sm md:text-[15px] flex-1 transition-colors">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <div className="flex flex-wrap gap-1.5">
                 {service.stack.map((t) => (
@@ -701,16 +729,29 @@ function ServiceCardMobile({ service, index }: { service: typeof SERVICES[number
           {service.title.toUpperCase()}
         </h3>
 
-        <p className="text-white/70 text-sm leading-relaxed mb-5">{service.description}</p>
+        {service.description && (
+          <p className="text-white/70 text-sm leading-relaxed mb-6">{service.description}</p>
+        )}
 
-        <ul className="space-y-2.5 mb-5">
-          {service.bullets.map((b, j) => (
-            <li key={j} className="flex items-center gap-3 text-white/70 text-sm">
-              <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: ac(), boxShadow: `0 0 8px ${ac(0.6)}` }} />
-              <span>{b}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-5 h-px" style={{ backgroundColor: ac(0.6) }} />
+            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-white/40">
+              Capacidades
+            </span>
+          </div>
+
+          <ul className="border-t border-white/[0.08]">
+            {service.bullets.map((b, j) => (
+              <li key={j} className="flex items-baseline gap-4 py-2.5 border-b border-white/[0.08]">
+                <span className="font-mono text-[10px] tracking-wider tabular-nums w-5 shrink-0 text-white/30">
+                  {String(j + 1).padStart(2, "0")}
+                </span>
+                <span className="text-white/75 text-sm flex-1">{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div className="flex flex-wrap gap-1.5">
           {service.stack.map((t) => (
@@ -950,7 +991,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {[
               { id: "about", label: "Sobre mí" },
-              { id: "services", label: "Servicios" },
+              { id: "services", label: "Aptitudes" },
               { id: "experience", label: "Experiencia" },
               { id: "projects", label: "Proyectos" },
               { id: "certifications", label: "Certificaciones" },
@@ -1046,14 +1087,14 @@ export default function Home() {
         </section>
 
         {/* ═══ ABOUT — editorial, sin cards ═══ */}
-        <section id="about" data-section="about" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
+        <section id="about" data-section="about" className="relative z-10 py-12 md:py-24 px-6 md:px-10 lg:px-20">
           <div className="max-w-6xl mx-auto">
             <SectionHeader index="01" label="Sobre mí" />
 
             {/* Big statement */}
             <h2 className="about-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl mb-8">
               Desarrollador de software enfocado en crear
-              interfaces que conectan con los usuarios.
+              interfaces que conectan con los <span className="text-[hsl(260,15%,75%)]">usuarios.</span>
             </h2>
 
             {/* Two column text */}
@@ -1093,19 +1134,15 @@ export default function Home() {
         {/* ═══ SERVICES — 02 (sticky-stacked deck of cards) ═══ */}
         <section id="services" data-section="services" className="relative z-10">
           {/* Intro: header + statement */}
-          <div className="px-6 md:px-10 lg:px-20 pt-20 md:pt-44 pb-12 md:pb-20">
+          <div className="px-6 md:px-10 lg:px-20 pt-12 md:pt-24 pb-6 md:pb-10">
             <div className="max-w-6xl mx-auto">
               <div className="services-reveal">
-                <SectionHeader index="02" label="Servicios" />
+                <SectionHeader index="02" label="Aptitudes" />
               </div>
 
-              <h2 className="services-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl mb-6">
-                Lo que <span style={{ WebkitTextStroke: `1.5px ${ac()}`, color: "transparent" }}>construyo</span> para vos.
+              <h2 className="services-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
+                Diseño, código y automatización bajo un mismo <span className="text-[hsl(260,15%,75%)]">criterio</span>.
               </h2>
-              <p className="services-reveal text-white/45 leading-relaxed max-w-2xl">
-                Tres formas de aportar valor a tu proyecto: desde el sitio que es tu carta de presentación,
-                hasta los flujos invisibles que hacen que todo funcione solo.
-              </p>
             </div>
           </div>
 
