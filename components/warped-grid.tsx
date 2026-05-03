@@ -239,7 +239,8 @@ export function WarpedGrid() {
     const canvas = canvasRef.current
     if (!canvas) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return
+
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches
 
     const ctx = setup(canvas)
     if (!ctx) return
@@ -248,7 +249,7 @@ export function WarpedGrid() {
     let { flowA, flowB } = ctx
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio, 1.5)
+      const dpr = Math.min(window.devicePixelRatio, isTouch ? 1 : 1.5)
       const w = window.innerWidth, h = window.innerHeight
       canvas.width = w * dpr
       canvas.height = h * dpr
@@ -261,7 +262,9 @@ export function WarpedGrid() {
     const onMove = (e: MouseEvent) => {
       mouse.current = { x: e.clientX / window.innerWidth, y: 1.0 - e.clientY / window.innerHeight }
     }
-    window.addEventListener("mousemove", onMove, { passive: true })
+    if (!isTouch) {
+      window.addEventListener("mousemove", onMove, { passive: true })
+    }
 
     const render = () => {
       const t = (Date.now() - startTime.current) / 1000
@@ -325,7 +328,7 @@ export function WarpedGrid() {
 
     return () => {
       window.removeEventListener("resize", resize)
-      window.removeEventListener("mousemove", onMove)
+      if (!isTouch) window.removeEventListener("mousemove", onMove)
       cancelAnimationFrame(rafRef.current)
     }
   }, [setup])

@@ -10,6 +10,7 @@ import Link from "next/link"
 import dynamic from "next/dynamic"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import EarthGlobe from "@/components/ui/globe"
+import { CardStack } from "@/components/ui/card-stack"
 
 const WarpedGrid = dynamic(() => import("@/components/warped-grid").then((m) => m.WarpedGrid), { ssr: false })
 const LoadingScreen = dynamic(() => import("@/components/loading-screen").then((m) => m.LoadingScreen), { ssr: false })
@@ -1317,8 +1318,6 @@ function ServicesPanel({ isMobile }: { isMobile: boolean }) {
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const projectsRef = useRef<HTMLDivElement>(null)
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeProject, setActiveProject] = useState(0)
   const prefersReducedMotion = useReducedMotion()
   const [mounted, setMounted] = useState(false)
@@ -1407,52 +1406,6 @@ export default function Home() {
         gsap.fromTo(el, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } })
       }
     })
-
-    // 3D Carousel projects — desktop only
-    if (projectsRef.current && window.innerWidth >= 1024) {
-      const count = PROJECTS.length
-
-      // Shared function: set a card's 3D state based on its continuous offset from center
-      const setCardState = (card: HTMLDivElement, offset: number) => {
-        const abs = Math.abs(offset)
-        // Opacity: quadratic falloff, stays high near center
-        const tOp        = Math.min(abs / 2.5, 1)
-        const opacity    = Math.max(0, 1 - tOp * tOp)
-        const rotateY    = Math.max(-28, Math.min(28, offset * 16))
-        const scale      = Math.max(0.80, 1 - abs * 0.085)
-        // Brightness/saturate: always applied as a continuous function (no hard threshold → no jump)
-        const tBr        = Math.min(abs / 2.0, 1)
-        const brightness = Math.max(0.15, 1 - tBr * tBr * 0.85)
-        const saturate   = Math.max(0.25, 1 - tBr * tBr * 0.75)
-        const filter     = `brightness(${brightness.toFixed(3)}) saturate(${saturate.toFixed(3)})`
-        gsap.set(card, {
-          xPercent: offset * 155 - 50,
-          yPercent: -50,
-          rotateY,
-          scale,
-          opacity,
-          zIndex: PROJECTS.length - Math.round(abs),
-          pointerEvents: abs < 0.5 ? "auto" : "none",
-          filter,
-        })
-      }
-
-      // Initialize card positions
-      cardRefs.current.forEach((card, i) => { if (card) setCardState(card, i) })
-
-      ScrollTrigger.create({
-        trigger: projectsRef.current,
-        start: "top top",
-        end: () => `+=${count * 350}vh`,
-        pin: true,
-        scrub: 2.5,
-        onUpdate: (self) => {
-          const raw = self.progress * (count - 1)
-          setActiveProject(Math.min(Math.round(raw), count - 1))
-          cardRefs.current.forEach((card, i) => { if (card) setCardState(card, i - raw) })
-        },
-      })
-    }
 
     // Certs — on mobile use opacity-only fade (no x offset) to avoid layout shifts
     gsap.utils.toArray<HTMLElement>(".cert-row").forEach((el, i) => {
@@ -1777,164 +1730,131 @@ export default function Home() {
             </div>
           </section>
         ) : (
-          /* ─── Desktop: horizontal 3D carousel ─── */
-          <section id="projects" data-section="projects" ref={projectsRef} className="relative z-10 h-screen overflow-hidden">
+          /* ─── Desktop: card stack en abanico ─── */
+          <section id="projects" data-section="projects" className="relative z-10 py-24 px-6 md:px-10 lg:px-20 overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-12 md:mb-16">
+                <SectionHeader index="04" label="Proyectos" />
+              </div>
 
-            {/* Horizontal carousel — anchor at 65% from left, slides behind info panel */}
-            <div className="absolute top-1/2 -translate-y-1/2" style={{ left: "63%", perspective: "1400px" }}>
-              {PROJECTS.map((p, i) => {
-                const isActive = i === activeProject
-                return (
-                  <div
-                    key={i}
-                    ref={(el) => { cardRefs.current[i] = el }}
-                    className="absolute top-1/2"
-                    style={{
-                      width: "min(52vw, 680px)",
-                      left: "50%",
-                    }}
-                  >
-                    <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                      className="magnetic block relative w-full group/proj select-none">
-
-                      <div style={{ padding: "0 8%" }}>
-                        <div style={{
-                          position: "relative",
-                          width: "100%",
-                          aspectRatio: "63/39",
-                          borderRadius: "14px",
-                          background: "#0d0d0d",
-                          boxShadow: `inset 0 0 0 2px #c8cacb, inset 0 0 0 13px #0d0d0d, ${isActive ? "0 28px 65px rgba(0,0,0,0.85)" : "0 10px 30px rgba(0,0,0,0.5)"}`,
-                          padding: "2% 2% 4.2%",
-                          display: "flex",
-                          alignItems: "stretch",
-                        }}>
-                          <div style={{
-                            position: "absolute",
-                            top: "2%", left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "16%", height: "3.2%",
-                            borderRadius: "0 0 6px 6px",
-                            background: "#0d0d0d",
-                            zIndex: 20,
-                          }} />
-
-                          <div style={{ position: "relative", width: "100%", borderRadius: "4px", overflow: "hidden", background: "#000" }}>
-                            <video
-                              autoPlay={isActive} muted loop playsInline poster={p.screenshot}
-                              preload={isActive ? "auto" : "none"}
-                              className="w-full h-full object-cover"
-                              ref={(el) => { if (el) { isActive ? el.play().catch(() => {}) : el.pause() } }}
+              <div className="grid lg:grid-cols-[5fr_7fr] gap-10 lg:gap-14 items-center">
+                {/* Info panel — izquierda */}
+                <div className="relative">
+                  <div className="relative min-h-[440px]">
+                    {PROJECTS.map((p, i) => (
+                      <div
+                        key={i}
+                        className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                          i === activeProject
+                            ? "opacity-100 translate-y-0 relative"
+                            : "opacity-0 translate-y-6 absolute inset-0 pointer-events-none"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 mb-5">
+                          <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
+                          <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
+                        </div>
+                        <h3 className="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
+                        <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-md">{p.description}</p>
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          {p.technologies.map((t) => (
+                            <span
+                              key={t}
+                              className="font-mono px-3 py-1 text-[11px] tracking-wider border border-white/[0.15] rounded text-white/60"
+                              style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
                             >
-                              <source src={p.video} type="video/mp4" />
-                            </video>
-
-                            <div style={{
-                              position: "absolute", inset: 0, pointerEvents: "none",
-                              background: "linear-gradient(130deg, rgba(255,255,255,0.05) 0%, transparent 40%)",
-                            }} />
-
-                            {isActive && (
-                              <div className="absolute inset-0 bg-black/0 group-hover/proj:bg-black/30 transition-colors duration-500 flex items-center justify-center" style={{ zIndex: 10 }}>
-                                <span className="opacity-0 group-hover/proj:opacity-100 transition-opacity duration-500 text-white text-xs font-mono tracking-widest uppercase flex items-center gap-2">
-                                  Ver proyecto <ExternalLink className="w-3.5 h-3.5" />
-                                </span>
-                              </div>
-                            )}
-                          </div>
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex flex-row items-center gap-3">
+                          <Link
+                            href={p.demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="magnetic inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm rounded-full hover:scale-105 transition-transform border border-white/20 text-white/70 bg-transparent hover:border-white/40 hover:text-white"
+                          >
+                            Demo <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+                          {!p.isPrivate && p.repoUrl ? (
+                            <Link
+                              href={p.repoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="magnetic inline-flex items-center gap-2 px-6 py-3 border border-[hsl(165_80%_48%)] text-[hsl(165_80%_48%)] font-medium text-sm rounded-full transition-all hover:scale-105"
+                            >
+                              Código <Code className="w-3.5 h-3.5" />
+                            </Link>
+                          ) : p.isPrivate ? (
+                            <span className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/30 text-sm rounded-full">
+                              <Code className="w-3.5 h-3.5" /> Privado
+                            </span>
+                          ) : null}
                         </div>
                       </div>
-
-                      <div style={{
-                        position: "relative",
-                        zIndex: 10,
-                        width: "100%",
-                        marginTop: "-1.2%",
-                        height: "26px",
-                        borderRadius: "0 0 10px 10px",
-                        border: "1px solid #a0a3a7",
-                        borderTop: "none",
-                        background: "radial-gradient(ellipse at center, #e8e8ea 60%, #b0b2b4 100%)",
-                      }} />
-                    </Link>
+                    ))}
                   </div>
-                )
-              })}
-            </div>
 
-            {/* Left info panel */}
-            <div className="absolute left-0 top-0 h-full w-[46%] z-20 hidden lg:flex flex-col justify-center pl-44 xl:pl-52 pr-12"
-              style={{
-                background: "linear-gradient(to right, rgba(4,6,10,0.96) 40%, rgba(4,6,10,0.65) 70%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
-                maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
-              }}>
-
-              <div className="absolute top-32 flex items-center gap-3">
-                <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>04</span>
-                <div className="h-[1px] w-12 bg-white/[0.18]" />
-                <span className="font-mono text-xl md:text-2xl tracking-[0.25em] text-white/50 uppercase">Proyectos</span>
-              </div>
-
-              <div className="relative z-10 mt-14">
-                <div className="relative">
-                  {PROJECTS.map((p, i) => (
-                    <div key={i} className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${i === activeProject ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 absolute inset-0 pointer-events-none"}`}>
-                      <div className="flex items-center gap-3 mb-5">
-                        <span className="font-mono text-[11px] tracking-[0.3em]" style={{ color: ac() }}>
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
-                        <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
-                      </div>
-                      <h3 className="text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
-                      <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm">{p.description}</p>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {p.technologies.map((t) => (
-                          <span key={t} className="font-mono px-3 py-1 text-[11px] tracking-wider border border-white/[0.15] rounded text-white/60" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>{t}</span>
-                        ))}
-                      </div>
-                      <div className="flex flex-row items-center gap-3 pt-8">
-                        <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
-                          className="magnetic inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm rounded-full hover:scale-105 transition-transform border border-white/20 text-white/70 bg-transparent hover:border-white/40 hover:text-white">
-                          Demo <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
-                        {!p.isPrivate && p.repoUrl ? (
-                          <Link href={p.repoUrl} target="_blank" rel="noopener noreferrer"
-                            className="magnetic inline-flex items-center gap-2 px-6 py-3 border border-[hsl(165_80%_48%)] text-[hsl(165_80%_48%)] font-medium text-sm rounded-full transition-all hover:scale-105">
-                            Código <Code className="w-3.5 h-3.5" />
-                          </Link>
-                        ) : p.isPrivate ? (
-                          <span className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/30 text-sm rounded-full">
-                            <Code className="w-3.5 h-3.5" /> Privado
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                  ))}
+                  <div className="mt-10 font-mono text-sm tracking-widest">
+                    <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
+                    <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
+                  </div>
                 </div>
 
-                <div className="mt-12 font-mono text-sm tracking-widest">
-                  <span style={{ color: ac() }}>{String(activeProject + 1).padStart(2, "0")}</span>
-                  <span className="text-white/20"> / {String(PROJECTS.length).padStart(2, "0")}</span>
-                </div>
-
-                <div className="flex gap-3 mt-6">
-                  {PROJECTS.map((_, i) => (
-                    <button key={i} className="w-2 h-2 rounded-full transition-all duration-500"
-                      style={{
-                        backgroundColor: i === activeProject ? "hsl(165 80% 48%)" : "rgba(255,255,255,0.15)",
-                        transform: i === activeProject ? "scale(1.4)" : "scale(1)",
-                      }}
-                      aria-label={`Proyecto ${i + 1}`}
-                    />
-                  ))}
+                {/* Card stack — derecha */}
+                <div className="w-full">
+                  <CardStack
+                    items={PROJECTS.map((p, i) => ({
+                      id: i,
+                      title: p.title,
+                      description: p.subtitle,
+                      href: p.demoUrl,
+                    }))}
+                    initialIndex={activeProject}
+                    cardWidth={560}
+                    cardHeight={350}
+                    overlap={0.5}
+                    spreadDeg={42}
+                    loop
+                    showDots
+                    onChangeIndex={(idx) => setActiveProject(idx)}
+                    renderCard={(item) => {
+                      const p = PROJECTS[item.id as number]
+                      return (
+                        <div className="relative h-full w-full bg-black">
+                          <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            poster={p.screenshot}
+                            preload="metadata"
+                            className="h-full w-full object-cover"
+                          >
+                            <source src={p.video} type="video/mp4" />
+                          </video>
+                          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(130deg, rgba(255,255,255,0.05) 0%, transparent 40%)" }} />
+                          <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-3 z-10">
+                            <div className="min-w-0">
+                              <div className="font-mono text-[10px] tracking-[0.3em] text-white/55 uppercase mb-1 truncate">
+                                {p.subtitle}
+                              </div>
+                              <div className="text-lg font-semibold text-white tracking-tight truncate">
+                                {p.title}
+                              </div>
+                            </div>
+                            <ExternalLink className="w-4 h-4 text-white/60 shrink-0 mb-1" />
+                          </div>
+                        </div>
+                      )
+                    }}
+                  />
                 </div>
               </div>
-            </div>
-
-            <div className="absolute bottom-8 right-6 md:right-10 font-mono text-[10px] tracking-wider text-white/20 z-30 hidden lg:block">
-              SCROLL ↓
             </div>
           </section>
         )}
