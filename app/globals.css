@@ -114,6 +114,74 @@ body::before {
   animation-play-state: paused;
 }
 
+/* ─── Activity feed (vertical scroll) ─── */
+@keyframes feed-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+.feed-track {
+  animation: feed-scroll 38s linear infinite;
+  will-change: transform;
+}
+
+.feed-track:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Broadcast ticker ─── */
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  animation: ticker-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll-reverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.ticker-fast {
+  animation: ticker-scroll 28s linear infinite;
+  will-change: transform;
+}
+.ticker-reverse {
+  animation: ticker-scroll-reverse 60s linear infinite;
+  will-change: transform;
+}
+.ticker-fast:hover, .ticker-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Tech orbit (rings + counter-rotate) ─── */
+@keyframes orbit-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes orbit-counter-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* ─── Live pulse glow (ring) ─── */
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(165 80% 48% / 0.5); }
+  50%      { box-shadow: 0 0 0 6px hsl(165 80% 48% / 0); }
+}
+
+.live-pulse {
+  animation: live-pulse 1.8s ease-out infinite;
+}
+
+
 /* ─── Horizontal scroll ─── */
 .horizontal-scroll-section {
   overflow: visible;
@@ -141,6 +209,8 @@ body::before {
   body { cursor: auto; }
   a, button, [role="button"] { cursor: auto; }
   .marquee-track, .marquee-track-reverse { animation: none; }
+  .feed-track, .ticker-track, .ticker-fast, .ticker-reverse { animation: none; }
+  .live-pulse { animation: none; }
 }
 
 @media (hover: none) and (pointer: coarse) {

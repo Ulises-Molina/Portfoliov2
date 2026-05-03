@@ -4,11 +4,12 @@ import type React from "react"
 import { useRef, useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap"
-import { ArrowUpRight, Github, Linkedin, Mail, ExternalLink, Code, FileText, Globe, Workflow, AppWindow, Zap, Filter, MessageSquare, Database } from "lucide-react"
+import { ArrowUpRight, Github, Linkedin, Mail, ExternalLink, Code, FileText, Globe, Workflow, AppWindow, Zap, Filter, MessageSquare, Database, Briefcase, Sparkles } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import EarthGlobe from "@/components/ui/globe"
 
 const WarpedGrid = dynamic(() => import("@/components/warped-grid").then((m) => m.WarpedGrid), { ssr: false })
 const LoadingScreen = dynamic(() => import("@/components/loading-screen").then((m) => m.LoadingScreen), { ssr: false })
@@ -159,6 +160,365 @@ const CERTS = [
   { title: "Claude Code in Action", org: "Anthropic", date: "03.2026", url: "https://verify.skilljar.com/c/d45ub3kt6epf" },
 ]
 
+/* ═══ ABOUT — components ═══ */
+
+function useTicker(intervalMs = 1000) {
+  const [t, setT] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setT(new Date()), intervalMs)
+    return () => clearInterval(id)
+  }, [intervalMs])
+  return t
+}
+
+function LiveDot({ size = 6 }: { size?: number }) {
+  return (
+    <span className="relative inline-flex" style={{ width: size, height: size }}>
+      <span className="absolute inset-0 rounded-full animate-ping" style={{ background: ac(0.55) }} />
+      <span className="relative rounded-full" style={{ width: size, height: size, background: ac(), boxShadow: `0 0 8px ${ac(0.8)}` }} />
+    </span>
+  )
+}
+
+/* ─── Count-up — animación numérica al entrar en viewport ─── */
+
+function CountUp({ to, prefix = "", duration = 1200 }: { to: number; prefix?: string; duration?: number }) {
+  const [n, setN] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const reduce = useReducedMotion()
+
+  useEffect(() => {
+    if (reduce) { setN(to); return }
+    const el = ref.current
+    if (!el) return
+    let started = false
+    let raf = 0
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting && !started) {
+          started = true
+          const start = performance.now()
+          const tick = (t: number) => {
+            const p = Math.min(1, (t - start) / duration)
+            const eased = 1 - Math.pow(1 - p, 3)
+            setN(Math.round(to * eased))
+            if (p < 1) raf = requestAnimationFrame(tick)
+          }
+          raf = requestAnimationFrame(tick)
+        }
+      })
+    }, { threshold: 0.4 })
+    obs.observe(el)
+    return () => { obs.disconnect(); cancelAnimationFrame(raf) }
+  }, [to, duration, reduce])
+
+  return <span ref={ref} className="tabular-nums">{prefix}{n}</span>
+}
+
+/* ─── Card shell — base visual compartida (gradiente, halo, textura) ─── */
+
+type BlobPosPreset = "tl" | "tr" | "bl" | "br"
+type BlobPosCustom = { top?: string; bottom?: string; left?: string; right?: string }
+
+function CardShell({
+  children,
+  className = "",
+  blob = "hsla(165, 80%, 48%, 0.2)",
+  blobPos = "tr",
+  minH,
+}: {
+  children: React.ReactNode
+  className?: string
+  blob?: string
+  blobPos?: BlobPosPreset | BlobPosCustom
+  minH?: number
+}) {
+  const presets: Record<BlobPosPreset, BlobPosCustom> = {
+    tl: { top: "-25%", left: "-25%" },
+    tr: { top: "-25%", right: "-25%" },
+    bl: { bottom: "-25%", left: "-25%" },
+    br: { bottom: "-25%", right: "-25%" },
+  }
+  const blobStyle = typeof blobPos === "string" ? presets[blobPos] : blobPos
+
+  return (
+    <div
+      className={`group relative rounded-[20px] overflow-hidden flex flex-col p-7 md:p-8 transition-[border-color,box-shadow] duration-500 hover:border-white/[0.14] ${className}`}
+      style={{
+        background: "linear-gradient(180deg, hsla(220, 18%, 9%, 0.7) 0%, hsla(220, 22%, 4%, 0.96) 100%)",
+        boxShadow: "inset 0 1px 0 hsla(0, 0%, 100%, 0.06), 0 30px 60px -25px rgba(0,0,0,0.5)",
+        border: "1px solid hsla(0, 0%, 100%, 0.08)",
+        minHeight: minH,
+      }}
+    >
+      <div
+        className="absolute top-0 left-8 right-8 h-px pointer-events-none opacity-70 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background: `linear-gradient(90deg, transparent, ${ac(0.65)}, transparent)` }}
+      />
+      <div
+        className="absolute w-72 h-72 rounded-full pointer-events-none"
+        style={{ ...blobStyle, background: `radial-gradient(circle, ${blob}, transparent 70%)`, filter: "blur(50px)" }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.04]"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+          backgroundSize: "22px 22px",
+        }}
+      />
+      <div className="relative z-10 flex flex-col flex-1">{children}</div>
+    </div>
+  )
+}
+
+/* ─── Counters card — años, proyectos, stacks ─── */
+
+const COUNTERS = [
+  { value: 2, prefix: "+", label: "AÑOS" },
+  { value: 15, prefix: "+", label: "PROYECTOS" },
+  { value: 6, prefix: "", label: "CERTIFICADOS" },
+]
+
+function CountersCard() {
+  return (
+    <CardShell blob="transparent" blobPos="bl">
+      <div className="flex items-center justify-between mb-8 md:mb-10">
+        <span className="font-mono text-[10px] tracking-[0.4em] text-white/65 inline-flex items-center gap-2.5">
+          <span className="w-3 h-px" style={{ background: ac(0.7) }} />
+          TRACK RECORD
+        </span>
+        <span className="font-mono text-[10px] tracking-[0.3em] text-white/35">2024 — HOY</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 md:gap-5">
+        {COUNTERS.map((c, i) => (
+          <div
+            key={c.label}
+            className={`text-center ${i > 0 ? "border-l border-white/[0.06]" : ""}`}
+          >
+            <p className="text-[2rem] md:text-[2.5rem] font-bold leading-none text-white tracking-tight">
+              <CountUp to={c.value} prefix={c.prefix} />
+            </p>
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <span className="w-2 h-px" style={{ background: ac(0.5) }} />
+              <p className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] text-white/45">{c.label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </CardShell>
+  )
+}
+
+/* ─── Live status card — identidad fija + snapshot rotando del "ahora" ─── */
+
+type LiveState = {
+  label: string
+  icon: typeof Code
+  value?: string
+  stack?: { name: string; icon: string }[]
+}
+
+const LIVE_STATES: LiveState[] = [
+  { label: "Working at", value: "Qualita Studio", icon: Briefcase },
+  {
+    label: "Stack principal",
+    icon: Zap,
+    stack: [
+      { name: "Next.js", icon: "/iconos/nextjs_icon_dark.svg" },
+      { name: "React", icon: "/iconos/react_light.svg" },
+      { name: "TypeScript", icon: "/iconos/typescript.svg" },
+      { name: "JavaScript", icon: "/iconos/javascript.svg" },
+      { name: "Node.js", icon: "/iconos/nodejs.svg" },
+      { name: "WordPress", icon: "/iconos/wordpress.svg" },
+      { name: "n8n", icon: "/iconos/n8n.svg" },
+    ],
+  },
+  { label: "Último certificado", value: "Claude Code in Action · Anthropic", icon: FileText },
+]
+
+const LIVE_INTERVAL_MS = 4500
+
+function LiveStatusCard() {
+  const [idx, setIdx] = useState(0)
+  const reduce = useReducedMotion()
+  const progressRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (reduce) return
+    const id = setInterval(() => setIdx((p) => (p + 1) % LIVE_STATES.length), LIVE_INTERVAL_MS)
+    return () => clearInterval(id)
+  }, [reduce])
+
+  useEffect(() => {
+    const el = progressRef.current
+    if (!el) return
+    if (reduce) { el.style.transform = "scaleX(1)"; return }
+    el.style.transform = "scaleX(0)"
+    const start = performance.now()
+    let raf = 0
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / LIVE_INTERVAL_MS)
+      el.style.transform = `scaleX(${p})`
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [idx, reduce])
+
+  const current = LIVE_STATES[idx]
+  const Icon = current.icon
+
+  return (
+    <CardShell blob={ac(0.22)} blobPos="tr">
+      {/* Terminal header — window dots + path + counter */}
+      <div
+        className="-mx-7 md:-mx-8 -mt-7 md:-mt-8 mb-6 px-5 py-3 flex items-center justify-between"
+        style={{
+          background: "hsla(220, 22%, 5%, 0.55)",
+          borderBottom: "1px solid hsla(0, 0%, 100%, 0.06)",
+        }}
+      >
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: "hsla(0, 70%, 60%, 0.7)" }} />
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: "hsla(40, 90%, 60%, 0.7)" }} />
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: "hsla(140, 70%, 50%, 0.7)" }} />
+        </div>
+        <div className="inline-flex items-center gap-2">
+          <LiveDot size={5} />
+          <span className="font-mono text-[10px] tracking-[0.25em] text-white/55 tabular-nums">
+            {String(idx + 1).padStart(2, "0")}
+            <span className="text-white/20">/</span>
+            {String(LIVE_STATES.length).padStart(2, "0")}
+          </span>
+        </div>
+      </div>
+
+      {/* Body — rotador horizontal, centrado vertical */}
+      <div className="flex-1 flex items-center min-h-[120px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -14, filter: "blur(6px)" }}
+            transition={{ duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
+            className="flex items-center gap-4 w-full"
+          >
+            <span
+              className="grid place-items-center w-12 h-12 rounded-xl shrink-0"
+              style={{
+                background: `linear-gradient(135deg, ${ac(0.2)}, ${ac(0.05)})`,
+                border: `1px solid ${ac(0.32)}`,
+                boxShadow: `inset 0 1px 0 ${ac(0.25)}, 0 0 16px ${ac(0.15)}`,
+              }}
+            >
+              <Icon className="w-5 h-5" style={{ color: ac() }} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <span className="font-mono text-[9.5px] tracking-[0.32em] text-white/50 uppercase block">
+                {current.label}
+              </span>
+              {current.stack ? (
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  {current.stack.map((s) => (
+                    <span
+                      key={s.name}
+                      title={s.name}
+                      className="grid place-items-center w-9 h-9 rounded-lg shrink-0 transition-colors duration-300 hover:border-white/20"
+                      style={{
+                        background: "hsla(0, 0%, 100%, 0.04)",
+                        border: "1px solid hsla(0, 0%, 100%, 0.08)",
+                      }}
+                    >
+                      <Image src={s.icon} alt={s.name} width={18} height={18} className="opacity-90" />
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[1.2rem] md:text-[1.4rem] font-semibold leading-[1.2] text-white tracking-tight mt-1 text-balance">
+                  {current.value}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Progress bars — la activa se llena progresivamente durante el ciclo */}
+      <div className="mt-5 flex items-center gap-1.5">
+        {LIVE_STATES.map((_, i) => {
+          const isPast = i < idx
+          const isCurrent = i === idx
+          return (
+            <div
+              key={i}
+              className="h-[2px] flex-1 rounded-full overflow-hidden relative"
+              style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+            >
+              {isPast && (
+                <div
+                  className="absolute inset-0"
+                  style={{ backgroundColor: "hsl(165, 80%, 48%)", opacity: 0.4 }}
+                />
+              )}
+              {isCurrent && (
+                <div
+                  ref={progressRef}
+                  className="absolute inset-0"
+                  style={{
+                    backgroundColor: "hsl(165, 80%, 48%)",
+                    boxShadow: "0 0 6px hsla(165, 80%, 48%, 0.4)",
+                    opacity: 0.7,
+                    transformOrigin: "left",
+                    transform: "scaleX(0)",
+                    willChange: "transform",
+                    zIndex: 1,
+                  }}
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </CardShell>
+  )
+}
+
+/* ─── Location card — globo rotando + reloj en vivo ─── */
+
+function LocationCard() {
+  const now = useTicker(1000)
+  const time = now.toLocaleTimeString("es-AR", {
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false, timeZone: "America/Argentina/Buenos_Aires",
+  })
+
+  return (
+    <CardShell blob="hsla(165, 80%, 55%, 0.22)" blobPos={{ top: "35%", left: "-30%" }} minH={320} className="h-full">
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-[10px] tracking-[0.4em] text-white/65 inline-flex items-center gap-2.5">
+          <span className="w-3 h-px" style={{ background: ac(0.7) }} />
+          UBICACIÓN
+        </span>
+        <span className="font-mono text-[10px] tracking-[0.3em] text-white/40">UTC −03:00</span>
+      </div>
+
+      <div className="flex-1 relative my-4 md:my-6 flex items-center justify-center">
+        <EarthGlobe size={240} />
+      </div>
+
+      <div className="flex items-baseline justify-between gap-3 flex-wrap">
+        <div>
+          <p className="text-base md:text-lg font-semibold text-white tracking-tight">Buenos Aires, ARG</p>
+          <p className="font-mono text-[10px] tracking-[0.25em] text-white/35 mt-0.5">−34.61° / −58.38°</p>
+        </div>
+        <p className="font-mono text-2xl md:text-[1.85rem] font-bold tabular-nums" style={{ color: ac() }}>{time}</p>
+      </div>
+    </CardShell>
+  )
+}
+
 /* ═══ CURSOR ═══ */
 
 function MagneticCursor() {
@@ -198,34 +558,202 @@ function MagneticCursor() {
   )
 }
 
-/* ═══ MARQUEE — dual row, full bleed ═══ */
+/* ═══ TECH — orbit pro ═══ */
 
-function TechMarquee() {
-  const reversed = [...TECH].reverse()
+type Tech = {
+  label: string
+  icon: string
+  categories: string[]
+}
 
-  const TechItem = ({ t, prefix }: { t: typeof TECH[number]; prefix: string }) => (
-    <div className="flex items-center gap-3 shrink-0 px-5 py-3 rounded-full border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 group">
-      <div className="relative w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity">
-        <Image src={t.icon} alt={t.label} fill className="object-contain" />
-      </div>
-      <span className="text-sm text-white/35 group-hover:text-white/90 transition-colors whitespace-nowrap font-medium">
-        {t.label}
-      </span>
-    </div>
-  )
+type Ring = {
+  label: string
+  radius: number
+  duration: number
+  reverse: boolean
+  items: Tech[]
+}
+
+const TECH_RINGS: Ring[] = [
+  {
+    label: "Backend & Cloud",
+    radius: 22,
+    duration: 70,
+    reverse: false,
+    items: [
+      { label: "Node.js", icon: "/iconos/nodejs.svg", categories: ["Backend"] },
+      { label: "SQL", icon: "/iconos/postgresql.svg", categories: ["Database"] },
+      { label: "AWS", icon: "/iconos/aws_light.svg", categories: ["Cloud"] },
+      { label: "Git", icon: "/iconos/git.svg", categories: ["DevOps"] },
+    ],
+  },
+  {
+    label: "CMS & Automation",
+    radius: 36,
+    duration: 105,
+    reverse: true,
+    items: [
+      { label: "WordPress", icon: "/iconos/wordpress.svg", categories: ["CMS"] },
+      { label: "Shopify", icon: "/iconos/shopify.svg", categories: ["E-commerce", "CMS"] },
+      { label: "Elementor", icon: "/iconos/elementor.svg", categories: ["CMS"] },
+      { label: "n8n", icon: "/iconos/n8n.svg", categories: ["Automation"] },
+    ],
+  },
+  {
+    label: "Frontend",
+    radius: 49,
+    duration: 140,
+    reverse: false,
+    items: [
+      { label: "Next.js", icon: "/iconos/nextjs_icon_dark.svg", categories: ["Frontend", "Backend"] },
+      { label: "React", icon: "/iconos/react_light.svg", categories: ["Frontend"] },
+      { label: "TypeScript", icon: "/iconos/typescript.svg", categories: ["Frontend", "Backend"] },
+      { label: "JavaScript", icon: "/iconos/javascript.svg", categories: ["Frontend", "Backend"] },
+      { label: "Tailwind CSS", icon: "/iconos/tailwindcss.svg", categories: ["Frontend"] },
+      { label: "HTML5", icon: "/iconos/html5.svg", categories: ["Frontend"] },
+      { label: "CSS", icon: "/iconos/css_old.svg", categories: ["Frontend"] },
+    ],
+  },
+]
+
+function TechOrbit() {
+  const [hovered, setHovered] = useState<string | null>(null)
+  const reduce = useReducedMotion()
+  const isPaused = hovered !== null
+
+  const hoveredTech = hovered
+    ? TECH_RINGS.flatMap((r) => r.items).find((t) => t.label === hovered) ?? null
+    : null
 
   return (
-    <div className="w-screen relative left-1/2 -translate-x-1/2 overflow-hidden space-y-3 py-8">
-      {/* Row 1 — left: two identical sets, animation translates -50% for seamless loop */}
-      <div className="marquee-track flex items-center gap-8 w-max">
-        {TECH.map((t, i) => <TechItem key={`a1-${i}`} t={t} prefix="a1" />)}
-        {TECH.map((t, i) => <TechItem key={`a2-${i}`} t={t} prefix="a2" />)}
+    <div className="relative w-full max-w-[680px] aspect-square mx-auto select-none">
+      {/* Anillos decorativos punteados */}
+      {TECH_RINGS.map((ring) => (
+        <div
+          key={`bg-${ring.label}`}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed pointer-events-none transition-colors duration-500"
+          style={{
+            width: `${ring.radius * 2}%`,
+            aspectRatio: "1",
+            borderColor: isPaused ? "hsla(0, 0%, 100%, 0.03)" : "hsla(0, 0%, 100%, 0.06)",
+          }}
+        />
+      ))}
+
+      {/* Núcleo central — reactivo */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+        <AnimatePresence mode="wait" initial={false}>
+          {hovered && hoveredTech ? (
+            <motion.div
+              key={hovered}
+              initial={{ opacity: 0, scale: 0.9, y: 4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -4 }}
+              transition={{ duration: 0.22, ease: [0.65, 0, 0.35, 1] }}
+              className="text-center px-3"
+            >
+              <p className="text-[1.4rem] md:text-[1.6rem] font-bold text-white tracking-tight leading-tight whitespace-nowrap">
+                {hovered}
+              </p>
+              <div className="inline-flex items-center gap-1.5 mt-2">
+                <span className="w-1 h-1 rounded-full" style={{ background: ac(), boxShadow: `0 0 6px ${ac(0.7)}` }} />
+                <span className="font-mono text-[9.5px] tracking-[0.35em] text-white/45 uppercase whitespace-nowrap">
+                  {hoveredTech.categories.join(" · ")}
+                </span>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="default-pulse"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ duration: 0.25, ease: [0.65, 0, 0.35, 1] }}
+              className="relative grid place-items-center"
+            >
+              <span
+                className="absolute w-20 h-20 rounded-full live-pulse"
+                style={{ background: ac(0.5) }}
+              />
+              <span
+                className="relative block w-4 h-4 rounded-full"
+                style={{
+                  background: ac(),
+                  boxShadow: `0 0 28px ${ac(0.85)}, 0 0 70px ${ac(0.4)}`,
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      {/* Row 2 — right (reversed): two identical sets */}
-      <div className="marquee-track-reverse flex items-center gap-8 w-max">
-        {reversed.map((t, i) => <TechItem key={`b1-${i}`} t={t} prefix="b1" />)}
-        {reversed.map((t, i) => <TechItem key={`b2-${i}`} t={t} prefix="b2" />)}
-      </div>
+
+      {/* Anillos con iconos */}
+      {TECH_RINGS.map((ring) => (
+        <div
+          key={`ring-${ring.label}`}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            animation: reduce
+              ? "none"
+              : `orbit-rotate ${ring.duration}s linear infinite${ring.reverse ? " reverse" : ""}`,
+            animationPlayState: isPaused ? "paused" : "running",
+          }}
+        >
+          {ring.items.map((t, i) => {
+            const angle = (i * 360) / ring.items.length
+            const rad = (angle * Math.PI) / 180
+            const x = 50 + ring.radius * Math.sin(rad)
+            const y = 50 - ring.radius * Math.cos(rad)
+            const isHovered = hovered === t.label
+            const isDimmed = isPaused && !isHovered
+
+            return (
+              <div
+                key={t.label}
+                className="absolute"
+                style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
+              >
+                <button
+                  type="button"
+                  onMouseEnter={() => setHovered(t.label)}
+                  onMouseLeave={() => setHovered(null)}
+                  onFocus={() => setHovered(t.label)}
+                  onBlur={() => setHovered(null)}
+                  aria-label={t.label}
+                  className="block w-12 h-12 md:w-14 md:h-14 outline-none focus-visible:ring-2 focus-visible:ring-white/30 pointer-events-auto rounded-2xl"
+                  style={{
+                    animation: reduce
+                      ? "none"
+                      : `orbit-counter-rotate ${ring.duration}s linear infinite${ring.reverse ? " reverse" : ""}`,
+                    animationPlayState: isPaused ? "paused" : "running",
+                    opacity: isDimmed ? 0.28 : 1,
+                    transition: "opacity 300ms",
+                  }}
+                >
+                  <div
+                    className="grid place-items-center w-full h-full rounded-2xl"
+                    style={{
+                      background: isHovered
+                        ? `linear-gradient(135deg, ${ac(0.32)}, ${ac(0.08)})`
+                        : "hsla(0, 0%, 100%, 0.04)",
+                      border: isHovered
+                        ? `1px solid ${ac(0.6)}`
+                        : "1px solid hsla(0, 0%, 100%, 0.1)",
+                      boxShadow: isHovered
+                        ? `0 0 32px ${ac(0.55)}, inset 0 1px 0 ${ac(0.35)}`
+                        : "inset 0 1px 0 hsla(0, 0%, 100%, 0.05), 0 4px 14px rgba(0,0,0,0.3)",
+                      transform: isHovered ? "scale(1.2)" : "scale(1)",
+                      transition: "background 300ms, border-color 300ms, box-shadow 300ms, transform 300ms",
+                    }}
+                  >
+                    <Image src={t.icon} alt={t.label} width={22} height={22} className="opacity-90" />
+                  </div>
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      ))}
     </div>
   )
 }
@@ -796,7 +1324,6 @@ export default function Home() {
   const [mounted, setMounted] = useState(false)
   const [activeNav, setActiveNav] = useState("hero")
   const [navVisible, setNavVisible] = useState(false)
-  const [time, setTime] = useState("")
   const [isMobile, setIsMobile] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -805,8 +1332,6 @@ export default function Home() {
     setMounted(true)
     setIsMobile(mobile)
     if (mobile) setLoading(false)
-    const tick = () => setTime(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }))
-    tick(); const id = setInterval(tick, 60000); return () => clearInterval(id)
   }, [])
 
   useEffect(() => {
@@ -853,7 +1378,7 @@ export default function Home() {
     tl.fromTo(".hero-cta-btn", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.4)" }, "-=0.3")
 
     if (!isMobile) {
-      gsap.to(".hero-content", { yPercent: 20, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: true } })
+      gsap.to(".hero-content", { yPercent: 20, opacity: 0, filter: "blur(14px)", ease: "none", scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: true } })
     }
 
     // About reveals — on mobile use opacity-only fade (no y offset) to avoid layout shifts
@@ -950,6 +1475,31 @@ export default function Home() {
         gsap.fromTo(el, { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.2 + i * 0.07, ease: "power2.out", scrollTrigger: { trigger: ".contact-section", start: "top 60%" } })
       })
     }
+
+    // Marimba-style scroll-driven blur on large headings (desktop only).
+    // Two scrubs: entry resolves blur as the element enters the viewport,
+    // exit re-blurs as it leaves through the top.
+    if (!isMobile) {
+      gsap.utils.toArray<HTMLElement>(".scroll-blur").forEach((el) => {
+        // Entry: blurred from below → clear at upper-middle
+        gsap.fromTo(el,
+          { filter: "blur(12px)", opacity: 0 },
+          {
+            filter: "blur(0px)", opacity: 1, ease: "none",
+            scrollTrigger: { trigger: el, start: "top 95%", end: "top 60%", scrub: 0.5 },
+          },
+        )
+        // Exit: clear → blurred and gone past the top
+        gsap.fromTo(el,
+          { filter: "blur(0px)", opacity: 1 },
+          {
+            filter: "blur(14px)", opacity: 0, ease: "none",
+            immediateRender: false,
+            scrollTrigger: { trigger: el, start: "top 30%", end: "top -20%", scrub: 0.5 },
+          },
+        )
+      })
+    }
   }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted, loading, isMobile] })
 
   const scrollTo = useCallback((id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }) }, [])
@@ -1004,7 +1554,6 @@ export default function Home() {
             ))}
           </nav>
           <div className="flex items-center gap-4">
-            <span className="hidden lg:block font-mono text-[10px] text-white/30 tracking-widest mr-10">BUE {time}</span>
             {SOCIAL.map((s) => (
               <Link key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
                 className="magnetic text-white/30 hover:text-white transition-colors duration-300 hidden sm:block" aria-label={s.label}>
@@ -1086,47 +1635,35 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ ABOUT — editorial, sin cards ═══ */}
-        <section id="about" data-section="about" className="relative z-10 py-12 md:py-24 px-6 md:px-10 lg:px-20">
-          <div className="max-w-6xl mx-auto">
-            <SectionHeader index="01" label="Sobre mí" />
-
-            {/* Big statement */}
-            <h2 className="about-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl mb-8">
-              Desarrollador de software enfocado en crear
-              interfaces que conectan con los <span className="text-[hsl(260,15%,75%)]">usuarios.</span>
-            </h2>
-
-            {/* Two column text */}
-            <div className="about-reveal grid md:grid-cols-2 gap-x-16 gap-y-6 mb-12">
-              <p className="text-white/45 leading-relaxed">
-                Transformo ideas en sitios rápidos, estéticos y orientados a resultados.
-                Priorizo performance, accesibilidad y experiencia clara.
-              </p>
-              <p className="text-white/45 leading-relaxed">
-                Me involucro desde la estrategia y el diseño hasta la implementación,
-                asegurando consistencia visual con foco en los objetivos.
-              </p>
-            </div>
-
-            {/* Stats inline */}
-            <div className="about-reveal flex gap-16 mb-16">
-              <div>
-                <span className="text-[2.5rem] md:text-[3rem] font-bold leading-none" style={{ color: ac() }}>+2</span>
-                <span className="block font-mono text-[10px] tracking-[0.3em] text-white/50 uppercase mt-1">Años</span>
+        {/* ═══ ABOUT — Editorial spread + marquee wall + manifesto ═══ */}
+        <section id="about" data-section="about" className="relative z-10 py-12 md:py-20 overflow-hidden">
+          <div className="px-6 md:px-10 lg:px-20">
+            <div className="max-w-6xl mx-auto">
+              <div className="about-reveal mb-6 md:mb-10">
+                <SectionHeader index="01" label="Sobre mí" />
               </div>
-              <div>
-                <span className="text-[2.5rem] md:text-[3rem] font-bold leading-none" style={{ color: ac() }}>+15</span>
-                <span className="block font-mono text-[10px] tracking-[0.3em] text-white/50 uppercase mt-1">Proyectos</span>
+
+              {/* Bento — ubicación con globo | live + counters apilados */}
+              <div className="about-reveal grid gap-5 md:gap-6 md:grid-cols-2">
+                <LocationCard />
+                <div className="flex flex-col gap-5 md:gap-6">
+                  <LiveStatusCard />
+                  <CountersCard />
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Tech Marquee — full width */}
-            <div className="about-reveal">
-              <div className="font-mono text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: ac(0.5) }}>
-                Stack tecnológico
+          <div className="px-6 md:px-10 lg:px-20">
+            <div className="max-w-6xl mx-auto">
+              {/* Stack tecnológico */}
+              <div className="about-reveal mt-12 md:mt-16">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="font-mono text-[10px] md:text-[11px] tracking-[0.4em] text-white/40">/ STACK</span>
+                  <span className="flex-1 h-px max-w-[160px]" style={{ background: `linear-gradient(90deg, ${ac(0.4)}, transparent)` }} />
+                </div>
+                <TechOrbit />
               </div>
-              <TechMarquee />
             </div>
           </div>
         </section>
@@ -1140,7 +1677,7 @@ export default function Home() {
                 <SectionHeader index="02" label="Aptitudes" />
               </div>
 
-              <h2 className="services-reveal text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
+              <h2 className="scroll-blur text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
                 Diseño, código y automatización bajo un mismo <span className="text-[hsl(260,15%,75%)]">criterio</span>.
               </h2>
             </div>
@@ -1429,12 +1966,14 @@ export default function Home() {
         <section id="contact" data-section="contact" className="contact-section relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20 overflow-hidden">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vh] rounded-full opacity-[0.05] blur-[160px] pointer-events-none" style={{ backgroundColor: ac() }} />
           <div className="max-w-5xl mx-auto relative z-10">
-            <div className="contact-big mb-16 md:mb-20">
-              <SectionHeader index="06" label="Contacto" />
-              <h2 className="text-[clamp(2.2rem,6vw,3.3rem)] font-bold leading-[1] tracking-tight text-white">
+            <div className="mb-16 md:mb-20">
+              <div className="contact-big">
+                <SectionHeader index="06" label="Contacto" />
+              </div>
+              <h2 className="scroll-blur text-[clamp(2.2rem,6vw,3.3rem)] font-bold leading-[1] tracking-tight text-white">
                 ¿Trabajamos<br /><span style={{ color: ac() }}>juntos</span>?
               </h2>
-              <p className="text-white/35 mt-6 max-w-md text-sm leading-relaxed">
+              <p className="contact-big text-white/35 mt-6 max-w-md text-sm leading-relaxed">
                 Actualmente estoy abierto a nuevas oportunidades. No dudes en contactarme si querés trabajar conmigo.
               </p>
             </div>
