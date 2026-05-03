@@ -48,7 +48,9 @@
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3001/)",
       "Bash(netstat -ano)",
       "Bash(awk '{print $NF}')",
-      "Bash(xargs -I{} taskkill //F //PID {})"
+      "Bash(xargs -I{} taskkill //F //PID {})",
+      "Bash(git checkout *)",
+      "Bash(git rm *)"
     ],
     "additionalDirectories": [
       "\\tmp"
