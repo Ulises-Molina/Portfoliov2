@@ -1101,7 +1101,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
       style={{ zIndex: index + 1 }}
     >
       <div
-        className="card-inner relative w-full max-w-[1300px] h-[88vh] md:h-[82vh] rounded-[28px] md:rounded-[36px] border border-white/[0.1] overflow-hidden"
+        className="card-inner relative w-full max-w-[1300px] h-[88vh] md:h-[86vh] lg:h-[84vh] xl:h-[82vh] rounded-[28px] md:rounded-[36px] border border-white/[0.1] overflow-hidden"
         style={{
           background: `radial-gradient(120% 80% at 100% 0%, ${ac(0.18)} 0%, transparent 55%), radial-gradient(80% 60% at 0% 100%, rgba(255,255,255,0.04) 0%, transparent 60%), hsla(220, 15%, 4%, 0.35)`,
           backdropFilter: "blur(48px) saturate(160%)",
@@ -1121,7 +1121,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
           }} />
 
         {/* Top bar: index + subtitle + icon */}
-        <div className="absolute top-6 md:top-9 left-7 md:left-12 right-7 md:right-12 flex items-center justify-between z-20">
+        <div className="absolute top-6 md:top-7 xl:top-9 left-7 md:left-10 xl:left-12 right-7 md:right-10 xl:right-12 flex items-center justify-between z-20">
           <div className="card-meta flex items-center gap-3">
             <span className="font-mono text-[10px] md:text-[11px] tracking-[0.35em] text-white/35 tabular-nums">
               {String(index + 1).padStart(2, "0")}<span className="text-white/15"> / {String(total).padStart(2, "0")}</span>
@@ -1132,14 +1132,14 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
             </span>
           </div>
 
-          <div className="card-icon w-12 h-12 md:w-14 md:h-14 rounded-2xl border-2 flex items-center justify-center backdrop-blur-sm"
+          <div className="card-icon w-11 h-11 md:w-12 md:h-12 xl:w-14 xl:h-14 rounded-2xl border-2 flex items-center justify-center backdrop-blur-sm"
             style={{ borderColor: ac(0.5), backgroundColor: ac(0.1), boxShadow: `0 0 30px ${ac(0.25)}` }}>
-            <Icon className="w-5 h-5 md:w-6 md:h-6" style={{ color: ac() }} />
+            <Icon className="w-5 h-5 xl:w-6 xl:h-6" style={{ color: ac() }} />
           </div>
         </div>
 
         {/* Main content grid */}
-        <div className="absolute inset-0 grid grid-cols-12 gap-4 md:gap-8 px-7 md:px-12 lg:px-16 pt-24 md:pt-28 pb-10 md:pb-14">
+        <div className="absolute inset-0 grid grid-cols-12 gap-4 md:gap-6 xl:gap-8 px-7 md:px-10 lg:px-14 xl:px-16 pt-20 md:pt-20 xl:pt-28 pb-8 md:pb-10 xl:pb-14">
 
           {/* Mockup — fills left half, centered with equal padding */}
           <div className="card-mockup col-span-12 md:col-span-6 flex items-center justify-center">
@@ -1149,23 +1149,23 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
           {/* Right content — centered in its column, mirrors mockup's framing */}
           <div className="col-span-12 md:col-span-6 flex items-center justify-center">
             <div className="w-full max-w-[480px]">
-              <h3 className="card-title leading-[0.85] tracking-tight text-white mb-5 md:mb-7"
+              <h3 className="card-title leading-[0.85] tracking-tight text-white mb-4 md:mb-4 xl:mb-7"
                 style={{
                   fontFamily: "var(--font-bebas)",
-                  fontSize: "clamp(2.6rem, 6.5vw, 5.5rem)",
+                  fontSize: "clamp(2.2rem, 4.6vw, 5.5rem)",
                   letterSpacing: "0.005em",
                 }}>
                 {service.title.toUpperCase()}
               </h3>
 
               {service.description && (
-                <p className="card-desc text-white/70 text-sm md:text-base lg:text-[1.05rem] leading-relaxed mb-7 md:mb-9">
+                <p className="card-desc text-white/70 text-sm md:text-[14px] xl:text-[1.05rem] leading-relaxed mb-5 md:mb-5 xl:mb-9">
                   {service.description}
                 </p>
               )}
 
-              <div className="mb-7 md:mb-9">
-                <div className="card-meta flex items-center gap-3 mb-3 md:mb-4">
+              <div className="mb-5 md:mb-5 xl:mb-9">
+                <div className="card-meta flex items-center gap-3 mb-3 md:mb-3 xl:mb-4">
                   <div className="w-6 h-px" style={{ backgroundColor: ac(0.6) }} />
                   <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/40">
                     Capacidades
@@ -1174,11 +1174,11 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
 
                 <ul className="border-t border-white/[0.08]">
                   {service.bullets.map((b, j) => (
-                    <li key={j} className="card-bullet group flex items-baseline gap-4 py-2.5 md:py-3 border-b border-white/[0.08]">
+                    <li key={j} className="card-bullet group flex items-baseline gap-4 py-2 md:py-2 xl:py-3 border-b border-white/[0.08]">
                       <span className="font-mono text-[10px] tracking-wider tabular-nums w-5 shrink-0 transition-colors text-white/30 group-hover:text-white/70">
                         {String(j + 1).padStart(2, "0")}
                       </span>
-                      <span className="text-white/75 group-hover:text-white text-sm md:text-[15px] flex-1 transition-colors">{b}</span>
+                      <span className="text-white/75 group-hover:text-white text-[13px] md:text-[13.5px] xl:text-[15px] flex-1 transition-colors">{b}</span>
                     </li>
                   ))}
                 </ul>
@@ -1186,7 +1186,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
 
               <div className="flex flex-wrap gap-1.5">
                 {service.stack.map((t) => (
-                  <span key={t} className="card-chip font-mono px-3 py-1.5 text-[10px] tracking-wider border rounded-full text-white/70 backdrop-blur-sm transition-colors duration-300 hover:text-white"
+                  <span key={t} className="card-chip font-mono px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] tracking-wider border rounded-full text-white/70 backdrop-blur-sm transition-colors duration-300 hover:text-white"
                     style={{ borderColor: "rgba(255,255,255,0.12)", backgroundColor: "rgba(255,255,255,0.03)" }}>
                     {t}
                   </span>
@@ -1197,7 +1197,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
         </div>
 
         {/* Bottom-right corner mark */}
-        <div className="absolute bottom-6 md:bottom-9 right-7 md:right-12 flex items-center gap-2 z-20 card-meta">
+        <div className="absolute bottom-5 md:bottom-6 xl:bottom-9 right-7 md:right-10 xl:right-12 flex items-center gap-2 z-20 card-meta">
           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ac(), boxShadow: `0 0 10px ${ac()}` }} />
           <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">{service.title}</span>
         </div>
