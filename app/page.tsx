@@ -122,6 +122,34 @@ const PROJECTS = [
     video: "/stockear.mp4", screenshot: "/stockear.jpeg", isPrivate: false,
   },
   {
+    title: "SVN Designs", subtitle: "Catálogo & e-commerce",
+    description: "El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca.",
+    technologies: ["Shopify", "Typeform", "Zapier"],
+    demoUrl: "https://svn-designs.com/", repoUrl: "",
+    video: "/svn.mp4", screenshot: "/svnmobile.png", isPrivate: true,
+  },
+  {
+    title: "Skiway", subtitle: "E-commerce industrial",
+    description: "Skiway es un sitio web para una marca argentina de calzado e indumentaria de seguridad industrial. Como desarrollador, trabajé en un diseño responsivo y funcional, optimizando la navegación, el catálogo de productos con filtros y la presentación de imágenes y detalles técnicos para ofrecer una experiencia clara y profesional.",
+    technologies: ["Wordpress", "Elementor", "WooCommerce", "CSS"],
+    demoUrl: "https://skiway.com.ar/", repoUrl: "",
+    video: "/skiway.mp4", screenshot: "/skiwaymobile.png", isPrivate: true,
+  },
+  {
+    title: "Surland Viajes", subtitle: "Agencia de viajes",
+    description: "Surland es una agencia especializada en viajes de egresados de primaria, secundaria y quinceañeras a destinos como Bariloche, Carlos Paz, Camboriú, cruceros y Disney. Como desarrollador trabajé en un diseño responsivo que presenta los paquetes de forma clara y atractiva, optimizando la navegación y la comunicación visual de la marca.",
+    technologies: ["Wordpress", "Elementor", "CSS"],
+    demoUrl: "https://surlandviajes.tur.ar/", repoUrl: "",
+    video: "/surland.mp4", screenshot: "/surlandmobile.png", isPrivate: true,
+  },
+  {
+    title: "Green Company", subtitle: "Web corporativa B2B",
+    description: "Green Company ofrece soluciones logísticas de forma B2B para empresas. Mi trabajo como desarrollador se enfocó en construir una interfaz alineada con la identidad visual de la marca, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad para mostrar servicios.",
+    technologies: ["Wordpress", "Elementor", "WooCommerce"],
+    demoUrl: "https://greenmovingco.com/", repoUrl: "",
+    video: "/green.mp4", screenshot: "/greenmobile.jpeg", isPrivate: true,
+  },
+  {
     title: "Fintrack", subtitle: "Finanzas personales",
     description: "Dashboard de finanzas personales con seguimiento de gastos, categorización automática, análisis con IA y visualización de tendencias. Incluye autenticación y gestión multi-cuenta.",
     technologies: ["React", "Supabase", "0Auth", "Vite", "TailwindCSS"],
@@ -148,7 +176,7 @@ const PROJECTS = [
     technologies: ["NextJS", "TypeScript", "TailwindCSS", "PostgreSQL", "NextAuth"],
     demoUrl: "https://next-js-eccomerce-nine.vercel.app/", repoUrl: "https://github.com/Ulises-Molina/NextJS-Eccomerce",
     video: "/nextjs.mp4", screenshot: "/next-sh-mobile.jpeg", isPrivate: false,
-  },
+  }
 ]
 
 const CERTS = [
@@ -616,142 +644,33 @@ const TECH_RINGS: Ring[] = [
   },
 ]
 
-function TechOrbit() {
-  const [hovered, setHovered] = useState<string | null>(null)
-  const reduce = useReducedMotion()
-  const isPaused = hovered !== null
+// Display order for the editorial stack columns (primary area first).
+const STACK_ORDER = ["Frontend", "Backend & Cloud", "CMS & Automation"]
 
-  const hoveredTech = hovered
-    ? TECH_RINGS.flatMap((r) => r.items).find((t) => t.label === hovered) ?? null
-    : null
+function TechStack() {
+  const groups = [...TECH_RINGS].sort(
+    (a, b) => STACK_ORDER.indexOf(a.label) - STACK_ORDER.indexOf(b.label),
+  )
 
   return (
-    <div className="relative w-full max-w-[680px] aspect-square mx-auto select-none">
-      {/* Anillos decorativos punteados */}
-      {TECH_RINGS.map((ring) => (
-        <div
-          key={`bg-${ring.label}`}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed pointer-events-none transition-colors duration-500"
-          style={{
-            width: `${ring.radius * 2}%`,
-            aspectRatio: "1",
-            borderColor: isPaused ? "hsla(0, 0%, 100%, 0.03)" : "hsla(0, 0%, 100%, 0.06)",
-          }}
-        />
-      ))}
-
-      {/* Núcleo central — reactivo */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-        <AnimatePresence mode="wait" initial={false}>
-          {hovered && hoveredTech ? (
-            <motion.div
-              key={hovered}
-              initial={{ opacity: 0, scale: 0.9, y: 4 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: -4 }}
-              transition={{ duration: 0.22, ease: [0.65, 0, 0.35, 1] }}
-              className="text-center px-3"
-            >
-              <p className="text-[1.4rem] md:text-[1.6rem] font-bold text-white tracking-tight leading-tight whitespace-nowrap">
-                {hovered}
-              </p>
-              <div className="inline-flex items-center gap-1.5 mt-2">
-                <span className="w-1 h-1 rounded-full" style={{ background: ac(), boxShadow: `0 0 6px ${ac(0.7)}` }} />
-                <span className="font-mono text-[9.5px] tracking-[0.35em] text-white/45 uppercase whitespace-nowrap">
-                  {hoveredTech.categories.join(" · ")}
-                </span>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="default-pulse"
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: 0.25, ease: [0.65, 0, 0.35, 1] }}
-              className="relative grid place-items-center"
-            >
+    <div className="space-y-7">
+      {groups.map((group) => (
+        <div key={group.label}>
+          <div className="flex items-center gap-2.5 mb-3.5">
+            <span className="w-1 h-1 rounded-full shrink-0" style={{ background: ac(), boxShadow: `0 0 6px ${ac(0.7)}` }} />
+            <h3 className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">{group.label}</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {group.items.map((t) => (
               <span
-                className="absolute w-20 h-20 rounded-full live-pulse"
-                style={{ background: ac(0.5) }}
-              />
-              <span
-                className="relative block w-4 h-4 rounded-full"
-                style={{
-                  background: ac(),
-                  boxShadow: `0 0 28px ${ac(0.85)}, 0 0 70px ${ac(0.4)}`,
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Anillos con iconos */}
-      {TECH_RINGS.map((ring) => (
-        <div
-          key={`ring-${ring.label}`}
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            animation: reduce
-              ? "none"
-              : `orbit-rotate ${ring.duration}s linear infinite${ring.reverse ? " reverse" : ""}`,
-            animationPlayState: isPaused ? "paused" : "running",
-          }}
-        >
-          {ring.items.map((t, i) => {
-            const angle = (i * 360) / ring.items.length
-            const rad = (angle * Math.PI) / 180
-            const x = 50 + ring.radius * Math.sin(rad)
-            const y = 50 - ring.radius * Math.cos(rad)
-            const isHovered = hovered === t.label
-            const isDimmed = isPaused && !isHovered
-
-            return (
-              <div
                 key={t.label}
-                className="absolute"
-                style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
+                className="group inline-flex items-center gap-2 pl-2 pr-3.5 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.03] transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.06]"
               >
-                <button
-                  type="button"
-                  onMouseEnter={() => setHovered(t.label)}
-                  onMouseLeave={() => setHovered(null)}
-                  onFocus={() => setHovered(t.label)}
-                  onBlur={() => setHovered(null)}
-                  aria-label={t.label}
-                  className="block w-12 h-12 md:w-14 md:h-14 outline-none focus-visible:ring-2 focus-visible:ring-white/30 pointer-events-auto rounded-2xl"
-                  style={{
-                    animation: reduce
-                      ? "none"
-                      : `orbit-counter-rotate ${ring.duration}s linear infinite${ring.reverse ? " reverse" : ""}`,
-                    animationPlayState: isPaused ? "paused" : "running",
-                    opacity: isDimmed ? 0.28 : 1,
-                    transition: "opacity 300ms",
-                  }}
-                >
-                  <div
-                    className="grid place-items-center w-full h-full rounded-2xl"
-                    style={{
-                      background: isHovered
-                        ? `linear-gradient(135deg, ${ac(0.32)}, ${ac(0.08)})`
-                        : "hsla(0, 0%, 100%, 0.04)",
-                      border: isHovered
-                        ? `1px solid ${ac(0.6)}`
-                        : "1px solid hsla(0, 0%, 100%, 0.1)",
-                      boxShadow: isHovered
-                        ? `0 0 32px ${ac(0.55)}, inset 0 1px 0 ${ac(0.35)}`
-                        : "inset 0 1px 0 hsla(0, 0%, 100%, 0.05), 0 4px 14px rgba(0,0,0,0.3)",
-                      transform: isHovered ? "scale(1.2)" : "scale(1)",
-                      transition: "background 300ms, border-color 300ms, box-shadow 300ms, transform 300ms",
-                    }}
-                  >
-                    <Image src={t.icon} alt={t.label} width={22} height={22} className="opacity-90" />
-                  </div>
-                </button>
-              </div>
-            )
-          })}
+                <Image src={t.icon} alt="" width={16} height={16} className="opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="text-[13px] text-white/70 group-hover:text-white transition-colors duration-300">{t.label}</span>
+              </span>
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -1065,21 +984,10 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
     const inner = root.querySelector<HTMLElement>(".card-inner")
     if (!inner) return
 
-    // Card peel-away: as the next card scrolls up, this one scales/fades
-    if (index < total - 1) {
-      gsap.to(inner, {
-        scale: 0.92,
-        opacity: 0.35,
-        filter: "blur(4px)",
-        ease: "none",
-        scrollTrigger: {
-          trigger: root,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.6,
-        },
-      })
-    }
+    // NOTE: the peel-away (scale/fade as the next card covers this one) is created
+    // in the parent's useGSAP, AFTER the Projects carousel pin exists. That pin sits
+    // above this section and inserts a tall pin-spacer; creating the scrub trigger
+    // here (on mount, before the pin) left it stuck at progress=1 → transparent card.
 
     // Reveal animations (play once on enter)
     const tl = gsap.timeline({
@@ -1097,7 +1005,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
   return (
     <div
       ref={ref}
-      className="sticky top-0 h-screen flex items-center justify-center px-4 md:px-8 lg:px-14"
+      className="service-card sticky top-0 h-screen flex items-center justify-center px-4 md:px-8 lg:px-14"
       style={{ zIndex: index + 1 }}
     >
       <div
@@ -1139,7 +1047,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
         </div>
 
         {/* Main content grid */}
-        <div className="absolute inset-0 grid grid-cols-12 gap-4 md:gap-6 xl:gap-8 px-7 md:px-10 lg:px-14 xl:px-16 pt-20 md:pt-20 xl:pt-28 pb-8 md:pb-10 xl:pb-14">
+        <div className="absolute inset-0 grid grid-cols-12 gap-4 md:gap-6 xl:gap-8 px-7 md:px-10 lg:px-14 xl:px-16 pt-20 md:pt-20 xl:pt-24 pb-8 md:pb-10 xl:pb-12 [@media(min-height:980px)]:xl:pt-28 [@media(min-height:980px)]:xl:pb-14">
 
           {/* Mockup — fills left half, centered with equal padding */}
           <div className="card-mockup col-span-12 md:col-span-6 flex items-center justify-center">
@@ -1149,7 +1057,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
           {/* Right content — centered in its column, mirrors mockup's framing */}
           <div className="col-span-12 md:col-span-6 flex items-center justify-center">
             <div className="w-full max-w-[480px]">
-              <h3 className="card-title leading-[0.85] tracking-tight text-white mb-4 md:mb-4 xl:mb-7"
+              <h3 className="card-title leading-[0.85] tracking-tight text-white mb-4 md:mb-4 xl:mb-5 [@media(min-height:980px)]:xl:mb-7"
                 style={{
                   fontFamily: "var(--font-bebas)",
                   fontSize: "clamp(2.2rem, 4.6vw, 5.5rem)",
@@ -1159,12 +1067,12 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
               </h3>
 
               {service.description && (
-                <p className="card-desc text-white/70 text-sm md:text-[14px] xl:text-[1.05rem] leading-relaxed mb-5 md:mb-5 xl:mb-9">
+                <p className="card-desc text-white/70 text-sm md:text-[14px] xl:text-[1.05rem] leading-relaxed mb-5 md:mb-5 xl:mb-6 [@media(min-height:980px)]:xl:mb-9">
                   {service.description}
                 </p>
               )}
 
-              <div className="mb-5 md:mb-5 xl:mb-9">
+              <div className="mb-5 md:mb-5 xl:mb-6 [@media(min-height:980px)]:xl:mb-9">
                 <div className="card-meta flex items-center gap-3 mb-3 md:mb-3 xl:mb-4">
                   <div className="w-6 h-px" style={{ backgroundColor: ac(0.6) }} />
                   <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/40">
@@ -1174,7 +1082,7 @@ function ServiceCard({ service, index, total }: { service: typeof SERVICES[numbe
 
                 <ul className="border-t border-white/[0.08]">
                   {service.bullets.map((b, j) => (
-                    <li key={j} className="card-bullet group flex items-baseline gap-4 py-2 md:py-2 xl:py-3 border-b border-white/[0.08]">
+                    <li key={j} className="card-bullet group flex items-baseline gap-4 py-2 md:py-2 xl:py-2.5 [@media(min-height:980px)]:xl:py-3 border-b border-white/[0.08]">
                       <span className="font-mono text-[10px] tracking-wider tabular-nums w-5 shrink-0 transition-colors text-white/30 group-hover:text-white/70">
                         {String(j + 1).padStart(2, "0")}
                       </span>
@@ -1454,6 +1362,23 @@ export default function Home() {
       })
     }
 
+    // Aptitudes cards peel-away — created HERE, after the Projects carousel pin
+    // above this section has inserted its tall pin-spacer, so these scrub triggers
+    // measure correct start/end positions. (Created inside the child cards on mount
+    // they ran before the pin existed and stayed stuck at progress=1 → transparent.)
+    if (!isMobile) {
+      const cards = gsap.utils.toArray<HTMLElement>(".service-card", containerRef.current)
+      cards.forEach((card, i) => {
+        if (i >= cards.length - 1) return // last card stays solid — nothing covers it
+        const inner = card.querySelector<HTMLElement>(".card-inner")
+        if (!inner) return
+        gsap.to(inner, {
+          scale: 0.92, opacity: 0.35, filter: "blur(4px)", ease: "none",
+          scrollTrigger: { trigger: card, start: "top top", end: "bottom top", scrub: 0.6 },
+        })
+      })
+    }
+
     // Certs — on mobile use opacity-only fade (no x offset) to avoid layout shifts
     gsap.utils.toArray<HTMLElement>(".cert-row").forEach((el, i) => {
       if (isMobile) {
@@ -1500,6 +1425,13 @@ export default function Home() {
         )
       })
     }
+
+    // The Projects carousel pins itself and inserts a tall pin-spacer above the
+    // sticky Aptitudes cards. The cards' scrub-based "peel" triggers are created
+    // in child components (before this pin exists), so their start/end positions
+    // ignore the spacer and stay stuck at progress=1 (opacity 0.35 → transparent).
+    // Recalculate every trigger now that the pin and its spacer are in the DOM.
+    requestAnimationFrame(() => ScrollTrigger.refresh())
   }, { scope: containerRef, dependencies: [prefersReducedMotion, mounted, loading, isMobile] })
 
   const scrollTo = useCallback((id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }) }, [])
@@ -1521,7 +1453,7 @@ export default function Home() {
             <motion.nav initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
               className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-3">
-              {[{ id: "about", n: "01" }, { id: "services", n: "02" }, { id: "experience", n: "03" }, { id: "projects", n: "04" }, { id: "certifications", n: "05" }, { id: "contact", n: "06" }].map((item) => (
+              {[{ id: "about", n: "01" }, { id: "projects", n: "02" }, { id: "services", n: "03" }, { id: "experience", n: "04" }, { id: "certifications", n: "05" }, { id: "contact", n: "06" }].map((item) => (
                 <button key={item.id} onClick={() => scrollTo(item.id)}
                   className={`group flex items-center gap-2 transition-all duration-300 ${activeNav === item.id ? "opacity-100" : "opacity-25 hover:opacity-60"}`} aria-label={item.id}>
                   <div className={`h-[1px] transition-all duration-500 ${activeNav === item.id ? "w-8" : "w-4"}`}
@@ -1541,9 +1473,9 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {[
               { id: "about", label: "Sobre mí" },
+              { id: "projects", label: "Proyectos" },
               { id: "services", label: "Aptitudes" },
               { id: "experience", label: "Experiencia" },
-              { id: "projects", label: "Proyectos" },
               { id: "certifications", label: "Certificaciones" },
               { id: "contact", label: "Contacto" },
             ].map((item) => (
@@ -1654,82 +1586,28 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="px-6 md:px-10 lg:px-20">
-            <div className="max-w-6xl mx-auto">
-              {/* Stack tecnológico */}
-              <div className="about-reveal mt-12 md:mt-16">
-                <div className="flex items-center gap-4 mb-6">
-                  <span className="font-mono text-[10px] md:text-[11px] tracking-[0.4em] text-white/40">/ STACK</span>
-                  <span className="flex-1 h-px max-w-[160px]" style={{ background: `linear-gradient(90deg, ${ac(0.4)}, transparent)` }} />
+          {/* Stack oculto por el momento — cambiar `false` por `true` para restaurarlo */}
+          {false && (
+            <div className="px-6 md:px-10 lg:px-20">
+              <div className="max-w-6xl mx-auto">
+                <div className="about-reveal mt-12 md:mt-16">
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="font-mono text-[10px] md:text-[11px] tracking-[0.4em] text-white/40">/ STACK</span>
+                    <span className="flex-1 h-px max-w-[160px]" style={{ background: `linear-gradient(90deg, ${ac(0.4)}, transparent)` }} />
+                  </div>
+                  <TechStack />
                 </div>
-                <TechOrbit />
               </div>
             </div>
-          </div>
+          )}
         </section>
 
-        {/* ═══ SERVICES — 02 (sticky-stacked deck of cards) ═══ */}
-        <section id="services" data-section="services" className="relative z-10">
-          {/* Intro: header + statement */}
-          <div className="px-6 md:px-10 lg:px-20 pt-12 md:pt-24 pb-6 md:pb-10">
-            <div className="max-w-6xl mx-auto">
-              <div className="services-reveal">
-                <SectionHeader index="02" label="Aptitudes" />
-              </div>
-
-              <h2 className="scroll-blur text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
-                Diseño, código y automatización bajo un mismo <span className="text-[hsl(260,15%,75%)]">criterio</span>.
-              </h2>
-            </div>
-          </div>
-
-          {/* Sticky-stacked cards: each pins to the top of the viewport and is covered by the next */}
-          <ServicesPanel isMobile={isMobile} />
-        </section>
-
-        {/* ═══ EXPERIENCE — timeline ═══ */}
-        <section id="experience" data-section="experience" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
-          <div className="max-w-5xl mx-auto">
-            <SectionHeader index="03" label="Experiencia" />
-            <div className="space-y-10">
-              {EXPERIENCE.map((exp, i) => (
-                <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
-                  <div className="flex flex-col items-center pt-2 shrink-0">
-                    <div className="w-3 h-3 rounded-full border-2 transition-colors duration-500"
-                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.15)", backgroundColor: exp.current ? ac(0.15) : "transparent" }} />
-                    {i < EXPERIENCE.length - 1 && <div className="w-[1px] flex-1 mt-2 bg-white/[0.08]" />}
-                  </div>
-                  <div className="pb-14 flex-1">
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>{exp.period}</span>
-                      <span className="text-xs text-white/40">— {exp.company}</span>
-                      {exp.current && (
-                        <span className="font-mono text-[9px] tracking-wider px-2 py-0.5 rounded-full border text-white/60"
-                          style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>ACTUAL</span>
-                      )}
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
-                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl whitespace-pre-line">{exp.description}</p>
-                    {exp.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {exp.technologies.map((t) => (
-                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ PROJECTS ═══ */}
+        {/* ═══ PROJECTS — 02 ═══ */}
         {isMobile ? (
           /* ─── Mobile: vertical cards ─── */
           <section id="projects" data-section="projects" className="relative z-10 py-16 px-6">
             <div className="max-w-lg mx-auto">
-              <SectionHeader index="04" label="Proyectos" />
+              <SectionHeader index="02" label="Proyectos" />
               <div className="space-y-16">
                 {PROJECTS.map((p, i) => (
                   <div key={i}>
@@ -1938,6 +1816,62 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        {/* ═══ SERVICES — 03 (sticky-stacked deck of cards) ═══ */}
+        <section id="services" data-section="services" className="relative z-10">
+          {/* Intro: header + statement */}
+          <div className="px-6 md:px-10 lg:px-20 pt-12 md:pt-24 pb-6 md:pb-10">
+            <div className="max-w-6xl mx-auto">
+              <div className="services-reveal">
+                <SectionHeader index="03" label="Aptitudes" />
+              </div>
+
+              <h2 className="scroll-blur text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
+                Diseño, código y automatización bajo un mismo <span className="text-[hsl(260,15%,75%)]">criterio</span>.
+              </h2>
+            </div>
+          </div>
+
+          {/* Sticky-stacked cards: each pins to the top of the viewport and is covered by the next */}
+          <ServicesPanel isMobile={isMobile} />
+        </section>
+
+        {/* ═══ EXPERIENCE — 04 (timeline) ═══ */}
+        <section id="experience" data-section="experience" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
+          <div className="max-w-5xl mx-auto">
+            <SectionHeader index="04" label="Experiencia" />
+            <div className="space-y-10">
+              {EXPERIENCE.map((exp, i) => (
+                <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
+                  <div className="flex flex-col items-center pt-2 shrink-0">
+                    <div className="w-3 h-3 rounded-full border-2 transition-colors duration-500"
+                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.15)", backgroundColor: exp.current ? ac(0.15) : "transparent" }} />
+                    {i < EXPERIENCE.length - 1 && <div className="w-[1px] flex-1 mt-2 bg-white/[0.08]" />}
+                  </div>
+                  <div className="pb-14 flex-1">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>{exp.period}</span>
+                      <span className="text-xs text-white/40">— {exp.company}</span>
+                      {exp.current && (
+                        <span className="font-mono text-[9px] tracking-wider px-2 py-0.5 rounded-full border text-white/60"
+                          style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>ACTUAL</span>
+                      )}
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
+                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl whitespace-pre-line">{exp.description}</p>
+                    {exp.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.technologies.map((t) => (
+                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* ═══ CERTIFICATIONS ═══ */}
         <section id="certifications" data-section="certifications" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
