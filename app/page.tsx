@@ -123,28 +123,28 @@ const PROJECTS = [
   },
   {
     title: "SVN Designs", subtitle: "Catálogo & e-commerce",
-    description: "El proyecto se centró en ofrecer un catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas con Zapier. Como desarrollador trabajé en la implementación de una interfaz clara que transmite profesionalismo y facilita la interacción con los servicios de la marca.",
+    description: "Catálogo visual atractivo y fácil de navegar, con formularios de pedido y automatización de respuestas vía Zapier. Una interfaz clara que transmite profesionalismo.",
     technologies: ["Shopify", "Typeform", "Zapier"],
     demoUrl: "https://svn-designs.com/", repoUrl: "",
     video: "/svn.mp4", screenshot: "/svnmobile.png", isPrivate: true,
   },
   {
     title: "Skiway", subtitle: "E-commerce industrial",
-    description: "Skiway es un sitio web para una marca argentina de calzado e indumentaria de seguridad industrial. Como desarrollador, trabajé en un diseño responsivo y funcional, optimizando la navegación, el catálogo de productos con filtros y la presentación de imágenes y detalles técnicos para ofrecer una experiencia clara y profesional.",
+    description: "Sitio para una marca argentina de calzado e indumentaria de seguridad industrial. Diseño responsivo con catálogo de productos filtrable y fichas técnicas claras.",
     technologies: ["Wordpress", "Elementor", "WooCommerce", "CSS"],
     demoUrl: "https://skiway.com.ar/", repoUrl: "",
     video: "/skiway.mp4", screenshot: "/skiwaymobile.png", isPrivate: true,
   },
   {
     title: "Surland Viajes", subtitle: "Agencia de viajes",
-    description: "Surland es una agencia especializada en viajes de egresados de primaria, secundaria y quinceañeras a destinos como Bariloche, Carlos Paz, Camboriú, cruceros y Disney. Como desarrollador trabajé en un diseño responsivo que presenta los paquetes de forma clara y atractiva, optimizando la navegación y la comunicación visual de la marca.",
+    description: "Agencia de viajes de egresados y quinceañeras a destinos como Bariloche, Camboriú, cruceros y Disney. Diseño responsivo que presenta los paquetes de forma clara y atractiva.",
     technologies: ["Wordpress", "Elementor", "CSS"],
     demoUrl: "https://surlandviajes.tur.ar/", repoUrl: "",
     video: "/surland.mp4", screenshot: "/surlandmobile.png", isPrivate: true,
   },
   {
     title: "Green Company", subtitle: "Web corporativa B2B",
-    description: "Green Company ofrece soluciones logísticas de forma B2B para empresas. Mi trabajo como desarrollador se enfocó en construir una interfaz alineada con la identidad visual de la marca, además de optimizar la experiencia en distintos dispositivos. Creamos una consistencia visual para reforzar la confianza desde la estética hasta la funcionalidad para mostrar servicios.",
+    description: "Soluciones logísticas B2B para empresas. Interfaz alineada con la identidad de la marca y optimizada para todos los dispositivos, con foco en transmitir confianza.",
     technologies: ["Wordpress", "Elementor", "WooCommerce"],
     demoUrl: "https://greenmovingco.com/", repoUrl: "",
     video: "/green.mp4", screenshot: "/greenmobile.jpeg", isPrivate: true,
@@ -1765,14 +1765,14 @@ export default function Home() {
                         <div className="h-px w-6" style={{ backgroundColor: ac(0.3) }} />
                         <span className="font-mono text-[11px] tracking-wider text-white/50 uppercase">{p.subtitle}</span>
                       </div>
-                      <h3 className="text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
-                      <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm">{p.description}</p>
+                      <h3 className="text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">{p.title}</h3>
+                      <p className="text-white/65 leading-relaxed text-sm mb-6 max-w-sm line-clamp-4">{p.description}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {p.technologies.map((t) => (
                           <span key={t} className="font-mono px-3 py-1 text-[11px] tracking-wider border border-white/[0.15] rounded text-white/60" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>{t}</span>
                         ))}
                       </div>
-                      <div className="flex flex-row items-center gap-3 pt-8">
+                      <div className="flex flex-row items-center gap-3 pt-6">
                         <Link href={p.demoUrl} target="_blank" rel="noopener noreferrer"
                           className="magnetic inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm rounded-full hover:scale-105 transition-transform border border-white/20 text-white/70 bg-transparent hover:border-white/40 hover:text-white">
                           Demo <ExternalLink className="w-3.5 h-3.5" />
