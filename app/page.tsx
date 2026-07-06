@@ -304,7 +304,7 @@ function CardShell({
 const COUNTERS = [
   { value: 2, prefix: "+", label: "AÑOS" },
   { value: 15, prefix: "+", label: "PROYECTOS" },
-  { value: 6, prefix: "", label: "CERTIFICADOS" },
+  { value: 6, prefix: "", label: "CERTIFICACIONES" },
 ]
 
 function CountersCard() {
@@ -362,7 +362,7 @@ const LIVE_STATES: LiveState[] = [
       { name: "n8n", icon: "/iconos/n8n.svg" },
     ],
   },
-  { label: "Último certificado", value: "Claude Code in Action · Anthropic", icon: FileText },
+  { label: "Última certificación", value: "Claude Code in Action · Anthropic", icon: FileText },
 ]
 
 const LIVE_INTERVAL_MS = 4500
@@ -1453,7 +1453,7 @@ export default function Home() {
             <motion.nav initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
               className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-3">
-              {[{ id: "about", n: "01" }, { id: "projects", n: "02" }, { id: "services", n: "03" }, { id: "experience", n: "04" }, { id: "certifications", n: "05" }, { id: "contact", n: "06" }].map((item) => (
+              {[{ id: "about", n: "01" }, { id: "services", n: "02" }, { id: "experience", n: "03" }, { id: "projects", n: "04" }, { id: "certifications", n: "05" }, { id: "contact", n: "06" }].map((item) => (
                 <button key={item.id} onClick={() => scrollTo(item.id)}
                   className={`group flex items-center gap-2 transition-all duration-300 ${activeNav === item.id ? "opacity-100" : "opacity-25 hover:opacity-60"}`} aria-label={item.id}>
                   <div className={`h-[1px] transition-all duration-500 ${activeNav === item.id ? "w-8" : "w-4"}`}
@@ -1473,9 +1473,9 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {[
               { id: "about", label: "Sobre mí" },
-              { id: "projects", label: "Proyectos" },
               { id: "services", label: "Aptitudes" },
               { id: "experience", label: "Experiencia" },
+              { id: "projects", label: "Proyectos" },
               { id: "certifications", label: "Certificaciones" },
               { id: "contact", label: "Contacto" },
             ].map((item) => (
@@ -1602,12 +1602,68 @@ export default function Home() {
           )}
         </section>
 
-        {/* ═══ PROJECTS — 02 ═══ */}
+        {/* ═══ SERVICES — 02 (sticky-stacked deck of cards) ═══ */}
+        <section id="services" data-section="services" className="relative z-10">
+          {/* Intro: header + statement */}
+          <div className="px-6 md:px-10 lg:px-20 pt-12 md:pt-24 pb-6 md:pb-10">
+            <div className="max-w-6xl mx-auto">
+              <div className="services-reveal">
+                <SectionHeader index="02" label="Aptitudes" />
+              </div>
+
+              <h2 className="scroll-blur text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
+                Diseño, código y automatización bajo un mismo <span className="text-[hsl(260,15%,75%)]">criterio</span>.
+              </h2>
+            </div>
+          </div>
+
+          {/* Sticky-stacked cards: each pins to the top of the viewport and is covered by the next */}
+          <ServicesPanel isMobile={isMobile} />
+        </section>
+
+        {/* ═══ EXPERIENCE — 03 (timeline) ═══ */}
+        <section id="experience" data-section="experience" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
+          <div className="max-w-5xl mx-auto">
+            <SectionHeader index="03" label="Experiencia" />
+            <div className="space-y-10">
+              {EXPERIENCE.map((exp, i) => (
+                <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
+                  <div className="flex flex-col items-center pt-2 shrink-0">
+                    <div className="w-3 h-3 rounded-full border-2 transition-colors duration-500"
+                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.15)", backgroundColor: exp.current ? ac(0.15) : "transparent" }} />
+                    {i < EXPERIENCE.length - 1 && <div className="w-[1px] flex-1 mt-2 bg-white/[0.08]" />}
+                  </div>
+                  <div className="pb-14 flex-1">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>{exp.period}</span>
+                      <span className="text-xs text-white/40">— {exp.company}</span>
+                      {exp.current && (
+                        <span className="font-mono text-[9px] tracking-wider px-2 py-0.5 rounded-full border text-white/60"
+                          style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>ACTUAL</span>
+                      )}
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
+                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl whitespace-pre-line">{exp.description}</p>
+                    {exp.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.technologies.map((t) => (
+                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ PROJECTS — 04 ═══ */}
         {isMobile ? (
           /* ─── Mobile: vertical cards ─── */
           <section id="projects" data-section="projects" className="relative z-10 py-16 px-6">
             <div className="max-w-lg mx-auto">
-              <SectionHeader index="02" label="Proyectos" />
+              <SectionHeader index="04" label="Proyectos" />
               <div className="space-y-16">
                 {PROJECTS.map((p, i) => (
                   <div key={i}>
@@ -1816,62 +1872,6 @@ export default function Home() {
             </div>
           </section>
         )}
-
-        {/* ═══ SERVICES — 03 (sticky-stacked deck of cards) ═══ */}
-        <section id="services" data-section="services" className="relative z-10">
-          {/* Intro: header + statement */}
-          <div className="px-6 md:px-10 lg:px-20 pt-12 md:pt-24 pb-6 md:pb-10">
-            <div className="max-w-6xl mx-auto">
-              <div className="services-reveal">
-                <SectionHeader index="03" label="Aptitudes" />
-              </div>
-
-              <h2 className="scroll-blur text-[clamp(1.6rem,4vw,3rem)] font-bold leading-[1.15] tracking-tight text-white max-w-4xl">
-                Diseño, código y automatización bajo un mismo <span className="text-[hsl(260,15%,75%)]">criterio</span>.
-              </h2>
-            </div>
-          </div>
-
-          {/* Sticky-stacked cards: each pins to the top of the viewport and is covered by the next */}
-          <ServicesPanel isMobile={isMobile} />
-        </section>
-
-        {/* ═══ EXPERIENCE — 04 (timeline) ═══ */}
-        <section id="experience" data-section="experience" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
-          <div className="max-w-5xl mx-auto">
-            <SectionHeader index="04" label="Experiencia" />
-            <div className="space-y-10">
-              {EXPERIENCE.map((exp, i) => (
-                <div key={i} className="exp-entry group relative flex gap-5 md:gap-8">
-                  <div className="flex flex-col items-center pt-2 shrink-0">
-                    <div className="w-3 h-3 rounded-full border-2 transition-colors duration-500"
-                      style={{ borderColor: exp.current ? ac() : "rgba(255,255,255,0.15)", backgroundColor: exp.current ? ac(0.15) : "transparent" }} />
-                    {i < EXPERIENCE.length - 1 && <div className="w-[1px] flex-1 mt-2 bg-white/[0.08]" />}
-                  </div>
-                  <div className="pb-14 flex-1">
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>{exp.period}</span>
-                      <span className="text-xs text-white/40">— {exp.company}</span>
-                      {exp.current && (
-                        <span className="font-mono text-[9px] tracking-wider px-2 py-0.5 rounded-full border text-white/60"
-                          style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>ACTUAL</span>
-                      )}
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
-                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl whitespace-pre-line">{exp.description}</p>
-                    {exp.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {exp.technologies.map((t) => (
-                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ═══ CERTIFICATIONS ═══ */}
         <section id="certifications" data-section="certifications" className="relative z-10 py-20 md:py-44 px-6 md:px-10 lg:px-20">
