@@ -90,19 +90,14 @@ const SERVICES = [
 
 const EXPERIENCE = [
   {
-    role: "Web Developer", company: "Qualita Studio", period: "MAR 2025 — PRESENTE", current: true,
-    description: "Desarrollo, configuración y mantenimiento de sitios web y plataformas E-Commerce.\nImplementación front-end con HTML, CSS y JavaScript. Gestión de WordPress y Shopify, personalización de themes y plugins.\nDiseño y optimización UX/UI, responsive design, automatización de procesos con n8n y Zapier, integración de APIs, SEO técnico, administración de hosting y dominios, soporte en Email Marketing.\nColaboración con equipos de diseño y marketing bajo metodologías ágiles.",
-    technologies: ["Wordpress", "Elementor", "Shopify", "Notion", "Zapier", "HTML5", "CSS3", "JavaScript"],
+    role: "Full-Stack & Automation Developer", company: "Qualita Studio", period: "DIC 2025 — PRESENTE", current: true,
+    description: "Automatizaciones con n8n que conectan la generación de leads con CRMs y sistemas internos.\nIntegración de APIs y herramientas externas para optimizar flujos digitales.\nDesarrollo y mantenimiento de sitios web y plataformas E-Commerce.\nAdministración de hosting, dominios y servidores.\nTracking avanzado de eventos (GTM, GA4, Google Ads, Meta Pixel).\nTrabajo con equipos de diseño y marketing bajo metodologías ágiles.",
+    technologies: ["n8n", "Zapier", "APIs", "GTM", "GA4", "Google Ads", "Meta Pixel", "Wordpress", "Shopify"],
   },
   {
-    role: "Pasante Web Developer", company: "Qualita Studio", period: "FEB — MAR 2025", current: false,
-    description: "Desarrollo de sitios web con enfoque en interfaces responsivas, accesibles y alineadas con los objetivos del negocio.",
-    technologies: ["Wordpress", "Elementor", "Shopify", "ClickUp"],
-  },
-  {
-    role: "Encargado de local", company: "Great Burgers", period: "2023 — 2025", current: false,
-    description: "Atención al cliente, manejo de caja, grupo de trabajo y control de inventario.",
-    technologies: [],
+    role: "Web Developer", company: "Qualita Studio", period: "FEB — DIC 2025", current: false,
+    description: "Desarrollo y mantenimiento de sitios web y plataformas E-Commerce.\nFront-end con HTML, CSS y JavaScript enfocado en UX y conversión.\nGestión de WordPress y Shopify: themes, plugins y nuevas funcionalidades.\nDiseño UX/UI y desarrollo responsive multi-dispositivo.\nOptimización SEO técnica y estructural.\nSoporte en campañas de Email Marketing.",
+    technologies: ["HTML5", "CSS3", "JavaScript", "Wordpress", "Shopify", "SEO", "UX/UI"],
   },
 ]
 
@@ -1546,14 +1541,14 @@ export default function Home() {
                   Desarrollador de Software especializado en interfaces modernas y funcionales. Foco en performance, diseño y experiencia de usuario.
                 </p>
                 <div className="flex gap-3 hero-meta shrink-0">
-                  <button onClick={() => scrollTo("projects")}
+                  <Link href="https://wa.me/5491165162354" target="_blank" rel="noopener noreferrer"
                     className="hero-cta-btn magnetic group px-6 py-3 text-white font-semibold text-sm rounded-full hover:scale-105 transition-transform flex items-center gap-2 border border-white/20"
                     style={{ backgroundColor: "rgba(255,255,255,0.08)", boxShadow: `0 0 20px ${ac(0.15)}` }}>
-                    Proyectos <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </button>
-                  <button onClick={() => scrollTo("contact")}
+                    Contactame <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </Link>
+                  <button onClick={() => scrollTo("projects")}
                     className="hero-cta-btn magnetic px-6 py-3 border border-white/15 text-white/80 font-medium text-sm rounded-full hover:border-white/30 hover:text-white transition-all">
-                    Contacto
+                    Proyectos
                   </button>
                 </div>
               </div>
@@ -1643,7 +1638,14 @@ export default function Home() {
                       )}
                     </div>
                     <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
-                    <p className="text-white/55 leading-relaxed mb-4 text-sm max-w-2xl whitespace-pre-line">{exp.description}</p>
+                    <ul className="mb-4 max-w-2xl space-y-1.5">
+                      {exp.description.split("\n").map((line, li) => (
+                        <li key={li} className="flex gap-2.5 text-white/55 text-sm leading-relaxed">
+                          <span className="shrink-0 select-none" style={{ color: ac() }}>•</span>
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
                     {exp.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {exp.technologies.map((t) => (
