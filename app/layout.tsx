@@ -98,8 +98,9 @@ export const metadata: Metadata = {
     canonical: BASE_URL,
   },
   icons: {
-    icon: "/icons8-studio-display-50 .png",
-    shortcut: "/icons8-studio-display-50 .png",
+    icon: "/icons8-studio-display-50.png",
+    shortcut: "/favicon.ico",
+    apple: "/icons8-studio-display-50.png",
   },
 }
 
