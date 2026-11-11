@@ -34,12 +34,12 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 })
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ulisesmolina.vercel.app"
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.ulisesmolina.com.ar"
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Ulises Molina — Software Dev",
+    default: "Ulises Molina | Software Dev",
     template: "%s | Ulises Molina",
   },
   description:
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_AR",
     url: BASE_URL,
-    siteName: "Ulises Molina — Frontend Developer",
-    title: "Ulises Molina — Frontend Developer",
+    siteName: "Ulises Molina | Frontend Developer",
+    title: "Ulises Molina | Frontend Developer",
     description:
       "Frontend Developer especializado en React, Next.js y TypeScript. Creando experiencias digitales excepcionales.",
     images: [
@@ -72,13 +72,13 @@ export const metadata: Metadata = {
         url: "/origin.jpeg",
         width: 1200,
         height: 630,
-        alt: "Ulises Molina — Frontend Developer",
+        alt: "Ulises Molina | Frontend Developer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ulises Molina — Frontend Developer",
+    title: "Ulises Molina | Frontend Developer",
     description:
       "Frontend Developer especializado en React, Next.js y TypeScript. Creando experiencias digitales excepcionales.",
     images: ["/origin.jpeg"],
