@@ -248,13 +248,20 @@ export function WarpedGrid() {
     const { gl, quadBuf, FLOW_SIZE, flowProg, flowU, flowPos, mainProg, mainU, mainPos } = ctx
     let { flowA, flowB } = ctx
 
+    // En touch, la barra de URL cambia la altura al scrollear: solo redimensionamos
+    // cuando cambia el ancho (rotación) para no regenerar el buffer en cada scroll.
+    // El tamaño visual lo maneja el CSS (fixed inset-0 al 100%).
+    let lastW = 0
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio, isTouch ? 1 : 1.5)
       const w = window.innerWidth, h = window.innerHeight
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      canvas.style.width = w + "px"
-      canvas.style.height = h + "px"
+      if (isTouch && w === lastW) return
+      lastW = w
+      // El ruido es suave y difuso: renderizar por debajo de la resolución nativa no se
+      // nota y reduce muchísimo el trabajo del fragment shader (es fullscreen, cada frame).
+      // Desktop: 0.75x CSS px (antes hasta 1.5x en retina → ~4x menos píxeles). Touch: 0.5x.
+      const scale = isTouch ? 0.5 : 0.75
+      canvas.width = Math.round(w * scale)
+      canvas.height = Math.round(h * scale)
     }
     resize()
     window.addEventListener("resize", resize, { passive: true })
@@ -266,7 +273,16 @@ export function WarpedGrid() {
       window.addEventListener("mousemove", onMove, { passive: true })
     }
 
-    const render = () => {
+    // En touch el fondo se mueve lento y no reacciona al dedo: 30fps alcanzan y ahorran batería
+    const minFrameMs = isTouch ? 1000 / 30 : 0
+    let lastFrame = 0
+
+    const render = (now: number) => {
+      if (now - lastFrame < minFrameMs - 1) {
+        rafRef.current = requestAnimationFrame(render)
+        return
+      }
+      lastFrame = now
       const t = (Date.now() - startTime.current) / 1000
       const aspect = canvas.width / canvas.height
 

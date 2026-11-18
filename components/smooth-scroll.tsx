@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { ReactLenis, useLenis } from 'lenis/react'
 import { ScrollTrigger } from '@/lib/gsap'
 
@@ -24,15 +24,11 @@ function LenisController({ stopped }: { stopped: boolean }) {
   return null
 }
 
+/* Siempre montado (también en el render del servidor) para que el árbol no cambie
+   al hidratar: antes se alternaba entre <>children</> y <ReactLenis> y eso remontaba
+   la página entera. En touch Lenis no intercepta el scroll (syncTouch: false),
+   así que el scroll nativo del celular queda intacto. */
 export function SmoothScroll({ children, stopped }: { children: React.ReactNode; stopped?: boolean }) {
-  const [isTouch, setIsTouch] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    setIsTouch(window.matchMedia("(hover: none) and (pointer: coarse)").matches)
-  }, [])
-
-  if (isTouch !== false) return <>{children}</>
-
   return (
     <ReactLenis
       root
@@ -40,6 +36,7 @@ export function SmoothScroll({ children, stopped }: { children: React.ReactNode;
         lerp: 0.09,
         duration: 1.4,
         smoothWheel: true,
+        syncTouch: false,
       }}
     >
       <LenisController stopped={!!stopped} />

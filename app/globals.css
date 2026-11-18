@@ -38,11 +38,15 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     cursor: none;
+    overflow-x: clip;
   }
 
   html {
     background: hsl(0 0% 8%);
     overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 
   a, button, [role="button"] {
@@ -218,6 +222,15 @@ body::before {
   a, button, [role="button"] { cursor: auto; }
   .custom-cursor { display: none !important; }
 }
+
+/* ─── Hero: estado inicial previo a la intro de GSAP ───
+   La clase la agrega un script inline en <head> antes del primer paint, así el
+   HTML del servidor no muestra el hero un instante antes de animarlo. Solo
+   opacidad en .hero-meta / .hero-cta-btn: GSAP lee el transform computado y
+   algunos (ej. el indicador de scroll) ya usan translate. */
+html.js-anim .hero-line { transform: translateY(110%) rotateX(-20deg); }
+html.js-anim .hero-meta,
+html.js-anim .hero-cta-btn { opacity: 0; }
 
 /* ─── Skip to content (accessibility) ─── */
 .skip-to-content {

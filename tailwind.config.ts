@@ -2,6 +2,8 @@ import type { Config } from "tailwindcss"
 
 const config = {
   darkMode: ["class"],
+  // hover: solo en dispositivos con puntero real (evita hovers "pegados" tras un tap en mobile)
+  future: { hoverOnlyWhenSupported: true },
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",

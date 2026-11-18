@@ -16,6 +16,18 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  poweredByHeader: false,
+  // Assets de /public (videos, imágenes, PDF): no llevan hash en el nombre, así que
+  // cache corta + stale-while-revalidate largo: las visitas repetidas cargan al instante
+  // y si se reemplaza un archivo, se actualiza en segundo plano.
+  async headers() {
+    return [
+      {
+        source: "/:all*(mp4|webm|webp|png|jpg|jpeg|svg|ico|pdf)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=2592000" }],
+      },
+    ]
+  },
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
