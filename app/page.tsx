@@ -4,7 +4,7 @@ import type React from "react"
 import { Fragment, useRef, useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap"
-import { ArrowUpRight, Github, Linkedin, Mail, FileText } from "lucide-react"
+import { ArrowUpRight, Github, Linkedin, Mail, FileText, Plus } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { SmoothScroll } from "@/components/smooth-scroll"
@@ -189,24 +189,72 @@ function ServicesList() {
 const EXPERIENCE = [
   {
     role: "Full-Stack & Automation Developer", company: "Qualita Studio", period: "DIC 2025 — PRESENTE", current: true,
+    summary: "Automatizaciones, integraciones de APIs y tracking avanzado que conectan marketing con ventas.",
     description: "Automatizaciones con n8n que conectan la generación de leads con CRMs y sistemas internos.\nIntegración de APIs y herramientas externas para optimizar flujos digitales.\nDesarrollo y mantenimiento de sitios web y plataformas E-Commerce.\nAdministración de hosting, dominios y servidores.\nTracking avanzado de eventos (GTM, GA4, Google Ads, Meta Pixel).\nTrabajo con equipos de diseño y marketing bajo metodologías ágiles.",
     technologies: ["n8n", "Zapier", "APIs", "GTM", "GA4", "Google Ads", "Meta Pixel", "Wordpress", "Shopify"],
   },
   {
     role: "Web Developer", company: "Qualita Studio", period: "FEB — DIC 2025", current: false,
+    summary: "Sitios y e-commerce en WordPress y Shopify con foco en UX, SEO y conversión.",
     description: "Desarrollo y mantenimiento de sitios web y plataformas E-Commerce.\nFront-end con HTML, CSS y JavaScript enfocado en UX y conversión.\nGestión de WordPress y Shopify: themes, plugins y nuevas funcionalidades.\nDiseño UX/UI y desarrollo responsive multi-dispositivo.\nOptimización SEO técnica y estructural.\nSoporte en campañas de Email Marketing.",
     technologies: ["HTML5", "CSS3", "JavaScript", "Wordpress", "Shopify", "SEO", "UX/UI"],
   },
 ]
 
 const CERTS = [
-  { title: "JavaScript Algorithms & Data Structures", org: "freeCodeCamp", date: "02.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8" },
-  { title: "Curso avanzado de React JS", org: "Gobierno de la Ciudad de Buenos Aires", date: "06.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
-  { title: "Curso avanzado de Node JS", org: "Gobierno de la Ciudad de Buenos Aires", date: "12.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
-  { title: "Responsive Web Design", org: "freeCodeCamp", date: "01.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/responsive-web-design" },
-  { title: "English Certificate B2 — Upper Intermediate", org: "EF SET", date: "02.2025", url: "https://cert.efset.org/es/7WVPUE" },
-  { title: "Claude Code in Action", org: "Anthropic", date: "03.2026", url: "https://verify.skilljar.com/c/d45ub3kt6epf" },
+  { title: "JavaScript Algorithms & Data Structures", org: "freeCodeCamp", badge: "FCC", date: "02.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/javascript-algorithms-and-data-structures-v8" },
+  { title: "Curso avanzado de React JS", org: "Gobierno de la Ciudad de Buenos Aires", orgShort: "GCBA", badge: "BA", date: "06.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1752792565172/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
+  { title: "Curso avanzado de Node JS", org: "Gobierno de la Ciudad de Buenos Aires", orgShort: "GCBA", badge: "BA", date: "12.2025", url: "https://www.linkedin.com/in/ulises-rafael-molina/overlay/1766005199800/single-media-viewer/?profileId=ACoAAEMW2M4BXEIU9aAorWjDk3HB4Cl0NRGjZy8" },
+  { title: "Responsive Web Design", org: "freeCodeCamp", badge: "FCC", date: "01.2025", url: "https://www.freecodecamp.org/certification/Ulises-Molina/responsive-web-design" },
+  { title: "English Certificate B2 — Upper Intermediate", org: "EF SET", badge: "EF", date: "02.2025", url: "https://cert.efset.org/es/7WVPUE" },
+  { title: "Claude Code in Action", org: "Anthropic", badge: "AI", date: "03.2026", url: "https://verify.skilljar.com/c/d45ub3kt6epf" },
 ]
+
+type Cert = (typeof CERTS)[number] & { orgShort?: string }
+
+/* ═══ EXPERIENCE DETAILS ═══ */
+
+/** Desktop: lista completa siempre visible. Mobile: resumen + detalle desplegable. */
+function ExperienceDetails({ exp }: { exp: (typeof EXPERIENCE)[number] }) {
+  const [open, setOpen] = useState(false)
+  const bullets = (
+    <ul className="max-w-2xl space-y-1.5">
+      {exp.description.split("\n").map((line, li) => (
+        <li key={li} className="flex gap-2.5 text-white/55 text-sm leading-relaxed">
+          <span className="shrink-0 select-none" style={{ color: ac() }}>•</span>
+          <span>{line}</span>
+        </li>
+      ))}
+    </ul>
+  )
+  return (
+    <>
+      {/* Mobile: resumen + detalle desplegable */}
+      <div className="md:hidden">
+        <p className="text-[14px] leading-relaxed text-white/60" style={{ fontFamily: "var(--font-inter)" }}>{exp.summary}</p>
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div className="overflow-hidden"
+              initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+              <div className="pt-4">{bullets}</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
+          className="mt-3 inline-flex items-center gap-2 py-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/50 active:text-white">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full border transition-colors duration-300"
+            style={{ borderColor: open ? ac(0.6) : "rgba(255,255,255,0.15)" }}>
+            <Plus className={`h-3 w-3 transition-transform duration-300 ${open ? "rotate-45" : ""}`} style={{ color: open ? ac() : undefined }} />
+          </span>
+          {open ? "Ocultar detalle" : "Ver detalle"}
+        </button>
+      </div>
+      {/* Desktop: lista completa */}
+      <div className="hidden md:block">{bullets}</div>
+    </>
+  )
+}
 
 /* ═══ CURSOR ═══ */
 
@@ -654,7 +702,7 @@ export default function Home() {
                         style={{ background: `linear-gradient(to bottom, ${ac(0.5)}, rgba(255,255,255,0.08) 40%)` }} />
                     )}
                   </div>
-                  <div className={`exp-body flex-1 ${i < EXPERIENCE.length - 1 ? "pb-14" : ""}`}>
+                  <div className={`exp-body min-w-0 flex-1 ${i < EXPERIENCE.length - 1 ? "pb-10 md:pb-14" : ""}`}>
                     <div className="flex flex-wrap items-center gap-3 mb-2">
                       <span className="font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: ac() }}>{exp.period}</span>
                       <span className="text-xs text-white/40">— {exp.company}</span>
@@ -663,19 +711,12 @@ export default function Home() {
                           style={{ borderColor: ac(0.4), backgroundColor: ac(0.08) }}>ACTUAL</span>
                       )}
                     </div>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold leading-snug mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
-                    <ul className="mb-4 max-w-2xl space-y-1.5">
-                      {exp.description.split("\n").map((line, li) => (
-                        <li key={li} className="flex gap-2.5 text-white/55 text-sm leading-relaxed">
-                          <span className="shrink-0 select-none" style={{ color: ac() }}>•</span>
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold leading-snug mb-2 md:mb-3 text-white group-hover:translate-x-1 transition-transform duration-500">{exp.role}</h3>
+                    <ExperienceDetails exp={exp} />
                     {exp.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="scrollbar-hide mt-4 -mr-6 pr-6 md:mr-0 md:pr-0 flex flex-nowrap md:flex-wrap gap-1.5 overflow-x-auto md:overflow-visible [mask-image:linear-gradient(to_right,black_80%,transparent)] md:[mask-image:none]">
                         {exp.technologies.map((t) => (
-                          <span key={t} className="font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
+                          <span key={t} className="shrink-0 font-mono px-2.5 py-1 text-[10px] tracking-wider border border-white/[0.08] rounded text-white/35">{t}</span>
                         ))}
                       </div>
                     )}
@@ -691,16 +732,24 @@ export default function Home() {
           <div className="max-w-5xl mx-auto">
             <SectionHeader index="04" label="Certificaciones" />
             <div>
-              {CERTS.map((c, i) => (
+              {(CERTS as Cert[]).map((c, i) => (
                 <Link key={i} href={c.url} target="_blank" rel="noopener noreferrer" className="cert-row magnetic group block">
                   <div className="cert-line h-[1px] origin-left bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors duration-500" />
-                  <div className="cert-body py-5 md:py-7 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-6">
-                    <h3 className="text-[15px] sm:text-base md:text-lg font-medium leading-snug text-white/80 group-hover:text-white transition-colors duration-300 flex-1">{c.title}</h3>
-                    <div className="flex items-center gap-4 md:gap-6 md:shrink-0">
-                      <span className="min-w-0 flex-1 md:flex-none font-mono text-[10px] tracking-wider text-white/45">{c.org}</span>
-                      <span className="shrink-0 font-mono text-[10px] tracking-wider text-white/45">{c.date}</span>
-                      <ArrowUpRight className="shrink-0 w-3.5 h-3.5 text-white/30 md:text-white/10 group-hover:text-white/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                  <div className="cert-body py-4 md:py-7 flex items-center gap-4 md:gap-6">
+                    {/* Monograma de la institución (solo mobile) */}
+                    <span aria-hidden="true"
+                      className="md:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] font-mono text-[10px] font-medium tracking-wider"
+                      style={{ color: ac(0.85) }}>{c.badge}</span>
+                    <div className="min-w-0 flex-1 md:flex md:items-center md:justify-between md:gap-6">
+                      <h3 className="line-clamp-2 md:line-clamp-none text-[14px] sm:text-base md:text-lg font-medium leading-snug text-white/85 group-hover:text-white transition-colors duration-300 md:flex-1">{c.title}</h3>
+                      <div className="mt-1 md:mt-0 flex items-center gap-2 md:gap-6 md:shrink-0 font-mono text-[10px] tracking-wider text-white/45">
+                        <span className="md:hidden">{c.orgShort ?? c.org}</span>
+                        <span className="hidden md:inline">{c.org}</span>
+                        <span aria-hidden="true" className="md:hidden text-white/20">·</span>
+                        <span className="shrink-0">{c.date}</span>
+                      </div>
                     </div>
+                    <ArrowUpRight className="shrink-0 w-3.5 h-3.5 text-white/30 md:text-white/10 group-hover:text-white/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
                   </div>
                 </Link>
               ))}
